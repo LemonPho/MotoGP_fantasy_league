@@ -164,19 +164,15 @@ void MemberMenu::modifyMember() {
 }
 
 void MemberMenu::saveChangesMade() {
-    char option;
 
-    cout << "Would you like to save changes made? (S/N): ";
-    cin >> option;
-    if(option == 's' || option == 'S'){
-        string homeDirectory, temp, currentDirectory;
-        char tempDirectory[256];
-        currentDirectory += temp + "/";
-        homeDirectory = getenv("HOME");
-        sprintf(tempDirectory, "%s/%s", homeDirectory.data(), currentDirectory.data());
-        currentDirectory = tempDirectory;
-        memberList->writeToDisk(currentDirectory + MEMBER_DATA);
-    }
+    string homeDirectory, currentDirectory;
+    char tempDirectory[256];
+    currentDirectory += seasonName + "/";
+    homeDirectory = getenv("HOME");
+    sprintf(tempDirectory, "%s/%s", homeDirectory.data(), currentDirectory.data());
+    currentDirectory = tempDirectory;
+    memberList->writeToDisk(currentDirectory + MEMBER_DATA);
+
 
 }
 

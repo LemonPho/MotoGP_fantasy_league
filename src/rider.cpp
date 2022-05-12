@@ -2,9 +2,9 @@
 
 Rider::Rider() {
     name = Name();
-    number = "NUMBER";
-    country = "COUNTRY";
-    team = "ROOKIE";
+    number = "";
+    country = "";
+    team = "";
     rookie = false;
     testRider = false;
     chosen = false;

@@ -57,8 +57,12 @@ void Menu::startProgram() {
             j++;
         }
         if(j == 3){
-            while(currentDirectory[i++] != '/'){
-                seasonName[i] = currentDirectory[i];
+            int k = 0;
+            i++;
+            while(currentDirectory[i] != '/'){
+                seasonName[k] = currentDirectory[i];
+                i++;
+                k++;
             }
             end = true;
         }
