@@ -149,5 +149,5 @@ void MemberList::writeToDisk(const string &fileName) {
 }
 
 MemberList *MemberList::readFromDisk(const string &fileName) {
-
+    return nullptr;
 }
