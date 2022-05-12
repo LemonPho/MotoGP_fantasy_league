@@ -58,9 +58,11 @@ void Menu::startProgram() {
         }
         if(j == 3){
             int k = 0;
-            i++;
+            char temp;
+            i+=2;
             while(currentDirectory[i] != '/'){
-                seasonName[k] = currentDirectory[i];
+                temp = currentDirectory[i];
+               seasonName += temp;
                 i++;
                 k++;
             }
@@ -69,7 +71,8 @@ void Menu::startProgram() {
         i++;
     }
     currentDirectory += "/";
-    memberList = memberList->readFromDisk(currentDirectory + MEMBER_DATA);
+    memberList = new MemberList();
+    //memberList = memberList->readFromDisk(currentDirectory + MEMBER_DATA);
 }
 
 void Menu::menu() {

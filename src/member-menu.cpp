@@ -167,7 +167,7 @@ void MemberMenu::saveChangesMade() {
 
     string homeDirectory, currentDirectory;
     char tempDirectory[256];
-    currentDirectory += seasonName + "/";
+    currentDirectory += "." + seasonName + "/";
     homeDirectory = getenv("HOME");
     sprintf(tempDirectory, "%s/%s", homeDirectory.data(), currentDirectory.data());
     currentDirectory = tempDirectory;

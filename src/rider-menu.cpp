@@ -136,19 +136,14 @@ void RiderMenu::listRiders() {
 }
 
 void RiderMenu::saveChangesMade() {
-    char option;
+    string homeDirectory, temp, currentDirectory;
+    char tempDirectory[256];
+    currentDirectory += "." + seasonName + "/";
+    homeDirectory = getenv("HOME");
+    sprintf(tempDirectory, "%s/%s", homeDirectory.data(), currentDirectory.data());
+    currentDirectory = tempDirectory;
+    memberList->riderList->writeToDisk(currentDirectory + RIDER_DATA);
 
-    cout << "Would you like to save changes made? (S/N): ";
-    cin >> option;
-    if(option == 's' || option == 'S'){
-        string homeDirectory, temp, currentDirectory;
-        char tempDirectory[256];
-        currentDirectory += temp + "/";
-        homeDirectory = getenv("HOME");
-        sprintf(tempDirectory, "%s/%s", homeDirectory.data(), currentDirectory.data());
-        currentDirectory = tempDirectory;
-        memberList->riderList->writeToDisk(currentDirectory + RIDER_DATA);
-    }
 }
 
 void RiderMenu::enterToContinue() {
