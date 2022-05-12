@@ -24,6 +24,10 @@ bool Rider::setData(Name &name, string &number, string &country, string &team, b
     return true;
 }
 
+void Rider::setNumber(string &number) {
+    this->number = number;
+}
+
 void Rider::addPoints(int &points) {
     this->points += points;
 }
@@ -96,4 +100,71 @@ string Rider::toStringSmall() {
     result = fillSpaces(result, SPACE_PRINT_SMALL - result.length());
 
     return result;
+}
+
+string Rider::toStringDisk() {
+    string result;
+
+    result += number;
+    result += "|";
+    result += name.toString();
+    result += "|";
+    result += country;
+    result += "|";
+    result += team;
+    result += "|";
+    if(rookie){
+        result += "(R)|";
+    } else {
+        result += " |";
+    }
+    if(testRider){
+        result += "(T)|";
+    } else {
+        result += " |";
+    }
+    if(chosen){
+        result += "*";
+    } else {
+        result += " ";
+    }
+
+    return result;
+}
+
+Rider &Rider::operator=(const Rider &rider) {
+    name = rider.name;
+    number = rider.number;
+    country = rider.country;
+    team = rider.team;
+    rookie = rider.rookie;
+    testRider = rider.testRider;
+    chosen = rider.chosen;
+    points = rider.points;
+
+    return *this;
+}
+
+bool Rider::operator==(const Rider &rider) {
+    return number == rider.number;
+}
+
+bool Rider::operator!=(const Rider &rider) {
+    return number != rider.number;
+}
+
+bool Rider::operator<(const Rider &rider) {
+    return number < rider.number;
+}
+
+bool Rider::operator<=(const Rider &rider) {
+    return number <= rider.number;
+}
+
+bool Rider::operator>(const Rider &rider) {
+    return number > rider.number;
+}
+
+bool Rider::operator>=(const Rider &rider) {
+    return number >= rider.number;
 }

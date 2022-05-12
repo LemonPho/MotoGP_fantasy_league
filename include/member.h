@@ -17,6 +17,7 @@ private:
     Rider rookie;
     int riderCount;
     int points;
+
 public:
     Member();
     Member(const Member &member);
@@ -29,7 +30,10 @@ public:
     string getUserName();
     Rider* getRiders();
     Rider getRookie();
+    int getRiderCount();
+    int getPoints();
 
+    string getRidersDisk();
     string toStringSmall();
 };
 

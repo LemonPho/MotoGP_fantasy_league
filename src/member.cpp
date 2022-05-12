@@ -52,6 +52,24 @@ Rider Member::getRookie() {
     return rookie;
 }
 
+int Member::getRiderCount() {
+    return riderCount;
+}
+
+int Member::getPoints() {
+    return points;
+}
+
+string Member::getRidersDisk() {
+    string result = "";
+
+    for(int i = 0; i < riderCount; i++){
+        result += riders[i].toStringDisk();
+    }
+
+    return result;
+}
+
 string Member::toStringSmall() {
     string result;
 
@@ -61,13 +79,15 @@ string Member::toStringSmall() {
 
     result = fillSpaces(result, SPACE_USERNAME - result.length());
 
-    for(int i = 0; i < RIDER_COUNT; i++){
+    for(int i = 0; i < riderCount; i++){
         result += riders[i].toStringSmall();
         result += "| ";
     }
 
-    result += rookie.toStringSmall();
-    result += "|";
+    if(rookie.getNumber() == "NUMBER") {
+        result += rookie.toStringSmall();
+        result += "|";
+    }
 
     return result;
 }

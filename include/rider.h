@@ -13,7 +13,7 @@ using namespace std;
 #define SPACE_COUNTRY 10
 #define SPACE_TEAM 25
 //space used when printing riders sumarized
-#define SPACE_PRINT_SMALL 35
+#define SPACE_PRINT_SMALL 25
 
 //rider
 class Rider {
@@ -32,6 +32,7 @@ public:
     Rider();
 
     bool setData(Name &name, string &number, string &country, string &team, bool &rookie, bool &testRider);
+    void setNumber(string &number);
     void setChosen(bool &chosen);
     void addPoints(int &points);
 
@@ -44,6 +45,15 @@ public:
 
     string toString();
     string toStringSmall();
+    string toStringDisk();
+
+    Rider& operator = (const Rider &rider);
+    bool operator == (const Rider &rider);
+    bool operator != (const Rider &rider);
+    bool operator < (const Rider &rider);
+    bool operator <= (const Rider &rider);
+    bool operator > (const Rider &rider);
+    bool operator >= (const Rider &rider);
 };
 
 #endif //MOTOGP_FANTASY_LEAGUE_RIDER_H

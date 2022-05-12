@@ -12,7 +12,9 @@ bool MemberList::isValidPos(MemberNode *memberNode) {
     return false;
 }
 
-MemberList::MemberList() : header(nullptr){}
+MemberList::MemberList() : header(nullptr){
+    riderList = new RiderList();
+}
 
 MemberList::~MemberList() {
     deleteAll();
@@ -145,7 +147,27 @@ void MemberList::deleteAll() {
 }
 
 void MemberList::writeToDisk(const string &fileName) {
+    ofstream file(fileName, ios::out);
+    MemberNode* temp(header);
+    string tempString;
 
+    if(!file.is_open()){
+        cout << "Couldn't open " << fileName << endl;
+        return;
+    }
+    while(temp != nullptr){
+        tempString = temp->getData().getUserName();
+        tempString += "|";
+        tempString += to_string(temp->getData().getRiderCount());
+        tempString += "|";
+        tempString += to_string(temp->getData().getPoints());
+        tempString += "|";
+        tempString += temp->getData().getRookie().toStringDisk();
+        tempString += "|";
+        tempString += temp->getData().getRidersDisk();
+        file << tempString << endl;
+        temp = temp->getNext();
+    }
 }
 
 MemberList *MemberList::readFromDisk(const string &fileName) {

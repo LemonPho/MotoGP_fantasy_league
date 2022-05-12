@@ -2,8 +2,10 @@
 #define MOTOGP_FANTASY_LEAGUE_MEMBER_LIST_H
 
 #include <iostream>
+#include <fstream>
 
 #include "member-node.h"
+#include "rider-list.h"
 
 using namespace std;
 
@@ -11,6 +13,8 @@ class MemberList {
     MemberNode* header;
     bool isValidPos(MemberNode* memberNode);
 public:
+    RiderList* riderList;
+
     MemberList();
     ~MemberList();
 
