@@ -5,24 +5,29 @@ Menu::Menu() {
         memberList = memberList->readFromDisk(currentDirectory + FILENAME);
     } else {
         memberList = new MemberList();
+        currentDirectory = ".";
         firstStart();
     }
 }
 
 void Menu::firstStart() {
-    string homeDirectory;
+    int success;
+    string homeDirectory, temp;
     char tempDirectory[256];
 
     cout << "Wellcome to the MotoGP Fantasy League Manager" << endl;
     cout << "Input a name for the current season: ";
-    getline(cin, currentDirectory);
-    currentDirectory += "/";
+    getline(cin, temp);
+    currentDirectory += temp + "/";
 
     homeDirectory = getenv("HOME");
-    sprintf(tempDirectory, "%s/Documents/MotoGP-Fantasy-League/%s", homeDirectory.data(), currentDirectory.data());
+    sprintf(tempDirectory, "%s/%s", homeDirectory.data(), currentDirectory.data());
 
     currentDirectory = tempDirectory;
-    mkdir(currentDirectory.data());
+    success = mkdir(currentDirectory.data(), S_IRWXU);
+    if(success != 0){
+        cout << "Couldn't create directory, error: " << success << endl;
+    }
 }
 
 void Menu::menu() {
