@@ -1,7 +1,7 @@
 #include "member.h"
 
 Member::Member() {
-    userName = "USER_NAME";
+    userName = "";
     for(int i = 0; i < RIDER_COUNT; i++){
         riders[i] = Rider();
     }
