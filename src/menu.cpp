@@ -22,7 +22,7 @@ void Menu::firstStart() {
     sprintf(tempDirectory, "%s/Documents/MotoGP-Fantasy-League/%s", homeDirectory.data(), currentDirectory.data());
 
     currentDirectory = tempDirectory;
-
+    mkdir(currentDirectory.data());
 }
 
 void Menu::menu() {
