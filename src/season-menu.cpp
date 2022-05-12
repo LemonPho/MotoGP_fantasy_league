@@ -1,7 +1,8 @@
 #include "season-menu.h"
 
-SeasonMenu::SeasonMenu(MemberList *memberList, string &seasonName) {
+SeasonMenu::SeasonMenu(MemberList *memberList, RiderList *riderList, string &seasonName) {
     this->memberList = memberList;
+    this->riderList = riderList;
     this->seasonName = seasonName;
     menu();
 }

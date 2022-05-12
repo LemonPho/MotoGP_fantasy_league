@@ -9,9 +9,10 @@ using namespace std;
 class SeasonMenu {
 private:
     MemberList* memberList;
+    RiderList* riderList;
     string seasonName;
 public:
-    SeasonMenu(MemberList* memberList, string &seasonName);
+    SeasonMenu(MemberList* memberList, RiderList* riderList, string &seasonName);
 
     void menu();
 

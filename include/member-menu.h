@@ -10,18 +10,20 @@ using namespace std;
 class MemberMenu {
 private:
     MemberList* memberList;
+    RiderList* riderList;
     string seasonName;
     bool saveChanges;
 public:
-    MemberMenu(MemberList *memberList, string &seasonName);
+    MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName);
+
+    void updateMemberPoints();
 
     void menu();
     void addMember();
     void deleteMember();
     void modifyMember();
-    void saveChangesMade();
 
-    void enterToContinue();
+    static void enterToContinue();
 };
 
 enum{

@@ -187,9 +187,100 @@ void RiderList::deleteAll() {
 }
 
 void RiderList::writeToDisk(const string &fileName) {
-    cout << "In development"  << endl;
+    ofstream file(fileName);
+    RiderNode* temp(header);
+    string tempString;
+
+    if(!file.is_open()){
+        cout << "Couldn't open " << fileName << endl;
+        return;
+    }
+    while(temp != nullptr){
+        tempString = temp->getData().getNumber();
+        tempString += "|";
+        tempString += temp->getData().getName().getFirstName();
+        tempString += "|";
+        tempString += temp->getData().getName().getLastName();
+        tempString += "|";
+        tempString += temp->getData().getCountry();
+        tempString += "|";
+        tempString += temp->getData().getTeam();
+        tempString += "|";
+        tempString += to_string(temp->getData().getPoints());
+        tempString += "|";
+        if(temp->getData().getRookie()){
+            tempString += "R";
+        } else {
+            tempString += " ";
+        }
+        tempString += "|";
+        if(temp->getData().getTestRider()){
+            tempString += "T";
+        } else {
+            tempString += " ";
+        }
+        tempString += "|";
+        if(temp->getData().getChosen()){
+            tempString += "C";
+        } else {
+            tempString += " ";
+        }
+        file << tempString << endl;
+        temp = temp->getNext();
+    }
+    file.close();
 }
 
 RiderList *RiderList::readFromDisk(const string &fileName) {
-    return nullptr;
+    ifstream file(fileName);
+    RiderList* riderList = new RiderList();
+    string tempString;
+
+    string firstName, lastName, country, team, number;
+    int points;
+    Name name;
+    bool rookie, testRider, chosen;
+    Rider tempRider;
+
+    getline(file, tempString, '|');
+    if(tempString.empty() || tempString == " "){
+        return new RiderList();
+    }
+    while(tempString != " " && !tempString.empty()){
+        number = tempString;
+        getline(file, tempString, '|');
+        firstName = tempString;
+        getline(file, tempString, '|');
+        lastName = tempString;
+        getline(file, tempString, '|');
+        country = tempString;
+        getline(file, tempString, '|');
+        team = tempString;
+        getline(file, tempString, '|');
+        points = stoi(tempString);
+        getline(file, tempString, '|');
+        if(tempString == " "){
+            rookie = false;
+        } else {
+            rookie = true;
+        }
+        getline(file, tempString, '|');
+        if(tempString == " "){
+            testRider = false;
+        } else {
+            testRider = true;
+        }
+        getline(file, tempString);
+        if(tempString == " "){
+            chosen = false;
+        } else {
+            chosen = true;
+        }
+        name.setData(firstName, lastName);
+        tempRider.setChosen(chosen);
+        tempRider.setData(name, number, country, team, points, rookie, testRider);
+        riderList->insertOrdered(tempRider);
+        getline(file, tempString, '|');
+    }
+    return riderList;
 }

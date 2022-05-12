@@ -1,11 +1,35 @@
 #include "member-menu.h"
 #include "menu.h"
 
-MemberMenu::MemberMenu(MemberList *memberList, string &seasonName) {
-    this->memberList = new MemberList();
+MemberMenu::MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName) {
+    this->memberList = memberList;
+    this->riderList = riderList;
     this->seasonName = seasonName;
     saveChanges = false;
+    //updateMemberPoints();
     menu();
+}
+
+void MemberMenu::updateMemberPoints() {
+    int totalPoints = 0;
+    int riderCount = 0;
+    Rider riders[RIDER_COUNT] = {Rider(), Rider(), Rider(), Rider(), Rider()};
+    Member tempMember;
+    MemberNode* temp(memberList->getFirstPos());
+
+    while(temp != nullptr){
+        tempMember = temp->getData();
+        riderCount = tempMember.getRiderCount();
+        totalPoints = 0;
+        for(int i = 0; i < riderCount; i++){
+            riders[i] = tempMember.getRider(i);
+            totalPoints += riders[i].getPoints();
+        }
+        totalPoints += tempMember.getPoints();
+        tempMember.setPoints(totalPoints);
+        temp->setData(&tempMember);
+        temp = temp->getNext();
+    }
 }
 
 void MemberMenu::menu() {
@@ -26,6 +50,7 @@ void MemberMenu::menu() {
         switch(option){
             case ADD_MEMBER: {
                 addMember();
+                updateMemberPoints();
                 saveChanges = true;
                 break;
             }
@@ -36,12 +61,16 @@ void MemberMenu::menu() {
             }
             case MODIFY_MEMBER: {
                 modifyMember();
+                updateMemberPoints();
                 saveChanges = true;
                 break;
             }
             case LIST_MEMBERS: {
+                system(CLEAR);
                 cout << memberList->toString() << endl;
+                cin.ignore();
                 enterToContinue();
+                break;
             }
             case DELETE_ALL_MEMBERS: {
                 char opt;
@@ -55,8 +84,7 @@ void MemberMenu::menu() {
                 break;
             }
             case SAVE_CHANGES_MEMBER: {
-                saveChangesMade();
-                break;
+                memberList->writeToDisk(seasonName + '-' + MEMBER_DATA);                break;
             }
             case EXIT_MEMBER: {
                 if(saveChanges) {
@@ -65,10 +93,15 @@ void MemberMenu::menu() {
                     cout << "->";
                     cin >> opt;
                     if(opt == 's' || opt == 'S'){
-                        saveChangesMade();
+                        memberList->writeToDisk(seasonName + '-' + MEMBER_DATA);
                     }
                 }
                 end = true;
+                break;
+            }
+            default: {
+                cout << "Select a valid option" << endl;
+                enterToContinue();
                 break;
             }
         }
@@ -78,7 +111,7 @@ void MemberMenu::menu() {
 void MemberMenu::addMember() {
     Member tempMember;
     string userName;
-    string riderList;
+    string riderListString;
     string usedNumbers[RIDER_COUNT] = {"-1","-1","-1","-1","-1"};
     Rider rookie;
     Rider tempRider;
@@ -104,10 +137,9 @@ void MemberMenu::addMember() {
         cin >> riderCount;
         cin.ignore();
     }
-
-    riderList = memberList->riderList->toString();
-    cout << riderList << endl;
-    if(riderList != "No riders in list"){
+    riderListString = riderList->toString();
+    cout << riderListString << endl;
+    if(riderListString != "No riders in list"){
         for(int i = 0; i < riderCount; i++){
             cout << "Input the desired rider number: " << endl;
             cout << "->";
@@ -123,8 +155,8 @@ void MemberMenu::addMember() {
             }
             usedNumbers[i] = tempRiderNumber;
             tempRider.setNumber(tempRiderNumber);
-            tempRiderNode = memberList->riderList->retrievePos(tempRider);
-            tempRider = memberList->riderList->retrieveData(tempRiderNode);
+            tempRiderNode = riderList->retrievePos(tempRider);
+            tempRider = riderList->retrieveData(tempRiderNode);
             tempMember.setRider(tempRider);
         }
         cout << "Would you like to add a rookie? (S/N)" << endl;
@@ -135,17 +167,18 @@ void MemberMenu::addMember() {
             cout << "->";
             cin >> tempRiderNumber;
             tempRider.setNumber(tempRiderNumber);
-            tempRiderNode = memberList->riderList->retrievePos(tempRider);
-            rookie = memberList->riderList->retrieveData(tempRiderNode);
+            tempRiderNode = riderList->retrievePos(tempRider);
+            rookie = riderList->retrieveData(tempRiderNode);
             while(!rookie.getRookie()){
                 cout << "Please input a valid rookie (R)" << endl;
                 cout << "->";
                 cin >> tempRiderNumber;
                 tempRider.setNumber(tempRiderNumber);
-                tempRiderNode = memberList->riderList->retrievePos(tempRider);
-                rookie = memberList->riderList->retrieveData(tempRiderNode);
+                tempRiderNode = riderList->retrievePos(tempRider);
+                rookie = riderList->retrieveData(tempRiderNode);
                 tempMember.setRookie(rookie);
             }
+            tempMember.setRookie(rookie);
         }
     } else {
         cout << "Make sure after adding riders to add them to " << userName << endl;
@@ -160,19 +193,6 @@ void MemberMenu::deleteMember() {
 }
 
 void MemberMenu::modifyMember() {
-
-}
-
-void MemberMenu::saveChangesMade() {
-
-    string homeDirectory, currentDirectory;
-    char tempDirectory[256];
-    currentDirectory += "." + seasonName + "/";
-    homeDirectory = getenv("HOME");
-    sprintf(tempDirectory, "%s/%s", homeDirectory.data(), currentDirectory.data());
-    currentDirectory = tempDirectory;
-    memberList->writeToDisk(currentDirectory + MEMBER_DATA);
-
 
 }
 

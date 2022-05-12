@@ -10,8 +10,9 @@ using namespace std;
 
 //space used by each category when printing
 #define SPACE_NUMBER 2
-#define SPACE_COUNTRY 10
+#define SPACE_COUNTRY 20
 #define SPACE_TEAM 25
+#define SPACE_POINTS 4
 //space used when printing riders sumarized
 #define SPACE_PRINT_SMALL 25
 
@@ -31,10 +32,10 @@ public:
     //functions
     Rider();
 
-    bool setData(Name &name, string &number, string &country, string &team, bool &rookie, bool &testRider);
+    bool setData(Name &name, string &number, string &country, string &team, int &points, bool &rookie, bool &testRider);
     void setNumber(string &number);
     void setChosen(bool &chosen);
-    void addPoints(int &points);
+    void setPoints(int &points);
 
     Name getName();
     string getNumber();
@@ -42,6 +43,8 @@ public:
     string getTeam();
     bool getRookie();
     bool getTestRider();
+    bool getChosen();
+    int getPoints();
 
     string toString();
     string toStringSmall();

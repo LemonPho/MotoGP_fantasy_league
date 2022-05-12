@@ -2,6 +2,7 @@
 #define MOTOGP_FANTASY_LEAGUE_RIDER_LIST_H
 
 #include <iostream>
+#include <fstream>
 #include "rider-node.h"
 
 class RiderList {

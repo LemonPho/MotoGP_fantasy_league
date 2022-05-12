@@ -21,7 +21,7 @@ Member::Member(const Member &member) {
 }
 
 bool Member::setUserName(string &userName) {
-    if(userName.length() > 35){
+    if(userName.length() > MAX_USERNAME){
         return false;
     }
     this->userName = userName;
@@ -29,23 +29,28 @@ bool Member::setUserName(string &userName) {
 }
 
 void Member::setRider(Rider &rider) {
-    riders[riderCount++] = rider;
+    riders[riderCount] = rider;
+    riderCount++;
+}
+
+void Member::setRiderCount(int &riderCount){
+    this->riderCount = riderCount;
 }
 
 void Member::setRookie(Rider &rookie) {
     this->rookie = rookie;
 }
 
-void Member::addPoints(int &points) {
-    this->points += points;
+void Member::setPoints(int &points) {
+    this->points = points;
 }
 
 string Member::getUserName() {
     return userName;
 }
 
-Rider *Member::getRiders() {
-    return riders;
+Rider Member::getRider(int &index) {
+    return riders[index];
 }
 
 Rider Member::getRookie() {
@@ -79,15 +84,27 @@ string Member::toStringSmall() {
 
     result = fillSpaces(result, SPACE_USERNAME - result.length());
 
+
     for(int i = 0; i < riderCount; i++){
         result += riders[i].toStringSmall();
         result += "| ";
     }
 
-    if(rookie.getNumber() == "NUMBER") {
+    if(!rookie.getNumber().empty()) {
         result += rookie.toStringSmall();
         result += "|";
     }
 
     return result;
+}
+
+Member &Member::operator=(const Member member1) {
+    userName = member1.userName;
+    for(int i = 0; i < member1.riderCount; i++){
+        riders[i] = member1.riders[i];
+        riderCount++;
+    }
+    rookie = member1.rookie;
+    points = member1.points;
+    return *this;
 }

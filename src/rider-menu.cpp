@@ -1,7 +1,7 @@
 #include "rider-menu.h"
 
-RiderMenu::RiderMenu(MemberList *memberList, string &seasonName) {
-    this->memberList = memberList;
+RiderMenu::RiderMenu(RiderList *riderList, string &seasonName) {
+    this->riderList = riderList;
     this->seasonName = seasonName;
     saveChanges = false;
     menu();
@@ -14,17 +14,22 @@ void RiderMenu::menu() {
         system(CLEAR);
         cout << "Rider Menu" << endl;
         cout << "1. Add Rider" << endl;
-        cout << "2. Modify Rider" << endl;
-        cout << "3. Delete Rider" << endl;
-        cout << "4. List Riders" << endl;
-        cout << "5. Delete ALL Riders" << endl;
-        cout << "6. Save Changes" << endl;
-        cout << "7. Exit" << endl;
+        cout << "2. Add Race Results" << endl;
+        cout << "3. Modify Rider" << endl;
+        cout << "4. Delete Rider" << endl;
+        cout << "5. List Riders" << endl;
+        cout << "6. Delete ALL Riders" << endl;
+        cout << "7. Save Changes" << endl;
+        cout << "8. Exit" << endl;
         cout << "Option: ";
         cin >> option;
         switch(option){
             case ADD_RIDER: {
                 saveChanges = addRider();
+                break;
+            }
+            case ADD_RACE_RESULTS: {
+                saveChanges = addRaceResults();
                 break;
             }
             case MODIFY_RIDER: {
@@ -36,6 +41,10 @@ void RiderMenu::menu() {
                 break;
             }
             case LIST_RIDERS: {
+                system(CLEAR);
+                cout << riderList->toString() << endl;
+                cin.ignore();
+                enterToContinue();
                 break;
             }
             case DELETE_ALL_RIDERS: {
@@ -44,13 +53,14 @@ void RiderMenu::menu() {
                 cout << "->";
                 cin >> opt;
                 if(opt == 's' || opt == 'S'){
-                    memberList->riderList->deleteAll();
+                    riderList->deleteAll();
                     saveChanges = true;
                 }
                 break;
             }
             case SAVE_CHANGES_RIDERS: {
-                saveChangesMade();
+                riderList->writeToDisk(seasonName + '-' + RIDER_DATA);
+                saveChanges = false;
                 break;
             }
             case EXIT_RIDER: {
@@ -60,7 +70,8 @@ void RiderMenu::menu() {
                     cout << "->";
                     cin >> opt;
                     if(opt == 'S' || opt == 's'){
-                        saveChangesMade();
+                        riderList->writeToDisk(seasonName + '-' + RIDER_DATA);
+                        saveChanges = false;
                     }
                 }
                 end = true;
@@ -118,10 +129,28 @@ bool RiderMenu::addRider() {
     cin >> points;
 
     name.setData(firstName, lastName);
-    tempRider.setData(name, number, country, team, rookie, testRider);
-    tempRider.addPoints(points);
+    tempRider.setData(name, number, country, team, points, rookie, testRider);
 
-    memberList->riderList->insertOrdered(tempRider);
+    riderList->insertOrdered(tempRider);
+    return true;
+}
+
+bool RiderMenu::addRaceResults() {
+    RiderNode* temp(riderList->getFirstPos());
+    int points;
+    string line;
+
+    while(temp != nullptr){
+        system(CLEAR);
+        line = temp->getData().toStringSmall();
+        cout << line << endl;
+        cout << "Input points obtained from race" << endl;
+        cout << "->";
+        cin >> points;
+        points += temp->getData().getPoints();
+        temp->getData().setPoints(points);
+        temp = temp->getNext();
+    }
     return true;
 }
 
@@ -132,17 +161,6 @@ bool RiderMenu::deleteRider() {
 }
 
 void RiderMenu::listRiders() {
-
-}
-
-void RiderMenu::saveChangesMade() {
-    string homeDirectory, temp, currentDirectory;
-    char tempDirectory[256];
-    currentDirectory += "." + seasonName + "/";
-    homeDirectory = getenv("HOME");
-    sprintf(tempDirectory, "%s/%s", homeDirectory.data(), currentDirectory.data());
-    currentDirectory = tempDirectory;
-    memberList->riderList->writeToDisk(currentDirectory + RIDER_DATA);
 
 }
 

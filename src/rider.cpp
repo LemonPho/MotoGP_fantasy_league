@@ -11,7 +11,7 @@ Rider::Rider() {
     points = 0;
 }
 
-bool Rider::setData(Name &name, string &number, string &country, string &team, bool &rookie, bool &testRider) {
+bool Rider::setData(Name &name, string &number, string &country, string &team, int &points, bool &rookie, bool &testRider) {
     if(rookie && testRider){
         return false;
     }
@@ -19,6 +19,7 @@ bool Rider::setData(Name &name, string &number, string &country, string &team, b
     this->number = number;
     this->country = country;
     this->team = team;
+    this->points = points;
     this->rookie = rookie;
     this->testRider = testRider;
     return true;
@@ -28,8 +29,8 @@ void Rider::setNumber(string &number) {
     this->number = number;
 }
 
-void Rider::addPoints(int &points) {
-    this->points += points;
+void Rider::setPoints(int &points) {
+    this->points = points;
 }
 
 void Rider::setChosen(bool &chosen) {
@@ -60,6 +61,14 @@ bool Rider::getTestRider() {
     return testRider;
 }
 
+bool Rider::getChosen() {
+    return chosen;
+}
+
+int Rider::getPoints() {
+    return points;
+}
+
 //toString is used to print the rider to the screen
 string Rider::toString() {
     string result;
@@ -67,6 +76,8 @@ string Rider::toString() {
     result += fillSpaces(number, SPACE_NUMBER - number.length());
     result += "|";
     result += name.toString();
+    result += "|";
+    result += fillSpaces(to_string(points), SPACE_POINTS - to_string(points).length());
     result += "|";
     result += fillSpaces(country, SPACE_COUNTRY - country.length());
     result += "|";
@@ -107,11 +118,15 @@ string Rider::toStringDisk() {
 
     result += number;
     result += "|";
-    result += name.toString();
+    result += name.getFirstName();
+    result += " ";
+    result += name.getLastName();
     result += "|";
     result += country;
     result += "|";
     result += team;
+    result += "|";
+    result += to_string(points);
     result += "|";
     if(rookie){
         result += "(R)|";
@@ -146,25 +161,25 @@ Rider &Rider::operator=(const Rider &rider) {
 }
 
 bool Rider::operator==(const Rider &rider) {
-    return number == rider.number;
+    return stoi(number) == stoi(rider.number);
 }
 
 bool Rider::operator!=(const Rider &rider) {
-    return number != rider.number;
+    return stoi(number) != stoi(rider.number);
 }
 
 bool Rider::operator<(const Rider &rider) {
-    return number < rider.number;
+    return stoi(number) < stoi(rider.number);
 }
 
 bool Rider::operator<=(const Rider &rider) {
-    return number <= rider.number;
+    return stoi(number) <= stoi(rider.number);
 }
 
 bool Rider::operator>(const Rider &rider) {
-    return number > rider.number;
+    return stoi(number) > stoi(rider.number);
 }
 
 bool Rider::operator>=(const Rider &rider) {
-    return number >= rider.number;
+    return stoi(number) >= stoi(rider.number);
 }

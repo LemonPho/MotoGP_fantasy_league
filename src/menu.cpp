@@ -9,70 +9,86 @@ Menu::Menu() {
         menu();
     } else {
         memberList = new MemberList();
+        riderList = new RiderList();
         firstStart();
         menu();
     }
 }
 
 void Menu::firstStart() {
-    int success;
-    string homeDirectory, temp;
-    char tempDirectory[256];
     ofstream file(PROGRAM_DATA, ios::out);
 
     cout << "Wellcome to the MotoGP Fantasy League Manager" << endl;
     cout << "Input a name for the current season (replace spaces with: - ): ";
-    getline(cin, temp);
-    seasonName = temp;
+    getline(cin, seasonName);
 
-    currentDirectory += temp + "/";
-    homeDirectory = getenv("HOME");
-    sprintf(tempDirectory, "%s/%s", homeDirectory.data(), currentDirectory.data());
-    currentDirectory = tempDirectory;
-    file << currentDirectory;
+    ofstream file2(seasonName + '-' + MEMBER_DATA, ios::out);
+    ofstream file3(seasonName + '-' + RIDER_DATA, ios::out);
+
+    file << seasonName;
     file.close();
-    /*success = mkdir(currentDirectory.data(), S_IRWXU);
-    if (success != 0) {
-        cout << "Couldn't create directory, error: " << success << endl;
-    }*/
-
+    file2.close();
+    file3.close();
 }
 
 void Menu::startProgram() {
     ifstream file(PROGRAM_DATA);
-    bool end = false;
-    int i = 0, j = 0;
 
     if(!file.is_open()){
         cout << "Error when opening " << PROGRAM_DATA << endl;
         throw exception();
     }
-    getline(file, currentDirectory);
-    if(currentDirectory.empty()){
-        memberList = new MemberList();
-        return;
-    }
-    while(!end){
-        if(currentDirectory[i] == '/'){
-            j++;
-        }
-        if(j == 3){
-            int k = 0;
-            char temp;
-            i+=2;
-            while(currentDirectory[i] != '/'){
-                temp = currentDirectory[i];
-               seasonName += temp;
-                i++;
-                k++;
+    getline(file, seasonName);
+    memberList = memberList->readFromDisk(seasonName + '-' + MEMBER_DATA);
+    riderList = riderList->readFromDisk(seasonName + '-' + RIDER_DATA);
+
+    MemberNode* tempMemberNode(memberList->getFirstPos());
+    Member tempMember;
+    Rider rider;
+    int riderCount, zero = 0;
+    string tempNumber;
+    bool found;
+
+    while(tempMemberNode != nullptr){
+        tempMember = tempMemberNode->getData();
+        riderCount = tempMemberNode->getData().getRiderCount();
+        tempMember.setRiderCount(zero);
+        for(int i = 0; i < riderCount; i++){
+            RiderNode* tempRider(riderList->getFirstPos());
+            tempNumber = tempMember.getRider(i).getNumber();
+            rider.setNumber(tempNumber);
+            found = false;
+            while(tempRider != nullptr){
+                if(tempRider->getData() == rider){
+                    rider = tempRider->getData();
+                    tempMember.setRider(rider);
+                    found = true;
+                }
+                tempRider = tempRider->getNext();
             }
-            end = true;
+            tempMemberNode->setData(&tempMember);
         }
-        i++;
+        if(tempMember.getRookie().getNumber() != "-1"){
+            RiderNode* tempRider(riderList->getFirstPos());
+            tempNumber = tempMember.getRookie().getNumber();
+            rider.setNumber(tempNumber);
+            found = false;
+            while(tempRider != nullptr){
+                if(tempRider->getData() == rider){
+                    rider = tempRider->getData();
+                    tempMember.setRookie(rider);
+                    found = true;
+                }
+                tempRider = tempRider->getNext();
+            }
+            tempMemberNode->setData(&tempMember);
+
+        }
+        tempMemberNode->setData(&tempMember);
+        tempMemberNode = tempMemberNode->getNext();
     }
-    currentDirectory += "/";
-    memberList = new MemberList();
-    //memberList = memberList->readFromDisk(currentDirectory + MEMBER_DATA);
+    //memberList->readFromDisk(seasonName + '-' + MEMBER_DATA);
+    //riderList = new RiderList();
 }
 
 void Menu::menu() {
@@ -89,18 +105,19 @@ void Menu::menu() {
         cin >> option;
         switch(option){
             case SEASONS_MANAGER: {
-                new SeasonMenu(memberList, seasonName);
+                new SeasonMenu(memberList, riderList, seasonName);
                 break;
             }
             case MEMBERS_MANAGER: {
-                new MemberMenu(memberList, seasonName);
+                new MemberMenu(memberList, riderList, seasonName);
                 break;
             }
             case RIDERS_MANAGER: {
-                new RiderMenu(memberList, seasonName);
+                new RiderMenu(riderList, seasonName);
                 break;
             }
             case EXIT_MENU: {
+                exit();
                 end = true;
                 break;
             }
@@ -110,6 +127,12 @@ void Menu::menu() {
             }
         }
     }while(!end);
+}
+
+void Menu::exit() {
+    ofstream file(seasonName + '-' + CURRENT_STANDINGS, ios::out);
+    file << memberList->toString() << endl;
+    file.close();
 }
 
 void Menu::enterToContinue() {

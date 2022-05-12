@@ -24,11 +24,12 @@ using namespace std;
 #define MEMBER_DATA "member-data.txt"
 #define RIDER_DATA "rider-data.txt"
 #define PROGRAM_DATA "program-data.txt"
+#define CURRENT_STANDINGS "current-standings.txt"
 
 class Menu {
 private:
     MemberList* memberList;
-    string currentDirectory;
+    RiderList* riderList;
     string seasonName;
 public:
     Menu();
@@ -36,6 +37,7 @@ public:
     void firstStart();
     void startProgram();
     void menu();
+    void exit();
     void enterToContinue();
 };
 

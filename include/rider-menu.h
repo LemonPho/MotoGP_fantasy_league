@@ -6,24 +6,25 @@
 
 class RiderMenu {
 private:
-    MemberList *memberList;
+    RiderList* riderList;
     string seasonName;
     bool saveChanges;
 public:
-    RiderMenu(MemberList *memberList, string &seasonName);
+    RiderMenu(RiderList *riderList, string &seasonName);
 
     void menu();
     bool addRider();
+    bool addRaceResults();
     bool modifyRider();
     bool deleteRider();
     void listRiders();
-    void saveChangesMade();
 
     void enterToContinue();
 };
 
 enum{
     ADD_RIDER = 1,
+    ADD_RACE_RESULTS,
     MODIFY_RIDER,
     DELETE_RIDER,
     LIST_RIDERS,

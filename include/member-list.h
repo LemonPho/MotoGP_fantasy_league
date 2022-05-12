@@ -13,7 +13,6 @@ class MemberList {
     MemberNode* header;
     bool isValidPos(MemberNode* memberNode);
 public:
-    RiderList* riderList;
 
     MemberList();
     ~MemberList();
