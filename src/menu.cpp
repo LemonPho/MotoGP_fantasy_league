@@ -9,6 +9,8 @@ Menu::Menu() {
         menu();
     } else {
         memberList = new MemberList();
+        ofstream fileCreate(PROGRAM_DATA, ios::out);
+        fileCreate.close();
         firstStart();
         menu();
     }
@@ -18,23 +20,24 @@ void Menu::firstStart() {
     int success;
     string homeDirectory, temp;
     char tempDirectory[256];
-    ofstream file(PROGRAM_DATA, ios::out);
+    ofstream file(PROGRAM_DATA);
 
     cout << "Wellcome to the MotoGP Fantasy League Manager" << endl;
     cout << "Input a name for the current season (replace spaces with: - ): ";
     getline(cin, temp);
     seasonName = temp;
 
+    currentDirectory = ".";
     currentDirectory += temp + "/";
     homeDirectory = getenv("HOME");
     sprintf(tempDirectory, "%s/%s", homeDirectory.data(), currentDirectory.data());
     currentDirectory = tempDirectory;
     file << currentDirectory;
     file.close();
-    /*success = mkdir(currentDirectory.data(), S_IRWXU);
+    success = mkdir(currentDirectory.data(), S_IRWXU);
     if (success != 0) {
         cout << "Couldn't create directory, error: " << success << endl;
-    }*/
+    }
 
 }
 
@@ -48,23 +51,28 @@ void Menu::startProgram() {
         throw exception();
     }
     getline(file, currentDirectory);
-    if(currentDirectory.empty()){
+    if(currentDirectory.length() < 5){
         memberList = new MemberList();
         return;
     }
+
     while(!end){
         if(currentDirectory[i] == '/'){
             j++;
         }
         if(j == 3){
-            while(currentDirectory[i++] != '/'){
-                seasonName[i] = currentDirectory[i];
+            i += 2;
+            int k =  0;
+            while(currentDirectory[i] != '/'){
+                seasonName[k] = currentDirectory[i];
+                k++;
+                i++;
             }
             end = true;
         }
         i++;
     }
-    currentDirectory += "/";
+
     memberList = memberList->readFromDisk(currentDirectory + MEMBER_DATA);
 }
 

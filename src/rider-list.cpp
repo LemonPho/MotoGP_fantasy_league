@@ -187,7 +187,7 @@ void RiderList::deleteAll() {
 }
 
 void RiderList::writeToDisk(const string &fileName) {
-
+    cout << "In development"  << endl;
 }
 
 RiderList *RiderList::readFromDisk(const string &fileName) {

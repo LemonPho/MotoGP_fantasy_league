@@ -2,7 +2,7 @@
 #include "menu.h"
 
 MemberMenu::MemberMenu(MemberList *memberList, string &seasonName) {
-    this->memberList = memberList;
+    this->memberList = new MemberList();
     this->seasonName = seasonName;
     saveChanges = false;
     menu();
