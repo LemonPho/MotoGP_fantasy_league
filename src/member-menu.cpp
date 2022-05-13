@@ -6,29 +6,27 @@ MemberMenu::MemberMenu(MemberList *memberList, RiderList *riderList, string &sea
     this->riderList = riderList;
     this->seasonName = seasonName;
     saveChanges = false;
-    //updateMemberPoints();
+    updateMemberPoints();
     menu();
 }
 
 void MemberMenu::updateMemberPoints() {
     int totalPoints = 0;
-    int riderCount = 0;
-    Rider riders[RIDER_COUNT] = {Rider(), Rider(), Rider(), Rider(), Rider()};
-    Member tempMember;
-    MemberNode* temp(memberList->getFirstPos());
+    MemberNode* tempMemberNode(memberList->getFirstPos());
+    Member *tempMember = new Member();
 
-    while(temp != nullptr){
-        tempMember = temp->getData();
-        riderCount = tempMember.getRiderCount();
+    while(tempMemberNode != nullptr){
+        *tempMember = tempMemberNode->getData();
+        RiderNode* tempRiderNode(tempMember->getRiderList()->getFirstPos());
         totalPoints = 0;
-        for(int i = 0; i < riderCount; i++){
-            riders[i] = tempMember.getRider(i);
-            totalPoints += riders[i].getPoints();
+        while(tempRiderNode != nullptr){
+            totalPoints += tempRiderNode->getData().getPoints();
+            tempRiderNode = tempRiderNode->getNext();
         }
-        totalPoints += tempMember.getPoints();
-        tempMember.setPoints(totalPoints);
-        temp->setData(&tempMember);
-        temp = temp->getNext();
+        totalPoints += tempMember->getPoints();
+        tempMember->setPoints(totalPoints);
+        tempMemberNode->setData(tempMember);
+        tempMemberNode = tempMemberNode->getNext();
     }
 }
 
@@ -157,7 +155,7 @@ void MemberMenu::addMember() {
             tempRider.setNumber(tempRiderNumber);
             tempRiderNode = riderList->retrievePos(tempRider);
             tempRider = riderList->retrieveData(tempRiderNode);
-            tempMember.setRider(tempRider);
+            tempMember.insertRider(tempRider);
         }
         cout << "Would you like to add a rookie? (S/N)" << endl;
         cout << "->";
@@ -185,6 +183,7 @@ void MemberMenu::addMember() {
         cin.ignore();
         enterToContinue();
     }
+    tempMember.setRiderCount(riderCount);
     memberList->insertData(memberList->getFirstPos(), tempMember);
 }
 

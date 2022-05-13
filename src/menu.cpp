@@ -3,13 +3,13 @@
 Menu::Menu() {
     system(CLEAR);
     ifstream file(PROGRAM_DATA);
+    memberList = new MemberList();
+    riderList = new RiderList();
 
     if(file.is_open()){
         startProgram();
         menu();
     } else {
-        memberList = new MemberList();
-        riderList = new RiderList();
         firstStart();
         menu();
     }
@@ -39,34 +39,33 @@ void Menu::startProgram() {
         throw exception();
     }
     getline(file, seasonName);
-    memberList = memberList->readFromDisk(seasonName + '-' + MEMBER_DATA);
     riderList = riderList->readFromDisk(seasonName + '-' + RIDER_DATA);
+    memberList = memberList->readFromDisk(seasonName + '-' + MEMBER_DATA);
 
     MemberNode* tempMemberNode(memberList->getFirstPos());
     Member tempMember;
     Rider rider;
-    int riderCount, zero = 0;
+    int riderCount;
     string tempNumber;
     bool found;
 
     while(tempMemberNode != nullptr){
         tempMember = tempMemberNode->getData();
+        RiderNode* tempRiderNode1(tempMember.getRiderList()->getFirstPos());
         riderCount = tempMemberNode->getData().getRiderCount();
-        tempMember.setRiderCount(zero);
-        for(int i = 0; i < riderCount; i++){
-            RiderNode* tempRider(riderList->getFirstPos());
-            tempNumber = tempMember.getRider(i).getNumber();
+        while(tempRiderNode1 != nullptr){
+            RiderNode* tempRiderNode2(riderList->getFirstPos());
+            tempNumber = tempRiderNode1->getData().getNumber();
             rider.setNumber(tempNumber);
-            found = false;
-            while(tempRider != nullptr){
-                if(tempRider->getData() == rider){
-                    rider = tempRider->getData();
-                    tempMember.setRider(rider);
-                    found = true;
+            while(tempRiderNode2 != nullptr){
+                if(tempRiderNode2->getData() == rider){
+                    rider = tempRiderNode2->getData();
+                    tempRiderNode1->setData(rider);
                 }
-                tempRider = tempRider->getNext();
+                tempRiderNode2 = tempRiderNode2->getNext();
             }
-            tempMemberNode->setData(&tempMember);
+            tempRiderNode1 = tempRiderNode1->getNext();
+            //tempMemberNode->setData(&tempMember);
         }
         if(tempMember.getRookie().getNumber() != "-1"){
             RiderNode* tempRider(riderList->getFirstPos());
@@ -81,21 +80,19 @@ void Menu::startProgram() {
                 }
                 tempRider = tempRider->getNext();
             }
-            tempMemberNode->setData(&tempMember);
+            //tempMemberNode->setData(&tempMember);
 
         }
-        tempMemberNode->setData(&tempMember);
+        //tempMemberNode->setData(&tempMember);
         tempMemberNode = tempMemberNode->getNext();
     }
-    //memberList->readFromDisk(seasonName + '-' + MEMBER_DATA);
-    //riderList = new RiderList();
 }
 
 void Menu::menu() {
     bool end = false;
     int option;
     do{
-        system(CLEAR);
+        //system(CLEAR);
         cout << "MotoGP Fantasy League Manager. Current season: " << seasonName <<  endl;
         cout << "1. Seasons Manager" << endl;
         cout << "2. Members Manager" << endl;

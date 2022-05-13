@@ -2,9 +2,7 @@
 
 Member::Member() {
     userName = "";
-    for(int i = 0; i < RIDER_COUNT; i++){
-        riders[i] = Rider();
-    }
+    riderList = new RiderList();
     rookie = Rider();
     riderCount = 0;
     points = 0;
@@ -12,9 +10,7 @@ Member::Member() {
 
 Member::Member(const Member &member) {
     this->userName = member.userName;
-    for(int i = 0; i < member.riderCount; i++){
-        this->riders[i] = member.riders[i];
-    }
+    this->riderList = member.riderList;
     this->rookie = member.rookie;
     this->riderCount = member.riderCount;
     this->points = member.points;
@@ -28,9 +24,16 @@ bool Member::setUserName(string &userName) {
     return true;
 }
 
-void Member::setRider(Rider &rider) {
-    riders[riderCount] = rider;
-    riderCount++;
+void Member::insertRider(Rider &rider) {
+    RiderNode* temp(riderList->getFirstPos());
+    while(temp != nullptr){
+        temp = temp->getNext();
+    }
+    riderList->insertData(temp, rider);
+}
+
+void Member::setRiderList(RiderList *riderList) {
+    this->riderList = riderList;
 }
 
 void Member::setRiderCount(int &riderCount){
@@ -49,12 +52,12 @@ string Member::getUserName() {
     return userName;
 }
 
-Rider Member::getRider(int &index) {
-    return riders[index];
-}
-
 Rider Member::getRookie() {
     return rookie;
+}
+
+RiderList* Member::getRiderList() {
+    return riderList;
 }
 
 int Member::getRiderCount() {
@@ -65,18 +68,9 @@ int Member::getPoints() {
     return points;
 }
 
-string Member::getRidersDisk() {
-    string result = "";
-
-    for(int i = 0; i < riderCount; i++){
-        result += riders[i].toStringDisk();
-    }
-
-    return result;
-}
-
 string Member::toStringSmall() {
     string result;
+    RiderNode* temp(riderList->getFirstPos());
 
     result += userName;
     result += " - ";
@@ -84,10 +78,10 @@ string Member::toStringSmall() {
 
     result = fillSpaces(result, SPACE_USERNAME - result.length());
 
-
-    for(int i = 0; i < riderCount; i++){
-        result += riders[i].toStringSmall();
+    while(temp != nullptr){
+        result += temp->getData().toStringSmall();
         result += "| ";
+        temp = temp->getNext();
     }
 
     if(!rookie.getNumber().empty()) {
@@ -100,10 +94,8 @@ string Member::toStringSmall() {
 
 Member &Member::operator=(const Member member1) {
     userName = member1.userName;
-    for(int i = 0; i < member1.riderCount; i++){
-        riders[i] = member1.riders[i];
-        riderCount++;
-    }
+    riderList = member1.riderList;
+    riderCount = member1.riderCount;
     rookie = member1.rookie;
     points = member1.points;
     return *this;

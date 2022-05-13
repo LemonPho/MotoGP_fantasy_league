@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-#include "name.h"
 #include "util.h"
 
 using namespace std;
@@ -20,7 +19,7 @@ using namespace std;
 class Rider {
 private:
     //attributes
-    Name name;
+    string firstName, lastName;
     string number;
     string country;
     string team;
@@ -32,12 +31,13 @@ public:
     //functions
     Rider();
 
-    bool setData(Name &name, string &number, string &country, string &team, int &points, bool &rookie, bool &testRider);
+    bool setData(string &firstName, string &lastName, string &number, string &country, string &team, int &points, bool &rookie, bool &testRider);
     void setNumber(string &number);
     void setChosen(bool &chosen);
     void setPoints(int &points);
 
-    Name getName();
+    string getFirstName();
+    string getLastName();
     string getNumber();
     string getCountry();
     string getTeam();

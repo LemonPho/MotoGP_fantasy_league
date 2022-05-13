@@ -1,7 +1,8 @@
 #include "rider.h"
 
 Rider::Rider() {
-    name = Name();
+    firstName = "";
+    lastName = "";
     number = "";
     country = "";
     team = "";
@@ -11,11 +12,12 @@ Rider::Rider() {
     points = 0;
 }
 
-bool Rider::setData(Name &name, string &number, string &country, string &team, int &points, bool &rookie, bool &testRider) {
+bool Rider::setData(string &firstName, string &lastName, string &number, string &country, string &team, int &points, bool &rookie, bool &testRider) {
     if(rookie && testRider){
         return false;
     }
-    this->name = name;
+    this->firstName = firstName;
+    this->lastName = lastName;
     this->number = number;
     this->country = country;
     this->team = team;
@@ -37,8 +39,12 @@ void Rider::setChosen(bool &chosen) {
     this->chosen = chosen;
 }
 
-Name Rider::getName() {
-    return name;
+string Rider::getFirstName() {
+    return firstName;
+}
+
+string Rider::getLastName(){
+    return lastName;
 }
 
 string Rider::getNumber() {
@@ -75,7 +81,9 @@ string Rider::toString() {
 
     result += fillSpaces(number, SPACE_NUMBER - number.length());
     result += "|";
-    result += name.toString();
+    result += firstName;
+    result += "|";
+    result += lastName;
     result += "|";
     result += fillSpaces(to_string(points), SPACE_POINTS - to_string(points).length());
     result += "|";
@@ -99,8 +107,6 @@ string Rider::toString() {
 //toStringSmall prints the rider but sumarized for listing
 string Rider::toStringSmall() {
     string result;
-    string firstName = name.getFirstName();
-    string lastName = name.getLastName();
 
     result += firstName[0];
     result += ". ";
@@ -118,9 +124,9 @@ string Rider::toStringDisk() {
 
     result += number;
     result += "|";
-    result += name.getFirstName();
+    result += firstName;
     result += " ";
-    result += name.getLastName();
+    result += lastName;
     result += "|";
     result += country;
     result += "|";
@@ -148,7 +154,8 @@ string Rider::toStringDisk() {
 }
 
 Rider &Rider::operator=(const Rider &rider) {
-    name = rider.name;
+    firstName = rider.firstName;
+    lastName = rider.lastName;
     number = rider.number;
     country = rider.country;
     team = rider.team;

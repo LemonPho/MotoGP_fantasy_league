@@ -88,7 +88,6 @@ void RiderMenu::menu() {
 
 bool RiderMenu::addRider() {
     string firstName, lastName, number, country, team;
-    Name name;
     bool rookie = false, testRider = false;
     int points;
     Rider tempRider;
@@ -128,8 +127,7 @@ bool RiderMenu::addRider() {
     cout << "->";
     cin >> points;
 
-    name.setData(firstName, lastName);
-    tempRider.setData(name, number, country, team, points, rookie, testRider);
+    tempRider.setData(firstName, lastName, number, country, team, points, rookie, testRider);
 
     riderList->insertOrdered(tempRider);
     return true;

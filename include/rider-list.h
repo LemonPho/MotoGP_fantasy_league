@@ -26,6 +26,8 @@ public:
     void deleteAll();
     void writeToDisk(const string& fileName);
     RiderList* readFromDisk(const string& fileName);
+
+    RiderList& operator = (RiderList* riderList);
 };
 
 #endif //MOTOGP_FANTASY_LEAGUE_RIDER_LIST_H

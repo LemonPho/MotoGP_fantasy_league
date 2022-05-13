@@ -198,9 +198,9 @@ void RiderList::writeToDisk(const string &fileName) {
     while(temp != nullptr){
         tempString = temp->getData().getNumber();
         tempString += "|";
-        tempString += temp->getData().getName().getFirstName();
+        tempString += temp->getData().getFirstName();
         tempString += "|";
-        tempString += temp->getData().getName().getLastName();
+        tempString += temp->getData().getLastName();
         tempString += "|";
         tempString += temp->getData().getCountry();
         tempString += "|";
@@ -238,9 +238,8 @@ RiderList *RiderList::readFromDisk(const string &fileName) {
 
     string firstName, lastName, country, team, number;
     int points;
-    Name name;
     bool rookie, testRider, chosen;
-    Rider tempRider;
+    Rider *tempRider = new Rider();
 
     getline(file, tempString, '|');
     if(tempString.empty() || tempString == " "){
@@ -276,11 +275,33 @@ RiderList *RiderList::readFromDisk(const string &fileName) {
         } else {
             chosen = true;
         }
-        name.setData(firstName, lastName);
-        tempRider.setChosen(chosen);
-        tempRider.setData(name, number, country, team, points, rookie, testRider);
-        riderList->insertOrdered(tempRider);
+        tempRider->setChosen(chosen);
+        tempRider->setData(firstName, lastName, number, country, team, points, rookie, testRider);
+        riderList->insertOrdered(*tempRider);
         getline(file, tempString, '|');
     }
+    delete tempRider;
     return riderList;
+}
+
+RiderList &RiderList::operator=(RiderList *riderList) {
+    RiderNode* trailDest(nullptr);
+    RiderNode* trailSrc(nullptr);
+    RiderNode* tempDest(header);
+    RiderNode* tempSrc(riderList->getFirstPos());
+    RiderNode* lastDest(getLastPos());
+    RiderNode* lastSrc(riderList->getLastPos());
+
+    if(tempSrc == lastSrc){
+        tempSrc = tempDest;
+        return *this;
+    }
+    while(tempSrc != nullptr){
+        trailDest = tempDest;
+        trailSrc = tempSrc;
+        tempSrc = tempSrc->getNext();
+        tempDest = tempDest->getNext();
+        trailDest = trailSrc;
+    }
+    return *this;
 }

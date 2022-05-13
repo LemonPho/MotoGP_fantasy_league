@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "rider.h"
+#include "rider-list.h"
 
 using namespace std;
 
@@ -14,7 +15,7 @@ using namespace std;
 class Member {
 private:
     string userName;
-    Rider riders[RIDER_COUNT];
+    RiderList *riderList;
     Rider rookie;
     int riderCount;
     int points;
@@ -24,18 +25,18 @@ public:
     Member(const Member &member);
 
     bool setUserName(string &userName);
-    void setRider(Rider &rider);
+    void insertRider(Rider &rider);
+    void setRiderList(RiderList* riderList);
     void setRiderCount(int &riderCount);
     void setRookie(Rider &rookie);
     void setPoints(int &points);
 
     string getUserName();
-    Rider getRider(int &index);
     Rider getRookie();
+    RiderList* getRiderList();
     int getRiderCount();
     int getPoints();
 
-    string getRidersDisk();
     string toStringSmall();
 
     Member &operator = (const Member member1);
