@@ -78,12 +78,11 @@ int Rider::getPoints() {
 //toString is used to print the rider to the screen
 string Rider::toString() {
     string result;
+    string name = firstName + " " + lastName;
 
     result += fillSpaces(number, SPACE_NUMBER - number.length());
     result += "|";
-    result += firstName;
-    result += "|";
-    result += lastName;
+    result += fillSpaces(name, SPACE_NAME - name.length());
     result += "|";
     result += fillSpaces(to_string(points), SPACE_POINTS - to_string(points).length());
     result += "|";

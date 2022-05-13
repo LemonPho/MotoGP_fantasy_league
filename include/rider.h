@@ -12,6 +12,7 @@ using namespace std;
 #define SPACE_COUNTRY 20
 #define SPACE_TEAM 25
 #define SPACE_POINTS 4
+#define SPACE_NAME 25
 //space used when printing riders sumarized
 #define SPACE_PRINT_SMALL 25
 

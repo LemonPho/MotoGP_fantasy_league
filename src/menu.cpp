@@ -92,7 +92,7 @@ void Menu::menu() {
     bool end = false;
     int option;
     do{
-        //system(CLEAR);
+        system(CLEAR);
         cout << "MotoGP Fantasy League Manager. Current season: " << seasonName <<  endl;
         cout << "1. Seasons Manager" << endl;
         cout << "2. Members Manager" << endl;
