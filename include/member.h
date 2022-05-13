@@ -39,7 +39,8 @@ public:
 
     string toStringSmall();
 
-    Member &operator = (const Member member1);
+    Member &operator = (const Member& member);
+    bool operator == (const Member &member);
 };
 
 #endif //MOTOGP_FANTASY_LEAGUE_MEMBER_H

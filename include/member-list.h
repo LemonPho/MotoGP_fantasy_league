@@ -23,6 +23,7 @@ public:
     MemberNode* getFirstPos();
     MemberNode* getLastPos();
     MemberNode* getNextPos(MemberNode *memberNode);
+    MemberNode* retrievePos(const Member &data);
     void sortMembers();
     string toString();
     void deleteAll();

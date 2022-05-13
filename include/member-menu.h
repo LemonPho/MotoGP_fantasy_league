@@ -19,8 +19,8 @@ public:
     void updateMemberPoints();
 
     void menu();
-    void addMember();
-    void deleteMember();
+    bool addMember();
+    bool deleteMember();
     void modifyMember();
 
     static void enterToContinue();
@@ -34,6 +34,14 @@ enum{
     DELETE_ALL_MEMBERS,
     SAVE_CHANGES_MEMBER,
     EXIT_MEMBER
+};
+
+enum{
+    CHANGE_USERNAME = 1,
+    CHANGE_RIDER,
+    CHANGE_ROOKIE,
+    SAVE_CHANGES_MODIFY,
+    EXIT_MODIFY
 };
 
 #endif //MOTOGP_FANTASY_LEAGUE_MEMBER_MENU_H

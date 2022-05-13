@@ -112,6 +112,18 @@ MemberNode *MemberList::getNextPos(MemberNode *memberNode) {
     return memberNode->getNext();
 }
 
+MemberNode *MemberList::retrievePos(const Member &data) {
+    MemberNode* temp(header);
+
+    while(temp != nullptr){
+        if(temp->getData() == data){
+            return temp;
+        }
+        temp = temp->getNext();
+    }
+    return nullptr;
+}
+
 void MemberList::sortMembers() {
 
 }
@@ -191,7 +203,7 @@ MemberList *MemberList::readFromDisk(const string &fileName) {
     Rider tempRider;
     int riderCount=0;
     int pointsMember=0;
-    Member tempMember = Member();
+    Member tempMember;
 
     string number;
 
@@ -213,7 +225,6 @@ MemberList *MemberList::readFromDisk(const string &fileName) {
             number = tempString;
             tempRider.setNumber(number);
             tempMember.insertRider(tempRider);
-
         }
         tempMember.setRiderCount(i);
         tempMember.setUserName(userName);
@@ -221,6 +232,8 @@ MemberList *MemberList::readFromDisk(const string &fileName) {
         tempMember.setRiderCount(riderCount);
         memberList->insertData(memberList->getFirstPos(), tempMember);
         getline(file, tempString);
+        getline(file, tempString, '|');
+        tempMember = Member();
     }
     return memberList;
 }

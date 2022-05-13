@@ -45,14 +45,12 @@ void Menu::startProgram() {
     MemberNode* tempMemberNode(memberList->getFirstPos());
     Member tempMember;
     Rider rider;
-    int riderCount;
     string tempNumber;
     bool found;
 
     while(tempMemberNode != nullptr){
         tempMember = tempMemberNode->getData();
         RiderNode* tempRiderNode1(tempMember.getRiderList()->getFirstPos());
-        riderCount = tempMemberNode->getData().getRiderCount();
         while(tempRiderNode1 != nullptr){
             RiderNode* tempRiderNode2(riderList->getFirstPos());
             tempNumber = tempRiderNode1->getData().getNumber();
@@ -65,7 +63,6 @@ void Menu::startProgram() {
                 tempRiderNode2 = tempRiderNode2->getNext();
             }
             tempRiderNode1 = tempRiderNode1->getNext();
-            //tempMemberNode->setData(&tempMember);
         }
         if(tempMember.getRookie().getNumber() != "-1"){
             RiderNode* tempRider(riderList->getFirstPos());
@@ -80,10 +77,8 @@ void Menu::startProgram() {
                 }
                 tempRider = tempRider->getNext();
             }
-            //tempMemberNode->setData(&tempMember);
 
         }
-        //tempMemberNode->setData(&tempMember);
         tempMemberNode = tempMemberNode->getNext();
     }
 }
@@ -120,6 +115,7 @@ void Menu::menu() {
             }
             default: {
                 cout << "Select a valid option" << endl;
+                cin.ignore();
                 enterToContinue();
             }
         }

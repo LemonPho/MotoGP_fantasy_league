@@ -92,11 +92,15 @@ string Member::toStringSmall() {
     return result;
 }
 
-Member &Member::operator=(const Member member1) {
-    userName = member1.userName;
-    riderList = member1.riderList;
-    riderCount = member1.riderCount;
-    rookie = member1.rookie;
-    points = member1.points;
+Member &Member::operator=(const Member &member) {
+    userName = member.userName;
+    riderList = member.riderList;
+    riderCount = member.riderCount;
+    rookie = member.rookie;
+    points = member.points;
     return *this;
+}
+
+bool Member::operator==(const Member &member){
+    return userName == member.userName;
 }
