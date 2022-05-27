@@ -15,12 +15,11 @@ void RiderMenu::menu() {
         cout << "Rider Menu" << endl;
         cout << "1. Add Rider" << endl;
         cout << "2. Add Race Results" << endl;
-        cout << "3. Modify Rider" << endl;
-        cout << "4. Delete Rider" << endl;
-        cout << "5. List Riders" << endl;
-        cout << "6. Delete ALL Riders" << endl;
-        cout << "7. Save Changes" << endl;
-        cout << "8. Exit" << endl;
+        cout << "3. Delete Rider" << endl;
+        cout << "4. List Riders" << endl;
+        cout << "5. Delete ALL Riders" << endl;
+        cout << "6. Save Changes" << endl;
+        cout << "7. Exit" << endl;
         cout << "Option: ";
         cin >> option;
         switch(option){
@@ -30,10 +29,6 @@ void RiderMenu::menu() {
             }
             case ADD_RACE_RESULTS: {
                 saveChanges = addRaceResults();
-                break;
-            }
-            case MODIFY_RIDER: {
-                saveChanges = modifyRider();
                 break;
             }
             case DELETE_RIDER: {
@@ -152,14 +147,43 @@ bool RiderMenu::addRaceResults() {
     return true;
 }
 
-bool RiderMenu::modifyRider() {
-}
-
 bool RiderMenu::deleteRider() {
+    system(CLEAR);
+
+    string riderNumber;
+    Rider tempRider;
+    bool found = false;
+    RiderNode *tempNode(riderList->getFirstPos());
+
+    cout << "Delete Rider" << endl;
+    cout << riderList->toString() << endl;
+    cout << "Input rider number to delete: ";
+    getline(cin, riderNumber);
+    tempRider.setNumber(riderNumber);
+
+    while(tempNode != nullptr){
+        if(tempNode->getData() == tempRider){
+            riderList->deleteData(tempNode);
+            found = true;
+        }
+        tempNode = tempNode->getNext();
+    }
+
+    if(found){
+        cout << "Rider deleted successfully" << endl;
+        enterToContinue();
+        return true;
+    }
+    cout << "Rider not deleted successfully" << endl;
+    enterToContinue();
+    return false;
+
 }
 
 void RiderMenu::listRiders() {
-
+    cout << "List Riders" << endl;
+    cout << riderList->toString() << endl;
+    enterToContinue();
 }
 
 void RiderMenu::enterToContinue() {

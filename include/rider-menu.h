@@ -15,7 +15,6 @@ public:
     void menu();
     bool addRider();
     bool addRaceResults();
-    bool modifyRider();
     bool deleteRider();
     void listRiders();
 
@@ -25,7 +24,6 @@ public:
 enum{
     ADD_RIDER = 1,
     ADD_RACE_RESULTS,
-    MODIFY_RIDER,
     DELETE_RIDER,
     LIST_RIDERS,
     DELETE_ALL_RIDERS,
