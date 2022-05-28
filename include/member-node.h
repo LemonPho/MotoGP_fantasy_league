@@ -18,11 +18,12 @@ public:
     explicit MemberNode(const Member &data);
     ~MemberNode();
 
-    void setData(Member *data);
+    void setData(Member data);
     void setNext(MemberNode* next);
     void setPrevious(MemberNode* previous);
 
     Member getData();
+    Member* getDataPointer();
     MemberNode* getNext();
     MemberNode* getPrevious();
 

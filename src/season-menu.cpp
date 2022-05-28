@@ -1,6 +1,6 @@
 #include "season-menu.h"
 
-SeasonMenu::SeasonMenu(MemberList *memberList, RiderList *riderList, string &seasonName) {
+SeasonMenu::SeasonMenu(MemberList *memberList, RiderList *riderList, string* seasonName) {
     this->memberList = memberList;
     this->riderList = riderList;
     this->seasonName = seasonName;
@@ -11,7 +11,8 @@ void SeasonMenu::menu() {
     bool end = false;
     int option;
     do{
-        cout << "Season Menu: " << seasonName << endl;
+        system(CLEAR);
+        cout << "Season Menu: " << *seasonName << endl;
         cout << "1. Create new season" << endl;
         cout << "2. Select season" << endl;
         cout << "3. Change default season" << endl;
@@ -51,15 +52,18 @@ void SeasonMenu::createSeason() {
     int i = 1;
     bool finish = false;
     char option;
-    fstream file(PROGRAM_DATA, ios::app | ios::in);
+    ifstream readFile(PROGRAM_DATA, ios::in);
 
-    getline(file, auxString);
-    while (auxString != "") {
+    getline(readFile, auxString);
+    while (!auxString.empty()) {
         seasons[i++] = auxString;
+        getline(readFile, auxString);
     }
+    readFile.close();
+    ofstream writeFile(PROGRAM_DATA, ios::out);
     cout << "Creating season" << endl;
     cout << "Input the season name (change spaces for -): ";
-    getline(cin, seasonName);
+    cin.ignore();getline(cin, seasonName);
     while(!finish) {
         int j = 1;
         for(j; j < i; j++){
@@ -85,19 +89,20 @@ void SeasonMenu::createSeason() {
         seasons[0] = seasonName;
         j = 0;
     } else {
+        seasons[i++] = seasonName;
         j = 1;
     }
 
-    if (!file.is_open()) {
+    if (!writeFile.is_open()) {
         cout << "Error couldn't open " << PROGRAM_DATA << endl;
         enterToContinue();
         return;
     } else {
         for (j; j < i; j++) {
-            file << seasons[j] << endl;
+            writeFile << seasons[j] << endl;
         }
     }
-    file.close();
+    writeFile.close();
     file2.close();
     file3.close();
 
@@ -105,6 +110,7 @@ void SeasonMenu::createSeason() {
 
 void SeasonMenu::changeSeason() {
     system(CLEAR);
+    cout << "Select Season" << endl;
 
     string seasons[100];
     string auxString;
@@ -116,6 +122,7 @@ void SeasonMenu::changeSeason() {
     getline(file, auxString);
     while(auxString != ""){
         seasons[i++] = auxString;
+        getline(file, auxString);
     }
     for(int j = 0; j < i; j++){
         cout << j+1 << " " << seasons[j] << endl;
@@ -131,8 +138,12 @@ void SeasonMenu::changeSeason() {
         }
     }
 
+    riderList->deleteAll();
+    memberList->deleteAll();
+
     riderList = riderList->readFromDisk(seasons[selection-1] + '-' + RIDER_DATA);
     memberList = memberList->readFromDisk(seasons[selection-1] + '-' + MEMBER_DATA);
+    *seasonName = seasons[selection-1];
 
     MemberNode* tempMemberNode(memberList->getFirstPos());
     Member tempMember;
@@ -175,6 +186,7 @@ void SeasonMenu::changeSeason() {
 
 void SeasonMenu::changeDefaultSeason() {
     system(CLEAR);
+    cout << "Change Default Season" << endl;
 
     string seasons[100];
     string auxString;

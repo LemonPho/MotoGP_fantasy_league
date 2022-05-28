@@ -16,8 +16,10 @@ MemberNode::~MemberNode() {
     delete dataPointer;
 }
 
-void MemberNode::setData(Member *data) {
-    dataPointer = data;
+void MemberNode::setData(Member data) {
+    Member* tempMember = new Member();
+    *tempMember = data;
+    dataPointer = tempMember;
 }
 
 void MemberNode::setNext(MemberNode *next) {
@@ -30,6 +32,10 @@ void MemberNode::setPrevious(MemberNode *previous) {
 
 Member MemberNode::getData() {
     return *dataPointer;
+}
+
+Member *MemberNode::getDataPointer() {
+    return dataPointer;
 }
 
 MemberNode *MemberNode::getNext() {

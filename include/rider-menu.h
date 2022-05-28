@@ -3,20 +3,23 @@
 
 #include <iostream>
 #include "menu.h"
+#include "member-menu.h"
 
 class RiderMenu {
 private:
+    MemberList* memberList;
     RiderList* riderList;
     string seasonName;
     bool saveChanges;
 public:
-    RiderMenu(RiderList *riderList, string &seasonName);
+    RiderMenu(MemberList* memberList, RiderList *riderList, string &seasonName);
 
     void menu();
     bool addRider();
     bool addRaceResults();
     bool deleteRider();
-    void listRiders();
+
+    void updateMembersRiders();
 
     void enterToContinue();
 };

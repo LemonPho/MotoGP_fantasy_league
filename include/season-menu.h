@@ -10,9 +10,9 @@ class SeasonMenu {
 private:
     MemberList* memberList;
     RiderList* riderList;
-    string seasonName;
+    string* seasonName;
 public:
-    SeasonMenu(MemberList* memberList, RiderList* riderList, string &seasonName);
+    SeasonMenu(MemberList* memberList, RiderList* riderList, string* seasonName);
 
     void menu();
 

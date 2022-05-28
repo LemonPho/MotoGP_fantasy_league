@@ -25,6 +25,9 @@ public:
     MemberNode* getNextPos(MemberNode *memberNode);
     MemberNode* retrievePos(const Member &data);
     void sortMembers();
+    MemberNode* split(MemberNode* head);
+    MemberNode* merge(MemberNode* first, MemberNode* second);
+    MemberNode* mergeSort(MemberNode* head);
     string toString();
     void deleteAll();
     void writeToDisk(const string &fileName);

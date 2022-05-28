@@ -175,7 +175,7 @@ void RiderList::deleteAll() {
 
     if(temp == last){
         delete temp;
-        header = new RiderNode();
+        header = nullptr;
     } else {
         while(temp != nullptr){
             trail = temp;
@@ -183,6 +183,7 @@ void RiderList::deleteAll() {
             delete trail;
         }
         delete temp;
+        header = nullptr;
     }
 }
 

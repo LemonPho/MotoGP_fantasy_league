@@ -6,25 +6,30 @@ MemberMenu::MemberMenu(MemberList *memberList, RiderList *riderList, string &sea
     this->riderList = riderList;
     this->seasonName = seasonName;
     saveChanges = false;
-    //updateMemberPoints();
+    updateMemberPoints();
+    memberList->sortMembers();
     menu();
 }
 
 void MemberMenu::updateMemberPoints() {
-    int totalPoints = 0;
+    int totalPoints;
     MemberNode* tempMemberNode(memberList->getFirstPos());
-    Member *tempMember = new Member();
+    Member tempMember;
+    Rider tempRookie;
+    RiderNode* tempRookieNode;
+    RiderNode* tempRiderNode = new RiderNode();
 
     while(tempMemberNode != nullptr){
-        *tempMember = tempMemberNode->getData();
-        RiderNode* tempRiderNode(tempMember->getRiderList()->getFirstPos());
         totalPoints = 0;
+        tempMember = tempMemberNode->getData();
+        totalPoints += tempMember.getRookie().getPoints();
+        tempRiderNode = tempMember.getRiderList()->getFirstPos();
         while(tempRiderNode != nullptr){
             totalPoints += tempRiderNode->getData().getPoints();
             tempRiderNode = tempRiderNode->getNext();
         }
-        totalPoints += tempMember->getPoints();
-        tempMember->setPoints(totalPoints);
+        totalPoints += tempMember.getPoints();
+        tempMember.setPoints(totalPoints);
         tempMemberNode->setData(tempMember);
         tempMemberNode = tempMemberNode->getNext();
     }
@@ -48,7 +53,7 @@ void MemberMenu::menu() {
         switch(option){
             case ADD_MEMBER: {
                 saveChanges = addMember();
-                //updateMemberPoints();
+                updateMemberPoints();
                 break;
             }
             case DELETE_MEMBER: {
@@ -273,7 +278,7 @@ void MemberMenu::modifyMember() {
                 getline(cin, userName);
                 tempMember = tempNode->getData();
                 tempMember.setUserName(userName);
-                tempNode->setData(&tempMember);
+                tempNode->setData(tempMember);
                 changes = true;
                 break;
             }

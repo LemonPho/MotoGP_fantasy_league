@@ -6,9 +6,11 @@ Menu::Menu() {
     memberList = new MemberList();
     riderList = new RiderList();
 
+    //if the file exists, we start program normally
     if(file.is_open()){
         startProgram();
         menu();
+    //if the file doesn't exist, we create it in firstStart()
     } else {
         firstStart();
         menu();
@@ -16,16 +18,19 @@ Menu::Menu() {
 }
 
 void Menu::firstStart() {
+    //create a new season since programdata is empty in this case
     ofstream file(PROGRAM_DATA, ios::out);
 
     cout << "Wellcome to the MotoGP Fantasy League Manager" << endl;
     cout << "Input a name for the current season (replace spaces with: - ): ";
     getline(cin, seasonName);
 
+    //create member and rider data
     ofstream file2(seasonName + '-' + MEMBER_DATA, ios::out);
     ofstream file3(seasonName + '-' + RIDER_DATA, ios::out);
+    file << seasonName << endl;
 
-    file << seasonName;
+    //close the three files to save the changes
     file.close();
     file2.close();
     file3.close();
@@ -34,59 +39,59 @@ void Menu::firstStart() {
 void Menu::startProgram() {
     ifstream file(PROGRAM_DATA);
 
+    //get season name
     if(!file.is_open()){
         cout << "Error when opening " << PROGRAM_DATA << endl;
         throw exception();
     }
     getline(file, seasonName);
+    //open data files for riders and members
     riderList = riderList->readFromDisk(seasonName + '-' + RIDER_DATA);
     memberList = memberList->readFromDisk(seasonName + '-' + MEMBER_DATA);
 
+    //variables
     MemberNode* tempMemberNode(memberList->getFirstPos());
+    RiderNode* tempRookieNode;
     Member tempMember;
+    Rider tempRookie;
     Rider rider;
     string tempNumber;
-    bool found;
 
+    //complete the rider lists and rookies of each member, because readFromDisk only assigns riders with only their numbers
     while(tempMemberNode != nullptr){
+        //retrieve rookie number and get full rookie data to assign
         tempMember = tempMemberNode->getData();
+        //retrieve rookie with only number
+        tempRookie = tempMember.getRookie();
+        //get rookie node using number
+        tempRookieNode = riderList->retrievePos(tempRookie);
+        //assign tempRookie to full data of the rookie node
+        tempRookie = tempRookieNode->getData();
+        //set the full rookie data
+        tempMember.setRookie(tempRookie);
+        //node to go through member rider list
         RiderNode* tempRiderNode1(tempMember.getRiderList()->getFirstPos());
         while(tempRiderNode1 != nullptr){
-            RiderNode* tempRiderNode2(riderList->getFirstPos());
+            //get full data of each rider, same method as rookie
+            RiderNode* tempRiderNode2;
             tempNumber = tempRiderNode1->getData().getNumber();
             rider.setNumber(tempNumber);
-            while(tempRiderNode2 != nullptr){
-                if(tempRiderNode2->getData() == rider){
-                    rider = tempRiderNode2->getData();
-                    tempRiderNode1->setData(rider);
-                }
-                tempRiderNode2 = tempRiderNode2->getNext();
-            }
+            tempRiderNode2 = riderList->retrievePos(rider);
+            rider = tempRiderNode2->getData();
+            tempRiderNode1->setData(rider);
             tempRiderNode1 = tempRiderNode1->getNext();
         }
-        if(tempMember.getRookie().getNumber() != "-1"){
-            RiderNode* tempRider(riderList->getFirstPos());
-            tempNumber = tempMember.getRookie().getNumber();
-            rider.setNumber(tempNumber);
-            found = false;
-            while(tempRider != nullptr){
-                if(tempRider->getData() == rider){
-                    rider = tempRider->getData();
-                    tempMember.setRookie(rider);
-                    found = true;
-                }
-                tempRider = tempRider->getNext();
-            }
-
-        }
+        tempMemberNode->setData(tempMember);
         tempMemberNode = tempMemberNode->getNext();
     }
 }
 
+//main menu
 void Menu::menu() {
     bool end = false;
     int option;
     do{
+        //main menu options
         system(CLEAR);
         cout << "MotoGP Fantasy League Manager. Current season: " << seasonName <<  endl;
         cout << "1. Seasons Manager" << endl;
@@ -97,7 +102,7 @@ void Menu::menu() {
         cin >> option;
         switch(option){
             case SEASONS_MANAGER: {
-                new SeasonMenu(memberList, riderList, seasonName);
+                new SeasonMenu(memberList, riderList, &seasonName);
                 break;
             }
             case MEMBERS_MANAGER: {
@@ -105,7 +110,7 @@ void Menu::menu() {
                 break;
             }
             case RIDERS_MANAGER: {
-                new RiderMenu(riderList, seasonName);
+                new RiderMenu(memberList, riderList, seasonName);
                 break;
             }
             case EXIT_MENU: {
@@ -123,6 +128,7 @@ void Menu::menu() {
 }
 
 void Menu::exit() {
+    //create current standings file (DOESN'T WORK, DONT KNOW WHY, JUST PRINTS RANDOM NUMBERS IN GROUPS OF 4)
     ofstream file(seasonName + '-' + CURRENT_STANDINGS, ios::out);
     file << memberList->toString() << endl;
     file.close();

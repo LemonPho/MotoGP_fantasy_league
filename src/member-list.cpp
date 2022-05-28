@@ -125,7 +125,52 @@ MemberNode *MemberList::retrievePos(const Member &data) {
 }
 
 void MemberList::sortMembers() {
+    header = mergeSort(header);
+}
 
+MemberNode *MemberList::split(MemberNode *head) {
+    MemberNode *fast = head, *slow = head;
+    while(fast->getNext() && fast->getNext()->getNext()){
+        fast = fast->getNext()->getNext();
+        slow = slow->getNext();
+    }
+    MemberNode* temp = slow->getNext();
+    slow->setNext(nullptr);
+    return temp;
+}
+
+MemberNode *MemberList::merge(MemberNode *first, MemberNode *second) {
+    if(!first){
+        return second;
+    }
+
+    if(!second){
+        return first;
+    }
+
+    if(first->getData().getPoints() > second->getData().getPoints()){
+        first->setNext(merge(first->getNext(), second));
+        first->getNext()->setPrevious(first);
+        first->setPrevious(nullptr);
+        return first;
+    } else {
+        second->setNext(merge(first, second->getNext()));
+        second->getNext()->setPrevious(second);
+        second->setPrevious(nullptr);
+        return second;
+    }
+}
+
+MemberNode *MemberList::mergeSort(MemberNode *head) {
+    if(!head || !head->getNext()){
+        return head;
+    }
+    MemberNode* second = split(head);
+
+    head = mergeSort(head);
+    second = mergeSort(second);
+
+    return merge(head, second);
 }
 
 string MemberList::toString() {
