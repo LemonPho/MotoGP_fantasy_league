@@ -28,4 +28,6 @@ add_executable(MotoGP_fantasy_league
         src/member-menu.cpp
         src/rider-menu.cpp)
 
+target_link_libraries(MotoGP_fantasy_league -static)
+
 target_include_directories(MotoGP_fantasy_league PRIVATE ./include)
