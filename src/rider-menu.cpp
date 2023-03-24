@@ -16,11 +16,12 @@ void RiderMenu::menu() {
         cout << "Rider Menu" << endl;
         cout << "1. Add Rider" << endl;
         cout << "2. Add Race Results" << endl;
-        cout << "3. Delete Rider" << endl;
-        cout << "4. List Riders" << endl;
-        cout << "5. Delete ALL Riders" << endl;
-        cout << "6. Save Changes" << endl;
-        cout << "7. Exit" << endl;
+        cout << "3. Add Sprint Race Results" << endl;
+        cout << "4. Delete Rider" << endl;
+        cout << "5. List Riders" << endl;
+        cout << "6. Delete ALL Riders" << endl;
+        cout << "7. Save Changes" << endl;
+        cout << "8. Exit" << endl;
         cout << "Option: ";
         cin >> option;
         switch(option){
@@ -30,6 +31,10 @@ void RiderMenu::menu() {
             }
             case ADD_RACE_RESULTS: {
                 saveChanges = addRaceResults();
+                break;
+            }
+            case ADD_SPRINT_RACE_RESULTS: {
+                saveChanges = addSprintRaceResults();
                 break;
             }
             case DELETE_RIDER: {
@@ -149,6 +154,37 @@ bool RiderMenu::addRaceResults() {
         cout << "->";
         cin >> position;
         if(position < 15 && position > 0) {
+            riderPoints += tempRider.getPoints();
+            riderPoints += points[position-1];
+            tempRider.setPoints(riderPoints);
+            temp->setData(tempRider);
+        }
+        temp = temp->getNext();
+    }
+    updateMembersRiders();
+    return true;
+}
+
+bool RiderMenu::addSprintRaceResults() {
+    system(CLEAR);
+
+    RiderNode* temp(riderList->getFirstPos());
+    Rider tempRider;
+    int position;
+    int points[25] = {12, 9, 7, 6, 5, 4, 3, 2, 1};
+    int riderPoints;
+    string line;
+
+    cout << "Add Sprint Race Results" << endl;
+    while(temp != nullptr){
+        riderPoints = 0;
+        line = temp->getData().toStringSmall();
+        tempRider = temp->getData();
+        cout << line << endl;
+        cout << "Input final race position" << endl;
+        cout << "->";
+        cin >> position;
+        if(position < 9 && position > 0) {
             riderPoints += tempRider.getPoints();
             riderPoints += points[position-1];
             tempRider.setPoints(riderPoints);
