@@ -39,7 +39,6 @@ enum{
 enum{
     CHANGE_USERNAME = 1,
     CHANGE_RIDER,
-    CHANGE_ROOKIE,
     SAVE_CHANGES_MODIFY,
     EXIT_MODIFY
 };

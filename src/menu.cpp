@@ -61,14 +61,6 @@ void Menu::startProgram() {
     while(tempMemberNode != nullptr){
         //retrieve rookie number and get full rookie data to assign
         tempMember = tempMemberNode->getData();
-        //retrieve rookie with only number
-        tempRookie = tempMember.getRookie();
-        //get rookie node using number
-        tempRookieNode = riderList->retrievePos(tempRookie);
-        //assign tempRookie to full data of the rookie node
-        tempRookie = tempRookieNode->getData();
-        //set the full rookie data
-        tempMember.setRookie(tempRookie);
         //node to go through member rider list
         RiderNode* tempRiderNode1(tempMember.getRiderList()->getFirstPos());
         while(tempRiderNode1 != nullptr){

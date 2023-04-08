@@ -166,19 +166,6 @@ void SeasonMenu::changeSeason() {
             }
             tempRiderNode1 = tempRiderNode1->getNext();
         }
-        if(tempMember.getRookie().getNumber() != "-1"){
-            RiderNode* tempRider(riderList->getFirstPos());
-            tempNumber = tempMember.getRookie().getNumber();
-            rider.setNumber(tempNumber);
-            while(tempRider != nullptr){
-                if(tempRider->getData() == rider){
-                    rider = tempRider->getData();
-                    tempMember.setRookie(rider);
-                }
-                tempRider = tempRider->getNext();
-            }
-
-        }
         tempMemberNode = tempMemberNode->getNext();
     }
 

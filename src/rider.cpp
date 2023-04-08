@@ -6,24 +6,16 @@ Rider::Rider() {
     number = "";
     country = "";
     team = "";
-    rookie = false;
-    testRider = false;
-    chosen = false;
     points = 0;
 }
 
-bool Rider::setData(string &firstName, string &lastName, string &number, string &country, string &team, int &points, bool &rookie, bool &testRider) {
-    if(rookie && testRider){
-        return false;
-    }
+bool Rider::setData(string &firstName, string &lastName, string &number, string &country, string &team, int &points) {
     this->firstName = firstName;
     this->lastName = lastName;
     this->number = number;
     this->country = country;
     this->team = team;
     this->points = points;
-    this->rookie = rookie;
-    this->testRider = testRider;
     return true;
 }
 
@@ -33,10 +25,6 @@ void Rider::setNumber(string &number) {
 
 void Rider::setPoints(int &points) {
     this->points = points;
-}
-
-void Rider::setChosen(bool &chosen) {
-    this->chosen = chosen;
 }
 
 string Rider::getFirstName() {
@@ -59,18 +47,6 @@ string Rider::getTeam() {
     return team;
 }
 
-bool Rider::getRookie() {
-    return rookie;
-}
-
-bool Rider::getTestRider() {
-    return testRider;
-}
-
-bool Rider::getChosen() {
-    return chosen;
-}
-
 int Rider::getPoints() {
     return points;
 }
@@ -90,16 +66,6 @@ string Rider::toString() {
     result += "|";
     result += fillSpaces(team, SPACE_TEAM - team.length());
     result += "|";
-    if(rookie){
-        result += "(R)|";
-    }
-    if(testRider){
-        result += "(T)|";
-    }
-    if(chosen){
-        result += "*";
-    }
-
     return result;
 }
 
@@ -124,7 +90,7 @@ string Rider::toStringDisk() {
     result += number;
     result += "|";
     result += firstName;
-    result += " ";
+    result += "|";
     result += lastName;
     result += "|";
     result += country;
@@ -133,22 +99,6 @@ string Rider::toStringDisk() {
     result += "|";
     result += to_string(points);
     result += "|";
-    if(rookie){
-        result += "(R)|";
-    } else {
-        result += " |";
-    }
-    if(testRider){
-        result += "(T)|";
-    } else {
-        result += " |";
-    }
-    if(chosen){
-        result += "*";
-    } else {
-        result += " ";
-    }
-
     return result;
 }
 
@@ -158,9 +108,6 @@ Rider &Rider::operator=(const Rider &rider) {
     number = rider.number;
     country = rider.country;
     team = rider.team;
-    rookie = rider.rookie;
-    testRider = rider.testRider;
-    chosen = rider.chosen;
     points = rider.points;
 
     return *this;

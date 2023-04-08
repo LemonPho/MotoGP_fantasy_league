@@ -216,22 +216,10 @@ void MemberList::writeToDisk(const string &fileName) {
         RiderNode* tempRiderNode(temp->getData().getRiderList()->getFirstPos());
         tempString = temp->getData().getUserName();
         tempString += "|";
-        tempString += to_string(temp->getData().getRiderCount());
-        tempString += "|";
-        if(temp->getData().getRookie().getNumber().empty()){
-            tempString += "-1";
-        } else {
-            tempString += temp->getData().getRookie().getNumber();
-        }
-        tempString += "|";
-        if(temp->getData().getRiderCount() == 0) {
-            tempString += "-1";
-        } else {
-            while(tempRiderNode != nullptr) {
-                tempString += tempRiderNode->getData().getNumber();
-                tempString += "|";
-                tempRiderNode = tempRiderNode->getNext();
-            }
+        while(tempRiderNode != nullptr) {
+            tempString += tempRiderNode->getData().getNumber();
+            tempString += "|";
+            tempRiderNode = tempRiderNode->getNext();
         }
         file << tempString << endl;
         temp = temp->getNext();
@@ -246,7 +234,6 @@ MemberList *MemberList::readFromDisk(const string &fileName) {
 
     string userName, rookieNumber;
     Rider tempRider;
-    int riderCount=0;
     int pointsMember=0;
     Member tempMember;
 
@@ -257,24 +244,16 @@ MemberList *MemberList::readFromDisk(const string &fileName) {
         return new MemberList();
     }
     while(tempString != " " && !tempString.empty()){
-        int i = 0;
+        int i;
         userName = tempString;
-        getline(file, tempString, '|');
-        riderCount = stoi(tempString);
-        getline(file, tempString, '|');
-        rookieNumber = tempString;
-        tempRider.setNumber(rookieNumber);
-        tempMember.setRookie(tempRider);
-        for(i = 0; i < riderCount; i++){
+        for(i = 0; i < RIDER_COUNT; i++){
             getline(file, tempString, '|');
             number = tempString;
             tempRider.setNumber(number);
             tempMember.insertRider(tempRider);
         }
-        tempMember.setRiderCount(i);
         tempMember.setUserName(userName);
         tempMember.setPoints(pointsMember);
-        tempMember.setRiderCount(riderCount);
         memberList->insertData(memberList->getFirstPos(), tempMember);
         getline(file, tempString);
         getline(file, tempString, '|');

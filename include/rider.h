@@ -24,17 +24,13 @@ private:
     string number;
     string country;
     string team;
-    bool rookie;
-    bool testRider;
-    bool chosen;
     int points;
 public:
     //functions
     Rider();
 
-    bool setData(string &firstName, string &lastName, string &number, string &country, string &team, int &points, bool &rookie, bool &testRider);
+    bool setData(string &firstName, string &lastName, string &number, string &country, string &team, int &points);
     void setNumber(string &number);
-    void setChosen(bool &chosen);
     void setPoints(int &points);
 
     string getFirstName();
@@ -42,9 +38,6 @@ public:
     string getNumber();
     string getCountry();
     string getTeam();
-    bool getRookie();
-    bool getTestRider();
-    bool getChosen();
     int getPoints();
 
     string toString();

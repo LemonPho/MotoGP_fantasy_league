@@ -3,16 +3,12 @@
 Member::Member() {
     userName = "";
     riderList = new RiderList();
-    rookie = Rider();
-    riderCount = 0;
     points = 0;
 }
 
 Member::Member(const Member &member) {
     this->userName = member.userName;
     this->riderList = member.riderList;
-    this->rookie = member.rookie;
-    this->riderCount = member.riderCount;
     this->points = member.points;
 }
 
@@ -36,14 +32,6 @@ void Member::setRiderList(RiderList *riderList) {
     this->riderList = riderList;
 }
 
-void Member::setRiderCount(int &riderCount){
-    this->riderCount = riderCount;
-}
-
-void Member::setRookie(Rider &rookie) {
-    this->rookie = rookie;
-}
-
 void Member::setPoints(int &points) {
     this->points = points;
 }
@@ -52,16 +40,8 @@ string Member::getUserName() {
     return userName;
 }
 
-Rider Member::getRookie() {
-    return rookie;
-}
-
 RiderList* Member::getRiderList() {
     return riderList;
-}
-
-int Member::getRiderCount() {
-    return riderCount;
 }
 
 int Member::getPoints() {
@@ -84,19 +64,12 @@ string Member::toStringSmall() {
         temp = temp->getNext();
     }
 
-    if(!rookie.getNumber().empty()) {
-        result += rookie.toStringSmall();
-        result += "|";
-    }
-
     return result;
 }
 
 Member &Member::operator=(const Member &member) {
     userName = member.userName;
     riderList = member.riderList;
-    riderCount = member.riderCount;
-    rookie = member.rookie;
     points = member.points;
     return *this;
 }

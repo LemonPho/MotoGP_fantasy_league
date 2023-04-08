@@ -16,13 +16,11 @@ void MemberMenu::updateMemberPoints() {
     MemberNode* tempMemberNode(memberList->getFirstPos());
     Member tempMember;
     Rider tempRookie;
-    RiderNode* tempRookieNode;
     RiderNode* tempRiderNode = new RiderNode();
 
     while(tempMemberNode != nullptr){
         totalPoints = 0;
         tempMember = tempMemberNode->getData();
-        totalPoints += tempMember.getRookie().getPoints();
         tempRiderNode = tempMember.getRiderList()->getFirstPos();
         while(tempRiderNode != nullptr){
             totalPoints += tempRiderNode->getData().getPoints();
@@ -119,7 +117,6 @@ bool MemberMenu::addMember() {
     Rider tempRider;
     RiderNode* tempRiderNode;
     string tempRiderNumber;
-    int riderCount = -1;
     char option;
 
     system(CLEAR);
@@ -133,19 +130,19 @@ bool MemberMenu::addMember() {
         getline(cin , userName);
     }
 
-    while(riderCount <= -1 || riderCount >= 6){
-        cout << "Input the amount of riders " << userName << " has chosen (0-5), you can add them later" << endl;
-        cout << "->";
-        cin >> riderCount;
-        cin.ignore();
-    }
     riderListString = riderList->toString();
     cout << riderListString << endl;
     if(riderListString != "No riders in list"){
-        for(int i = 0; i < riderCount; i++){
-            cout << "Input the desired rider number: " << endl;
-            cout << "->";
-            cin >> tempRiderNumber;
+        for(int i = 0; i < RIDER_COUNT; i++){
+            if(i == 5){
+                cout << "Input the desired rider number (Independent Rider): " << endl;
+                cout << "->";
+                cin >> tempRiderNumber;
+            } else {
+                cout << "Input the desired rider number: " << endl;
+                cout << "->";
+                cin >> tempRiderNumber;
+            }
             for(int j = 0; j < i; j++){
                 if(usedNumbers[j] == tempRiderNumber){
                     cout << "Make sure to not repeat the same riders" << endl;
@@ -161,33 +158,11 @@ bool MemberMenu::addMember() {
             tempRider = riderList->retrieveData(tempRiderNode);
             tempMember.insertRider(tempRider);
         }
-        cout << "Would you like to add a rookie? (S/N)" << endl;
-        cout << "->";
-        cin >> option;
-        if(option == 's' || option == 'S'){
-            cout << "Input the desired rider number" << endl;
-            cout << "->";
-            cin >> tempRiderNumber;
-            tempRider.setNumber(tempRiderNumber);
-            tempRiderNode = riderList->retrievePos(tempRider);
-            rookie = riderList->retrieveData(tempRiderNode);
-            while(!rookie.getRookie()){
-                cout << "Please input a valid rookie (R)" << endl;
-                cout << "->";
-                cin >> tempRiderNumber;
-                tempRider.setNumber(tempRiderNumber);
-                tempRiderNode = riderList->retrievePos(tempRider);
-                rookie = riderList->retrieveData(tempRiderNode);
-                tempMember.setRookie(rookie);
-            }
-            tempMember.setRookie(rookie);
-        }
     } else {
         cout << "Make sure after adding riders to add them to " << userName << endl;
         cin.ignore();
         enterToContinue();
     }
-    tempMember.setRiderCount(riderCount);
     memberList->insertData(memberList->getFirstPos(), tempMember);
     return true;
 }
@@ -237,9 +212,8 @@ void MemberMenu::modifyMember() {
         cout << "Modify Member" << endl;
         cout << "1. Change Username" << endl;
         cout << "2. Change Rider" << endl;
-        cout << "3. Change Rookie" << endl;
-        cout << "4. Save Changes" << endl;
-        cout << "5. Exit" << endl;
+        cout << "3. Save Changes" << endl;
+        cout << "4. Exit" << endl;
         cout << "Option: ";
         cin >> option;
         switch(option){
@@ -298,7 +272,7 @@ void MemberMenu::modifyMember() {
                 cout << "Modify Member Rider" << endl;
 
                 cout << memberList->toString() << endl;
-                cout << "Input the username of the member's riders you would like to modify" << endl;
+                cout << "Input the username of the member's riders you would like to modify (0 to cancel)" << endl;
                 cout << "-> ";
                 cin.ignore();getline(cin, userName);
                 tempMemberNode = memberList->retrievePos(tempMember);
@@ -324,7 +298,7 @@ void MemberMenu::modifyMember() {
                 system(CLEAR);
                 cout << "Modify Member Rider" << endl;
                 cout << tempMember.getRiderList()->toString() << endl;
-                cout << "Input rider number" << endl;
+                cout << "Input rider number (0 to cancel)" << endl;
                 cout << "-> ";
                 getline(cin, riderNumber);
                 tempRider.setNumber(riderNumber);
@@ -350,7 +324,7 @@ void MemberMenu::modifyMember() {
                 system(CLEAR);
                 cout << "Modify Member Rider" << endl;
                 cout << riderList->toString() << endl;
-                cout << "Input new rider number: " << endl;
+                cout << "Input new rider number (0 to cancel): " << endl;
                 cout << "-> ";
                 getline(cin, riderNumber);
                 tempRider.setNumber(riderNumber);
@@ -375,77 +349,6 @@ void MemberMenu::modifyMember() {
 
                 tempRider = tempRiderNode2->getData();
                 tempRiderNode1->setData(tempRider);
-
-                changes = true;
-                break;
-            }
-            case CHANGE_ROOKIE: {
-                system(CLEAR);
-                string userName;
-                Member tempMember;
-                MemberNode* tempMemberNode = new MemberNode();
-
-                string riderNumber;
-                Rider tempRider;
-                RiderNode* tempRiderNode = new RiderNode();
-
-                bool endModify = false;
-                system(CLEAR);
-                cout << "Modify Member Rookie" << endl;
-
-                cout << memberList->toString() << endl;
-                cout << "Input the username of the member's riders you would like to modify" << endl;
-                cout << "-> ";
-                cin.ignore();getline(cin, userName);
-                tempMemberNode = memberList->retrievePos(tempMember);
-
-                while(!endModify && tempMemberNode == nullptr){
-                    cout << "Member not found, input again (0 to cancel)" << endl;
-                    cout << "-> ";
-                    getline(cin, userName);
-                    if(userName == "0"){
-                        endModify = true;
-                    } else {
-                        tempMember.setUserName(userName);
-                        tempMemberNode = memberList->retrievePos(tempMember);
-                    }
-                }
-
-                if(endModify){
-                    return;
-                }
-
-                tempMember = tempMemberNode->getData();
-
-                system(CLEAR);
-                cout << "Modify Member Rookie" << endl;
-                cout << riderList->toString() << endl;
-                cout << "Input new rider number: " << endl;
-                cout << "-> ";
-                getline(cin, riderNumber);
-                tempRider.setNumber(riderNumber);
-                tempRiderNode = riderList->retrievePos(tempRider);
-                if(tempRiderNode == nullptr || !tempRiderNode->getData().getRookie()){
-                    endModify = false;
-                    while((tempRiderNode == nullptr || !tempRiderNode->getData().getRookie()) && !endModify){
-                        cout << "Rider not found or not a rookie, input number again (0 to cancel)" << endl;
-                        cout << "-> ";
-                        getline(cin, riderNumber);
-                        if(riderNumber == "0"){
-                            endModify = true;
-                        } else {
-                            tempRider.setNumber(riderNumber);
-                            tempRiderNode = riderList->retrievePos(tempRider);
-                        }
-                    }
-                    if(endModify){
-                        return;
-                    }
-                }
-
-                tempRider = tempRiderNode->getData();
-                tempMember.setRookie(tempRider);
-                memberList->insertData(tempMemberNode, tempMember);
 
                 changes = true;
                 break;

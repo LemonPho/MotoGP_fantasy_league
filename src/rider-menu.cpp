@@ -112,23 +112,11 @@ bool RiderMenu::addRider() {
     cout << "Input the team" << endl;
     cout << "->";
     getline(cin, team);
-    cout << "Is he a rookie? (S/N)" << endl;
-    cout << "->";
-    cin >> option;
-    if(option == 's' || option == 'S'){
-        rookie = true;
-    }
-    cout << "Is he a test rider? (S/N)" << endl;
-    cout << "->";
-    cin >> option;
-    if(option == 's' || option == 'S'){
-        testRider = true;
-    }
     cout << "Input the points" << endl;
     cout << "->";
     cin >> points;
 
-    tempRider.setData(firstName, lastName, number, country, team, points, rookie, testRider);
+    tempRider.setData(firstName, lastName, number, country, team, points);
 
     riderList->insertOrdered(tempRider);
     return true;

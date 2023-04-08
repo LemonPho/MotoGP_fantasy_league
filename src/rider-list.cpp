@@ -198,35 +198,7 @@ void RiderList::writeToDisk(const string &fileName) {
         return;
     }
     while(temp != nullptr){
-        tempString = temp->getData().getNumber();
-        tempString += "|";
-        tempString += temp->getData().getFirstName();
-        tempString += "|";
-        tempString += temp->getData().getLastName();
-        tempString += "|";
-        tempString += temp->getData().getCountry();
-        tempString += "|";
-        tempString += temp->getData().getTeam();
-        tempString += "|";
-        tempString += to_string(temp->getData().getPoints());
-        tempString += "|";
-        if(temp->getData().getRookie()){
-            tempString += "R";
-        } else {
-            tempString += " ";
-        }
-        tempString += "|";
-        if(temp->getData().getTestRider()){
-            tempString += "T";
-        } else {
-            tempString += " ";
-        }
-        tempString += "|";
-        if(temp->getData().getChosen()){
-            tempString += "C";
-        } else {
-            tempString += " ";
-        }
+        tempString = temp->getData().toStringDisk();
         file << tempString << endl;
         temp = temp->getNext();
     }
@@ -240,7 +212,7 @@ RiderList *RiderList::readFromDisk(const string &fileName) {
 
     string firstName, lastName, country, team, number;
     int points;
-    bool rookie, testRider, chosen;
+    bool chosen;
     Rider *tempRider = new Rider();
 
     getline(file, tempString, '|');
@@ -259,26 +231,8 @@ RiderList *RiderList::readFromDisk(const string &fileName) {
         team = tempString;
         getline(file, tempString, '|');
         points = stoi(tempString);
-        getline(file, tempString, '|');
-        if(tempString == " "){
-            rookie = false;
-        } else {
-            rookie = true;
-        }
-        getline(file, tempString, '|');
-        if(tempString == " "){
-            testRider = false;
-        } else {
-            testRider = true;
-        }
         getline(file, tempString);
-        if(tempString == " "){
-            chosen = false;
-        } else {
-            chosen = true;
-        }
-        tempRider->setChosen(chosen);
-        tempRider->setData(firstName, lastName, number, country, team, points, rookie, testRider);
+        tempRider->setData(firstName, lastName, number, country, team, points);
         riderList->insertOrdered(*tempRider);
         getline(file, tempString, '|');
     }
