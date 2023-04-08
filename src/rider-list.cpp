@@ -145,7 +145,8 @@ Rider RiderList::retrieveData(RiderNode *riderNode) {
     RiderNode* last(getLastPos());
 
     if(!isValidPos(riderNode)){
-        return {};
+        cout << "Error: rider not found" << endl;
+        getchar();
     }
 
     return riderNode->getData();
