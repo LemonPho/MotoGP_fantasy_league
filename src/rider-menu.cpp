@@ -153,7 +153,7 @@ bool RiderMenu::addRaceResults() {
         cout << "Input final race position" << endl;
         cout << "->";
         cin >> position;
-        if(position < 15 && position > 0) {
+        if(position < 16 && position > 0) {
             riderPoints += tempRider.getPoints();
             riderPoints += points[position-1];
             tempRider.setPoints(riderPoints);
@@ -184,7 +184,7 @@ bool RiderMenu::addSprintRaceResults() {
         cout << "Input final race position" << endl;
         cout << "->";
         cin >> position;
-        if(position < 9 && position > 0) {
+        if(position < 10 && position > 0) {
             riderPoints += tempRider.getPoints();
             riderPoints += points[position-1];
             tempRider.setPoints(riderPoints);
