@@ -142,15 +142,6 @@ bool MemberMenu::addMember() {
                 cout << "->";
                 cin >> tempRiderNumber;
             }
-            for(int j = 0; j < i; j++){
-                if(usedNumbers[j] == tempRiderNumber){
-                    cout << "Make sure to not repeat the same riders" << endl;
-                    cout << "Input a different number: " << endl;
-                    cout << "->";
-                    cin >> tempRiderNumber;
-                    j = 0;
-                }
-            }
             usedNumbers[i] = tempRiderNumber;
             tempRider.setNumber(tempRiderNumber);
             tempRiderNode = riderList->retrievePos(tempRider);
