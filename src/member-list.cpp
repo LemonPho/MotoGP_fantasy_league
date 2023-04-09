@@ -240,7 +240,7 @@ MemberList *MemberList::readFromDisk(const string &fileName) {
     string number;
 
     getline(file, tempString, '|');
-    if(tempString.empty() || tempString == " "){
+    if(tempString.empty() || tempString == " " || tempString == "/n"){
         return new MemberList();
     }
     while(tempString != " " && !tempString.empty()){

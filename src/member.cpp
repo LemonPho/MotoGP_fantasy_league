@@ -22,10 +22,15 @@ bool Member::setUserName(string &userName) {
 
 void Member::insertRider(Rider &rider) {
     RiderNode* temp(riderList->getFirstPos());
-    while(temp != nullptr){
-        temp = temp->getNext();
+    if(temp == nullptr){
+        riderList->insertData(temp, rider);
+    } else {
+        while(temp->getNext() != nullptr){
+            temp = temp->getNext();
+        }
+        riderList->insertData(temp, rider);
     }
-    riderList->insertData(temp, rider);
+
 }
 
 void Member::setRiderList(RiderList *riderList) {

@@ -13,6 +13,7 @@ public:
     RiderList();
     RiderList(RiderList& riderList);
     ~RiderList();
+
     bool isEmpty();
     void insertData(RiderNode* riderNode, const Rider &data);
     void insertOrdered(Rider& data);

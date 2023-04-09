@@ -32,16 +32,28 @@ void RiderList::insertData(RiderNode *riderNode, const Rider &data) {
     RiderNode* toInsert(new RiderNode(data));
 
     if(toInsert == nullptr){
-        cout << "No more space available, maybe allocation of ram for program is bad" << endl;
+        cout << "No more ram space available" << endl;
         throw exception();
     }
-    if(riderNode == nullptr){
-        toInsert->setNext(header);
+
+    if(header == nullptr){
         header = toInsert;
+    }else if(riderNode == nullptr) {
+        header->setNext(toInsert);
+        toInsert->setPrevious(header);
+    }else if(riderNode->getNext() == nullptr) {
+        riderNode->setNext(toInsert);
+        toInsert->setPrevious(riderNode);
+    }else if(riderNode->getPrevious() == nullptr){
+        toInsert->setNext(riderNode);
+        riderNode->setPrevious(toInsert);
     } else {
         toInsert->setNext(riderNode->getNext());
+        toInsert->setPrevious(riderNode);
+        riderNode->getNext()->setPrevious(toInsert);
         riderNode->setNext(toInsert);
     }
+
 }
 
 void RiderList::insertOrdered(Rider &data) {
@@ -153,7 +165,7 @@ Rider RiderList::retrieveData(RiderNode *riderNode) {
 }
 
 string RiderList::toString() {
-    RiderNode* temp(header);
+    RiderNode* temp = header;
     string result;
 
     if(isEmpty()){

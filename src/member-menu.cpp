@@ -22,11 +22,10 @@ void MemberMenu::updateMemberPoints() {
         totalPoints = 0;
         tempMember = tempMemberNode->getData();
         tempRiderNode = tempMember.getRiderList()->getFirstPos();
-        while(tempRiderNode != nullptr){
+        while(tempRiderNode != nullptr) {
             totalPoints += tempRiderNode->getData().getPoints();
             tempRiderNode = tempRiderNode->getNext();
         }
-        totalPoints += tempMember.getPoints();
         tempMember.setPoints(totalPoints);
         tempMemberNode->setData(tempMember);
         tempMemberNode = tempMemberNode->getNext();
