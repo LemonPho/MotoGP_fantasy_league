@@ -135,7 +135,7 @@ bool RiderMenu::addRaceResults() {
     cout << "Add Race Results" << endl;
     while(temp != nullptr){
         riderPoints = 0;
-        line = temp->getData().toStringSmall();
+        line = temp->getData().toStringSmall(true);
         tempRider = temp->getData();
         cout << line << endl;
         cout << "Input final race position" << endl;
@@ -166,7 +166,7 @@ bool RiderMenu::addSprintRaceResults() {
     cout << "Add Sprint Race Results" << endl;
     while(temp != nullptr){
         riderPoints = 0;
-        line = temp->getData().toStringSmall();
+        line = temp->getData().toStringSmall(true);
         tempRider = temp->getData();
         cout << line << endl;
         cout << "Input final race position" << endl;

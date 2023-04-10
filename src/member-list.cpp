@@ -191,6 +191,33 @@ string MemberList::toString() {
     return result;
 }
 
+string MemberList::toStringSmall() {
+    MemberNode* tempMemberNode(header);
+    RiderNode* tempRiderNode = new RiderNode();
+    Member tempMember;
+    Rider tempRider;
+    string result;
+
+    while(tempMemberNode != nullptr){
+        tempMember = tempMemberNode->getData();
+        result += tempMember.getUserName();
+        result += " - ";
+        result += to_string(tempMember.getPoints());
+        result += " |";
+        tempRiderNode = tempMember.getRiderList()->getFirstPos();
+        while(tempRiderNode != nullptr){
+            tempRider = tempRiderNode->getData();
+            result += tempRider.toStringSmall(false);
+            result += " |";
+            tempRiderNode = tempRiderNode->getNext();
+        }
+        result += "\n";
+        tempMemberNode = tempMemberNode->getNext();
+    }
+
+    return result;
+}
+
 void MemberList::deleteAll() {
     MemberNode* temp(header);
     MemberNode* prev;

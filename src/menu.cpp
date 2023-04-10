@@ -120,10 +120,7 @@ void Menu::menu() {
 }
 
 void Menu::exit() {
-    //create current standings file (DOESN'T WORK, DONT KNOW WHY, JUST PRINTS RANDOM NUMBERS IN GROUPS OF 4)
-    ofstream file(seasonName + '-' + CURRENT_STANDINGS, ios::out);
-    file << memberList->toString() << endl;
-    file.close();
+    //doesn't do anything but could be usefull
 }
 
 void Menu::enterToContinue() {

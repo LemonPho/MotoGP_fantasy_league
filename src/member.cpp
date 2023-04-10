@@ -64,7 +64,7 @@ string Member::toStringSmall() {
     result = fillSpaces(result, SPACE_USERNAME - result.length());
 
     while(temp != nullptr){
-        result += temp->getData().toStringSmall();
+        result += temp->getData().toStringSmall(true);
         result += "| ";
         temp = temp->getNext();
     }

@@ -2,28 +2,30 @@
 #define MOTOGP_FANTASY_LEAGUE_MEMBER_MENU_H
 
 #include <iostream>
+#include <fstream>
 
 #include "member-list.h"
 
 using namespace std;
 
 class MemberMenu {
-private:
-    MemberList* memberList;
-    RiderList* riderList;
-    string seasonName;
-    bool saveChanges;
-public:
-    MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName);
+    private:
+        MemberList* memberList;
+        RiderList* riderList;
+        string seasonName;
+        bool saveChanges;
+    public:
+        MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName);
 
-    void updateMemberPoints();
+        void updateMemberPoints();
 
-    void menu();
-    bool addMember();
-    bool deleteMember();
-    void modifyMember();
+        void menu();
+        bool addMember();
+        bool deleteMember();
+        void modifyMember();
+        void createStandingsFile();
 
-    static void enterToContinue();
+        static void enterToContinue();
 };
 
 enum{
@@ -32,6 +34,7 @@ enum{
     MODIFY_MEMBER,
     LIST_MEMBERS,
     DELETE_ALL_MEMBERS,
+    CREATE_STANDINGS_FILE,
     SAVE_CHANGES_MEMBER,
     EXIT_MEMBER
 };

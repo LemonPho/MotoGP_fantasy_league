@@ -43,8 +43,9 @@ void MemberMenu::menu() {
         cout << "3. Modify Member" << endl;
         cout << "4. List Members" << endl;
         cout << "5. Delete ALL Members" << endl;
-        cout << "6. Save Changes" << endl;
-        cout << "7. Exit" << endl;
+        cout << "6. Create standings file" << endl;
+        cout << "7. Save Changes" << endl;
+        cout << "8. Exit" << endl;
         cout << "Option: ";
         cin >> option;
         switch(option){
@@ -79,6 +80,24 @@ void MemberMenu::menu() {
                 enterToContinue();
                 saveChanges = true;
                 break;
+            }
+            case CREATE_STANDINGS_FILE: {
+                system(CLEAR);
+
+                //create current standings file (DOESN'T WORK, DONT KNOW WHY, JUST PRINTS RANDOM NUMBERS IN GROUPS OF 4)
+                ofstream file(seasonName + '-' + CURRENT_STANDINGS, ios::out);
+                if(!file.is_open()){
+                    cout << "Standings file NOT created successfully, check if administrator privileges are necessary" << endl;
+                } else {
+                    file << memberList->toStringSmall() << endl;
+                    file.close();
+                    cout << "Standings file created successfully" << endl;
+                    cout << "To open file standings on macOS:" << endl;
+                    cout << "Open Finder, on the top of the screen select Go, in the options select Home and the file should be labelled (season name)-current-standings.txt" << endl;
+                    cout << "On windows it should be located in the same directory as the program" << endl;
+                    getchar();
+                    enterToContinue();
+                }
             }
             case SAVE_CHANGES_MEMBER: {
                 memberList->writeToDisk(seasonName + '-' + MEMBER_DATA);

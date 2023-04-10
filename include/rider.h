@@ -41,7 +41,7 @@ public:
     int getPoints();
 
     string toString();
-    string toStringSmall();
+    string toStringSmall(bool spacing);
     string toStringDisk();
 
     Rider& operator = (const Rider &rider);

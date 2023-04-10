@@ -70,7 +70,7 @@ string Rider::toString() {
 }
 
 //toStringSmall prints the rider but sumarized for listing
-string Rider::toStringSmall() {
+string Rider::toStringSmall(bool spacing) {
     string result;
 
     result += firstName[0];
@@ -79,7 +79,9 @@ string Rider::toStringSmall() {
     result += " - ";
     result += to_string(points);
 
-    result = fillSpaces(result, SPACE_PRINT_SMALL - result.length());
+    if(spacing) {
+        result = fillSpaces(result, SPACE_PRINT_SMALL - result.length());
+    }
 
     return result;
 }
