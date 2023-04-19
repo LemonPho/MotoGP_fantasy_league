@@ -74,8 +74,10 @@ string Rider::toStringSmall(bool spacing) {
     string result;
 
     result += firstName[0];
-    result += ". ";
-    result += lastName;
+    result += ".";
+    for(int i = 0; i < 3; i++){
+        result += lastName[i];
+    }
     result += " - ";
     result += to_string(points);
 

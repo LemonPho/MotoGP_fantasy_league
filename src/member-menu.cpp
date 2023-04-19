@@ -84,7 +84,6 @@ void MemberMenu::menu() {
             case CREATE_STANDINGS_FILE: {
                 system(CLEAR);
 
-                //create current standings file (DOESN'T WORK, DONT KNOW WHY, JUST PRINTS RANDOM NUMBERS IN GROUPS OF 4)
                 ofstream file(seasonName + '-' + CURRENT_STANDINGS, ios::out);
                 if(!file.is_open()){
                     cout << "Standings file NOT created successfully, check if administrator privileges are necessary" << endl;

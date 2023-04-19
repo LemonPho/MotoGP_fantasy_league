@@ -196,23 +196,29 @@ string MemberList::toStringSmall() {
     RiderNode* tempRiderNode = new RiderNode();
     Member tempMember;
     Rider tempRider;
-    string result;
+    string result = "";
 
+    int i = 1;
     while(tempMemberNode != nullptr){
         tempMember = tempMemberNode->getData();
+        result += "<b>";
+        result += to_string(i);
+        result += ". ";
         result += tempMember.getUserName();
         result += " - ";
         result += to_string(tempMember.getPoints());
-        result += " |";
+        result += "</b>";
+        result += " | ";
         tempRiderNode = tempMember.getRiderList()->getFirstPos();
         while(tempRiderNode != nullptr){
             tempRider = tempRiderNode->getData();
             result += tempRider.toStringSmall(false);
-            result += " |";
+            result += " | ";
             tempRiderNode = tempRiderNode->getNext();
         }
-        result += "\n";
+        result += "<br/>\n";
         tempMemberNode = tempMemberNode->getNext();
+        i++;
     }
 
     return result;
