@@ -191,7 +191,7 @@ string MemberList::toString() {
     return result;
 }
 
-string MemberList::toStringSmall() {
+string MemberList::toStringSmallHTML() {
     //currently this is used to save as a html table with html tags
     MemberNode* tempMemberNode(header);
     RiderNode* tempRiderNode = new RiderNode();
