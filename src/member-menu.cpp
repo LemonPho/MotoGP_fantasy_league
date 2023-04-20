@@ -88,7 +88,7 @@ void MemberMenu::menu() {
                 if(!file.is_open()){
                     cout << "Standings file NOT created successfully, check if administrator privileges are necessary" << endl;
                 } else {
-                    file << memberList->toStringSmall() << endl << endl;
+                    file << memberList->toStringSmallHTML() << endl << endl;
                     file.close();
                     cout << "Standings file created successfully" << endl;
                     cout << "To open file standings on macOS:" << endl;

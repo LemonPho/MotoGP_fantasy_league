@@ -29,7 +29,7 @@ public:
     MemberNode* merge(MemberNode* first, MemberNode* second);
     MemberNode* mergeSort(MemberNode* head);
     string toString();
-    string toStringSmall();
+    string toStringSmallHTML();
     void deleteAll();
     void writeToDisk(const string &fileName);
     MemberList* readFromDisk(const string &fileName);

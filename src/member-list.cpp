@@ -192,6 +192,7 @@ string MemberList::toString() {
 }
 
 string MemberList::toStringSmall() {
+    //currently this is used to save as a html table with html tags
     MemberNode* tempMemberNode(header);
     RiderNode* tempRiderNode = new RiderNode();
     Member tempMember;
@@ -199,8 +200,11 @@ string MemberList::toStringSmall() {
     string result = "";
 
     int i = 1;
+    result += "<table>";
     while(tempMemberNode != nullptr){
         tempMember = tempMemberNode->getData();
+        result += "<tr>";
+        result += "<td>";
         result += "<b>";
         result += to_string(i);
         result += ". ";
@@ -208,18 +212,20 @@ string MemberList::toStringSmall() {
         result += " - ";
         result += to_string(tempMember.getPoints());
         result += "</b>";
-        result += " | ";
+        result += "</td>";
         tempRiderNode = tempMember.getRiderList()->getFirstPos();
         while(tempRiderNode != nullptr){
             tempRider = tempRiderNode->getData();
+            result += "<td>";
             result += tempRider.toStringSmall(false);
-            result += " | ";
             tempRiderNode = tempRiderNode->getNext();
+            result += "</td>";
         }
-        result += "<br/>\n";
+        result += "</tr>\n";
         tempMemberNode = tempMemberNode->getNext();
         i++;
     }
+    result += "</table>";
 
     return result;
 }
