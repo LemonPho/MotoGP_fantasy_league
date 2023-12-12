@@ -148,7 +148,30 @@ MemberNode *MemberList::merge(MemberNode *first, MemberNode *second) {
         return first;
     }
 
-    if(first->getData().getPoints() > second->getData().getPoints()){
+    if(first->getData().getPoints() == second->getData().getPoints()){
+        //compare which has better rider picks (determins which one has picks closest to the top 5)
+        RiderNode* firstPicks;
+        RiderNode* secondPicks;
+        firstPicks = first->getDataPointer()->getRiderList()->getFirstPos();
+        secondPicks = second->getDataPointer()->getRiderList()->getFirstPos();
+
+        while(firstPicks->getData().getPoints() == secondPicks->getData().getPoints()){
+            firstPicks = firstPicks->getNext();
+            secondPicks = secondPicks->getNext();
+        }
+
+        if(firstPicks->getData().getPoints() > secondPicks->getData().getPoints()){
+            first->setNext(merge(first->getNext(), second));
+            first->getNext()->setPrevious(first);
+            first->setPrevious(nullptr);
+            return first;
+        } else {
+            second->setNext(merge(first, second->getNext()));
+            second->getNext()->setPrevious(second);
+            second->setPrevious(nullptr);
+            return second;
+        }
+    } else if(first->getData().getPoints() > second->getData().getPoints()){
         first->setNext(merge(first->getNext(), second));
         first->getNext()->setPrevious(first);
         first->setPrevious(nullptr);
