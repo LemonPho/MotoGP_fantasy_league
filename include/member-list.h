@@ -24,10 +24,11 @@ public:
     MemberNode* getLastPos();
     MemberNode* getNextPos(MemberNode *memberNode);
     MemberNode* retrievePos(const Member &data);
-    void sortMembers();
+    void sortMembers(RiderNode* riderHead);
     MemberNode* split(MemberNode* head);
-    MemberNode* merge(MemberNode* first, MemberNode* second);
-    MemberNode* mergeSort(MemberNode* head);
+    MemberNode* tieBreaker(MemberNode* first, MemberNode* second, RiderNode* riderHead);
+    MemberNode* merge(MemberNode* first, MemberNode* second, RiderNode* riderHead);
+    MemberNode* mergeSort(MemberNode* head, RiderNode* riderHead);
     string toString();
     string toStringSmallHTML();
     void deleteAll();

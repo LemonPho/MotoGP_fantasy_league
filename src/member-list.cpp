@@ -124,8 +124,8 @@ MemberNode *MemberList::retrievePos(const Member &data) {
     return nullptr;
 }
 
-void MemberList::sortMembers() {
-    header = mergeSort(header);
+void MemberList::sortMembers(RiderNode* riderHead) {
+    header = mergeSort(header, riderHead);
 }
 
 MemberNode *MemberList::split(MemberNode *head) {
@@ -139,7 +139,49 @@ MemberNode *MemberList::split(MemberNode *head) {
     return temp;
 }
 
-MemberNode *MemberList::merge(MemberNode *first, MemberNode *second) {
+MemberNode *MemberList::tieBreaker(MemberNode *first, MemberNode *second, RiderNode *riderHead) {
+    //rider picks of each player (first, second)
+    RiderNode* firstPicks = first->getDataPointer()->getRiderList()->getFirstPos();
+    RiderNode* secondPicks = second->getDataPointer()->getRiderList()->getFirstPos();
+    RiderNode* tempRider = riderHead;
+
+    //if one of the members have one of the top 5 riders correctly guessed, the one that chose correctly will be ahead
+    //the if's are structured so that if they both have the same rider in the same position, then it keeps checking
+    while(firstPicks != nullptr && secondPicks != nullptr){
+        if(firstPicks == tempRider && secondPicks != tempRider){
+            return first;
+        } else if(firstPicks != tempRider && secondPicks == tempRider){
+            return second;
+        }
+
+        firstPicks = firstPicks->getNext();
+        secondPicks = secondPicks->getNext();
+        tempRider = tempRider->getNext();
+    }
+
+    firstPicks = first->getDataPointer()->getRiderList()->getFirstPos();
+    secondPicks = second->getDataPointer()->getRiderList()->getFirstPos();
+    //iterate until points are not the same
+    while(firstPicks->getData().getPoints() == secondPicks->getData().getPoints()){
+        firstPicks = firstPicks->getNext();
+        secondPicks = secondPicks->getNext();
+    }
+
+    //conditionals to find which player has a rider with more points
+    if(firstPicks->getData().getPoints() > secondPicks->getData().getPoints()){
+        first->setNext(merge(first->getNext(), second, riderHead));
+        first->getNext()->setPrevious(first);
+        first->setPrevious(nullptr);
+        return first;
+    } else {
+        second->setNext(merge(first, second->getNext(), riderHead));
+        second->getNext()->setPrevious(second);
+        second->setPrevious(nullptr);
+        return second;
+    }
+}
+
+MemberNode *MemberList::merge(MemberNode *first, MemberNode *second, RiderNode* riderHead) {
     if(!first){
         return second;
     }
@@ -148,52 +190,33 @@ MemberNode *MemberList::merge(MemberNode *first, MemberNode *second) {
         return first;
     }
 
+    //both players have the same amount of points, tiebreaker
     if(first->getData().getPoints() == second->getData().getPoints()){
-        //compare which has better rider picks (determins which one has picks closest to the top 5)
-        RiderNode* firstPicks;
-        RiderNode* secondPicks;
-        firstPicks = first->getDataPointer()->getRiderList()->getFirstPos();
-        secondPicks = second->getDataPointer()->getRiderList()->getFirstPos();
-
-        while(firstPicks->getData().getPoints() == secondPicks->getData().getPoints()){
-            firstPicks = firstPicks->getNext();
-            secondPicks = secondPicks->getNext();
-        }
-
-        if(firstPicks->getData().getPoints() > secondPicks->getData().getPoints()){
-            first->setNext(merge(first->getNext(), second));
-            first->getNext()->setPrevious(first);
-            first->setPrevious(nullptr);
-            return first;
-        } else {
-            second->setNext(merge(first, second->getNext()));
-            second->getNext()->setPrevious(second);
-            second->setPrevious(nullptr);
-            return second;
-        }
+        MemberNode* temp = tieBreaker(first, second, riderHead);
+        return temp;
     } else if(first->getData().getPoints() > second->getData().getPoints()){
-        first->setNext(merge(first->getNext(), second));
+        first->setNext(merge(first->getNext(), second, riderHead));
         first->getNext()->setPrevious(first);
         first->setPrevious(nullptr);
         return first;
     } else {
-        second->setNext(merge(first, second->getNext()));
+        second->setNext(merge(first, second->getNext(), riderHead));
         second->getNext()->setPrevious(second);
         second->setPrevious(nullptr);
         return second;
     }
 }
 
-MemberNode *MemberList::mergeSort(MemberNode *head) {
+MemberNode *MemberList::mergeSort(MemberNode *head, RiderNode* riderHead) {
     if(!head || !head->getNext()){
         return head;
     }
     MemberNode* second = split(head);
 
-    head = mergeSort(head);
-    second = mergeSort(second);
+    head = mergeSort(head, riderHead);
+    second = mergeSort(second, riderHead);
 
-    return merge(head, second);
+    return merge(head, second, riderHead);
 }
 
 string MemberList::toString() {

@@ -5,9 +5,10 @@ MemberMenu::MemberMenu(MemberList *memberList, RiderList *riderList, string &sea
     this->memberList = memberList;
     this->riderList = riderList;
     this->seasonName = seasonName;
+    cout << riderList->getFirstPos()->getData().toString() << endl;
     saveChanges = false;
     updateMemberPoints();
-    memberList->sortMembers();
+    memberList->sortMembers(riderList->getFirstPos());
     menu();
 }
 
@@ -84,12 +85,16 @@ void MemberMenu::menu() {
             case CREATE_STANDINGS_FILE: {
                 system(CLEAR);
 
-                ofstream file(seasonName + '-' + CURRENT_STANDINGS, ios::out);
-                if(!file.is_open()){
+                ofstream fileTXT(seasonName + '-' + CURRENT_STANDINGS, ios::out);
+                ofstream fileHTML(seasonName + '-' + CURRENT_STANDINGS_HTML, ios::out);
+
+                if(!fileTXT.is_open() || !fileHTML.is_open()){
                     cout << "Standings file NOT created successfully, check if administrator privileges are necessary" << endl;
                 } else {
-                    file << memberList->toStringSmallHTML() << endl << endl;
-                    file.close();
+                    fileTXT << memberList->toStringSmallHTML() << endl << endl;
+                    fileTXT.close();
+                    fileHTML << memberList->toStringSmallHTML() << endl << endl;
+                    fileHTML.close();
                     cout << "Standings file created successfully" << endl;
                     cout << "To open file standings on macOS:" << endl;
                     cout << "Open Finder, on the top of the screen select Go, in the options select Home and the file should be labelled (season name)-current-standings.txt" << endl;

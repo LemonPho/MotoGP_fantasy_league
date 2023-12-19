@@ -25,6 +25,7 @@ using namespace std;
 #define RIDER_DATA "rider-data.txt"
 #define PROGRAM_DATA "program-data.txt"
 #define CURRENT_STANDINGS "current-standings.txt"
+#define CURRENT_STANDINGS_HTML "current-standings.html"
 
 class Menu {
 private:
