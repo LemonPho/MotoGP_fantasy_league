@@ -1,11 +1,11 @@
 #include "member-menu.h"
 #include "menu.h"
+#include "util.h"
 
 MemberMenu::MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName) {
     this->memberList = memberList;
     this->riderList = riderList;
     this->seasonName = seasonName;
-    cout << riderList->getFirstPos()->getData().toString() << endl;
     saveChanges = false;
     updateMemberPoints();
     memberList->sortMembers(riderList->getFirstPos());
@@ -131,15 +131,16 @@ void MemberMenu::menu() {
 }
 
 bool MemberMenu::addMember() {
+    int riderCount = riderList->riderCount();
     Member tempMember;
-    string userName;
-    string riderListString;
-    string usedNumbers[RIDER_COUNT] = {"-1","-1","-1","-1","-1"};
-    Rider rookie;
-    Rider tempRider;
+    string userName, tempRiderNumber;
+    string riderStringArray[riderCount+1];
+    Rider rookie, tempRider;
     RiderNode* tempRiderNode;
-    string tempRiderNumber;
-    char option;
+    int selections[RIDER_COUNT] = {-1, -1, -1, -1, -1, -1}, amountSelected=0;
+    int option = 1, lineOption;
+    int key;
+    bool exit = false;
 
     system(CLEAR);
     cout << "Creating member" << endl;
@@ -152,23 +153,130 @@ bool MemberMenu::addMember() {
         getline(cin , userName);
     }
 
-    riderListString = riderList->toString();
-    cout << riderListString << endl;
-    if(riderListString != "No riders in list"){
-        for(int i = 0; i < RIDER_COUNT; i++){
-            if(i == 5){
-                cout << "Input the desired rider number (Independent Rider): " << endl;
-                cout << "->";
-                cin >> tempRiderNumber;
-            } else {
-                cout << "Input the desired rider number: " << endl;
-                cout << "->";
-                cin >> tempRiderNumber;
+    system(CLEAR);
+
+    if(riderCount != 0){
+        int longestStringLength = 0;
+        int left, right;
+
+        tempRiderNode = riderList->getFirstPos();
+        for(int i = 0; tempRiderNode != nullptr; tempRiderNode = tempRiderNode->getNext(), i++){
+            riderStringArray[i] = "\t" + tempRiderNode->getData().toString();
+            if(tempRiderNode->getData().toString().length() > longestStringLength){
+                longestStringLength = tempRiderNode->getData().toString().length();
             }
-            usedNumbers[i] = tempRiderNumber;
-            tempRider.setNumber(tempRiderNumber);
-            tempRiderNode = riderList->retrievePos(tempRider);
-            tempRider = riderList->retrieveData(tempRiderNode);
+        }
+
+        left = 10; //position of left arrows, 10 because of tab
+        right = longestStringLength + 19;
+
+        cout << "Add riders to member's picks" << endl;
+        cout << "Navigate with arrow keys" << endl;
+        cout << "Enter: add to list" << endl;
+        cout << "Backspace: remove from list" << endl;
+
+        printMenu(riderStringArray, riderCount);
+        cout << "\tAccept" << endl;
+
+        int messageLine = 8+riderCount, messageStart = 10, acceptLine = riderCount+1;
+        while(!exit){
+            lineOption = option+5;
+
+            updateMenu(lineOption, left, right);
+            key = _getch();
+
+            switch(key){
+                case 80: {
+                    if(option == riderCount+1){
+                        option = 1;
+                    } else {
+                        option++;
+                    }
+                    break;
+                }
+
+                case 72:{
+                    if(option == 1){
+                        option = riderCount+1;
+                    } else {
+                        option--;
+                    }
+                    break;
+                }
+
+                case 13: {
+                    gotoxy(messageStart, messageLine);
+                    cout << "                                                     ";
+
+                    if(option == acceptLine){
+                        if(amountSelected >= RIDER_COUNT){
+                            exit = true;
+                        } else {
+                            gotoxy(messageStart, messageLine);
+                            cout << "You must only select 6 riders" << endl;
+                        }
+                        break;
+                    }
+
+                    if(amountSelected == 4){
+                        gotoxy(messageStart, messageLine);
+                        cout << "The next rider will be the independent rider";
+                    }
+
+                    if(amountSelected >= RIDER_COUNT){
+                        gotoxy(messageStart, messageLine);
+                        cout << "You have selected the max amount of riders";
+                        break;
+                    }
+                    if(option != acceptLine && checkIfSelected(selections, RIDER_COUNT, option-1) == -1){
+                        int i = 0;
+                        for(i; i < RIDER_COUNT; i++){
+                            if(selections[i] == -1){
+                                break;
+                            }
+                        }
+                        if(i >= RIDER_COUNT){
+                            i = 5;
+                        }
+                        selections[i] = option-1;
+                        gotoxy(right + 5, option + 5);
+                        if(i == 5){
+                            cout << "i";
+                        } else {
+                            cout << i+1;
+                        }
+                        amountSelected++;
+                        break;
+                    }
+
+                    break;
+                }
+
+                case 8: {
+                    int selected;
+
+                    gotoxy(messageStart, messageLine);
+                    cout << "                                                     ";
+
+                    selected = checkIfSelected(selections, RIDER_COUNT, option-1);
+                    if(selected != -1){
+                        selections[selected] = -1;
+                        gotoxy(right+5, option+5);
+                        cout << " ";
+                        amountSelected--;
+                    }
+                    break;
+                }
+            }
+            clearSelection(lineOption-1, lineOption+1, left, right);
+
+        }
+
+        cout << endl;
+
+        for(int i = 0; i < RIDER_COUNT; i++){
+            tempRiderNode = riderList->retrievePosIndex(selections[i]);
+            tempRider = tempRiderNode->getData();
             tempMember.insertRider(tempRider);
         }
     } else {

@@ -15,6 +15,7 @@ public:
     ~RiderList();
 
     bool isEmpty();
+    int riderCount();
     void insertData(RiderNode* riderNode, const Rider &data);
     void insertOrdered(Rider& data);
     void deleteData(RiderNode* riderNode);
@@ -22,7 +23,9 @@ public:
     RiderNode* getLastPos();
     RiderNode* getNextPos(RiderNode *riderNode);
     RiderNode* retrievePos(Rider& rider);
+    RiderNode* retrievePosIndex(int index);
     Rider retrieveData(RiderNode* riderNode);
+    //string* toStringArray();
     string toString();
     void deleteAll();
     void writeToDisk(const string& fileName);

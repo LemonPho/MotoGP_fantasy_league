@@ -11,6 +11,18 @@ bool RiderList::isValidPos(RiderNode *riderNode) {
     return false;
 }
 
+int RiderList::riderCount() {
+    RiderNode* temp(header);
+    int i = 0;
+
+    while(temp != nullptr){
+        i++;
+        temp = temp->getNext();
+    }
+
+    return i;
+}
+
 RiderList::RiderList() :header(nullptr) {}
 
 RiderList::RiderList(RiderList &riderList) {}
@@ -152,6 +164,21 @@ RiderNode *RiderList::retrievePos(Rider &rider) {
     return nullptr;
 }
 
+RiderNode *RiderList::retrievePosIndex(int index) {
+    RiderNode* temp(header);
+    int riderCount = this->riderCount();
+
+    if(index > riderCount){
+        return nullptr;
+    }
+
+    for(int i = 0; i < index; i++){
+        temp = temp->getNext();
+    }
+
+    return temp;
+}
+
 Rider RiderList::retrieveData(RiderNode *riderNode) {
     RiderNode* temp(header);
     RiderNode* last(getLastPos());
@@ -180,6 +207,21 @@ string RiderList::toString() {
 
     return result;
 }
+
+/*
+string* RiderList::toStringArray() {
+    string *result[] = {};
+    RiderNode* temp(header);
+    int i = 0;
+
+    while(temp != nullptr){
+        *result[i] = "\t" + temp->getData().toString();
+        temp = temp->getNext();
+        i++;
+    }
+
+    return *result;
+}*/
 
 void RiderList::deleteAll() {
     RiderNode* temp(header);
