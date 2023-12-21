@@ -176,7 +176,8 @@ bool MemberMenu::addMember() {
         cout << "Backspace: remove from list" << endl;
 
         printMenu(riderStringArray, riderCount);
-        cout << "\tAccept" << endl;
+        cout << "\t\x1B[32mAccept" << endl; // green
+        cout << "\x1b[37m"; // white
 
         int messageLine = 8+riderCount, messageStart = 10, acceptLine = riderCount+1;
         while(!exit){
