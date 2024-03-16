@@ -74,6 +74,7 @@ void MemberMenu::menu() {
                     modifyMember();
                 }
                 updateMemberPoints();
+                memberList->sortMembers(riderList->getFirstPos());
                 break;
             }
             case LIST_MEMBERS: {

@@ -139,19 +139,19 @@ MemberNode *MemberList::split(MemberNode *head) {
     return temp;
 }
 
-MemberNode *MemberList::tieBreaker(MemberNode *first, MemberNode *second, RiderNode *riderHead) {
-    //rider picks of each player (first, second)
-    RiderNode* firstPicks = first->getDataPointer()->getRiderList()->getFirstPos();
-    RiderNode* secondPicks = second->getDataPointer()->getRiderList()->getFirstPos();
+MemberNode *MemberList::tieBreaker(MemberNode *firstMember, MemberNode *secondMember, RiderNode *riderHead) {
+    //rider picks of each player (firstMember, secondMember)
+    RiderNode* firstPicks = firstMember->getDataPointer()->getRiderList()->getFirstPos();
+    RiderNode* secondPicks = secondMember->getDataPointer()->getRiderList()->getFirstPos();
     RiderNode* tempRider = riderHead;
 
     //if one of the members have one of the top 5 riders correctly guessed, the one that chose correctly will be ahead
     //the if's are structured so that if they both have the same rider in the same position, then it keeps checking
     while(firstPicks != nullptr && secondPicks != nullptr){
         if(firstPicks == tempRider && secondPicks != tempRider){
-            return first;
+            return firstMember;
         } else if(firstPicks != tempRider && secondPicks == tempRider){
-            return second;
+            return secondMember;
         }
 
         firstPicks = firstPicks->getNext();
@@ -159,25 +159,25 @@ MemberNode *MemberList::tieBreaker(MemberNode *first, MemberNode *second, RiderN
         tempRider = tempRider->getNext();
     }
 
-    firstPicks = first->getDataPointer()->getRiderList()->getFirstPos();
-    secondPicks = second->getDataPointer()->getRiderList()->getFirstPos();
+    firstPicks = firstMember->getDataPointer()->getRiderList()->getFirstPos();
+    secondPicks = secondMember->getDataPointer()->getRiderList()->getFirstPos();
     //iterate until points are not the same
-    while(firstPicks->getData().getPoints() == secondPicks->getData().getPoints()){
+    while((firstPicks->getData().getPoints() == secondPicks->getData().getPoints()) && (firstPicks->getNext() != nullptr && firstPicks->getNext() != nullptr)){
         firstPicks = firstPicks->getNext();
         secondPicks = secondPicks->getNext();
     }
 
     //conditionals to find which player has a rider with more points
     if(firstPicks->getData().getPoints() > secondPicks->getData().getPoints()){
-        first->setNext(merge(first->getNext(), second, riderHead));
-        first->getNext()->setPrevious(first);
-        first->setPrevious(nullptr);
-        return first;
+        firstMember->setNext(merge(firstMember->getNext(), secondMember, riderHead));
+        firstMember->getNext()->setPrevious(firstMember);
+        firstMember->setPrevious(nullptr);
+        return firstMember;
     } else {
-        second->setNext(merge(first, second->getNext(), riderHead));
-        second->getNext()->setPrevious(second);
-        second->setPrevious(nullptr);
-        return second;
+        secondMember->setNext(merge(firstMember, secondMember->getNext(), riderHead));
+        secondMember->getNext()->setPrevious(secondMember);
+        secondMember->setPrevious(nullptr);
+        return secondMember;
     }
 }
 
