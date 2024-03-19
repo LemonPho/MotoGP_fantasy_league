@@ -3,12 +3,14 @@
 #include "util.h"
 
 MemberMenu::MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName) {
-    this->memberList = memberList;
+    errorMessage = "";
+    this->memberList = new MemberList(memberList->getFirstPos(), &errorMessage);
+    cout << "error message location: " << &errorMessage << endl;
     this->riderList = riderList;
     this->seasonName = seasonName;
     saveChanges = false;
     updateMemberPoints();
-    memberList->sortMembers(riderList->getFirstPos());
+    this->memberList->sortMembers(riderList->getFirstPos());
     menu();
 }
 
@@ -39,6 +41,11 @@ void MemberMenu::menu() {
     do{
         system(CLEAR);
         cout << "Member Menu, " << seasonName << endl;
+
+        if(!errorMessage.empty()){
+            cout << errorMessage << endl;
+        }
+
         cout << "1. Add Member" << endl;
         cout << "2. Delete Member" << endl;
         cout << "3. Modify Member" << endl;
@@ -49,6 +56,7 @@ void MemberMenu::menu() {
         cout << "8. Exit" << endl;
         cout << "Option: ";
         cin >> option;
+        errorMessage = "";
         switch(option){
             case ADD_MEMBER: {
                 if(!saveChanges){
@@ -74,7 +82,7 @@ void MemberMenu::menu() {
                     modifyMember();
                 }
                 updateMemberPoints();
-                memberList->sortMembers(riderList->getFirstPos());
+                this->memberList->sortMembers(riderList->getFirstPos());
                 break;
             }
             case LIST_MEMBERS: {

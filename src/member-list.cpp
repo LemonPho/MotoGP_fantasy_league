@@ -12,7 +12,13 @@ bool MemberList::isValidPos(MemberNode *memberNode) {
     return false;
 }
 
-MemberList::MemberList() : header(nullptr){}
+MemberList::MemberList() : header(nullptr), errorMessage(){}
+
+MemberList::MemberList(MemberNode* header, string* errorMessage){
+    cout << "error message location in memberlist constructor: " << errorMessage << endl;
+    this->header = header;
+    this->errorMessage = errorMessage;
+}
 
 MemberList::~MemberList() {
     deleteAll();
@@ -144,6 +150,7 @@ MemberNode *MemberList::tieBreaker(MemberNode *firstMember, MemberNode *secondMe
     RiderNode* firstPicks = firstMember->getDataPointer()->getRiderList()->getFirstPos();
     RiderNode* secondPicks = secondMember->getDataPointer()->getRiderList()->getFirstPos();
     RiderNode* tempRider = riderHead;
+    bool samePicks = true;
 
     //if one of the members have one of the top 5 riders correctly guessed, the one that chose correctly will be ahead
     //the if's are structured so that if they both have the same rider in the same position, then it keeps checking
@@ -165,6 +172,18 @@ MemberNode *MemberList::tieBreaker(MemberNode *firstMember, MemberNode *secondMe
     while((firstPicks->getData().getPoints() == secondPicks->getData().getPoints()) && (firstPicks->getNext() != nullptr && firstPicks->getNext() != nullptr)){
         firstPicks = firstPicks->getNext();
         secondPicks = secondPicks->getNext();
+        if(secondPicks->getData() != firstPicks->getData()){
+            samePicks = false;
+        }
+    }
+
+    if(secondPicks->getData() != firstPicks->getData()){
+        samePicks = false;
+    }
+
+    if(samePicks && errorMessage){
+        *errorMessage = firstMember->getData().getUserName() + " and " + secondMember->getData().getUserName() + " have the same rider picks!";
+        cout << *errorMessage << endl;
     }
 
     //conditionals to find which player has a rider with more points
