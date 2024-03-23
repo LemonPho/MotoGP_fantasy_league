@@ -47,6 +47,7 @@ void Menu::startProgram() {
     getline(file, seasonName);
     //open data files for riders and members
     riderList = riderList->readFromDisk(seasonName + '-' + RIDER_DATA);
+    riderList->generatePositions();
     memberList = memberList->readFromDisk(seasonName + '-' + MEMBER_DATA);
 
     //variables
@@ -56,6 +57,7 @@ void Menu::startProgram() {
     Rider tempRookie;
     Rider rider;
     string tempNumber;
+
 
     //complete the rider lists and rookies of each member, because readFromDisk only assigns riders with only their numbers
     while(tempMemberNode != nullptr){

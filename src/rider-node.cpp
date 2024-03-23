@@ -16,6 +16,10 @@ Rider RiderNode::getData() {
     return data;
 }
 
+Rider* RiderNode::getDataReference() {
+    return &data;
+}
+
 RiderNode *RiderNode::getNext() {
     return next;
 }

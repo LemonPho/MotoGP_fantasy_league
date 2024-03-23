@@ -19,6 +19,7 @@ public:
     void insertData(RiderNode* riderNode, const Rider &data);
     void insertOrdered(Rider& data);
     void deleteData(RiderNode* riderNode);
+    void generatePositions(); //should be called after riders are inserted
     RiderNode* getFirstPos();
     RiderNode* getLastPos();
     RiderNode* getNextPos(RiderNode *riderNode);
@@ -33,6 +34,8 @@ public:
     RiderList* readFromDisk(const string& fileName);
 
     RiderList& operator = (RiderList* riderList);
+
+    string *toStringArray();
 };
 
 #endif //MOTOGP_FANTASY_LEAGUE_RIDER_LIST_H

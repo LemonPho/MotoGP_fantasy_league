@@ -56,9 +56,6 @@ void RiderList::insertData(RiderNode *riderNode, const Rider &data) {
     }else if(riderNode->getNext() == nullptr) {
         riderNode->setNext(toInsert);
         toInsert->setPrevious(riderNode);
-    }else if(riderNode->getPrevious() == nullptr){
-        toInsert->setNext(riderNode);
-        riderNode->setPrevious(toInsert);
     } else {
         toInsert->setNext(riderNode->getNext());
         toInsert->setPrevious(riderNode);
@@ -72,14 +69,11 @@ void RiderList::insertOrdered(Rider &data) {
     RiderNode* temp(header);
     RiderNode* prev(nullptr);
 
-    while(temp != nullptr && data >= temp->getData()){
+    while(temp != nullptr && data <= temp->getData()){
         prev = temp;
         temp = temp->getNext();
-        if(temp != nullptr && data == temp->getData()){
-            prev = temp;
-            temp = temp->getNext();
-        }
     }
+
     insertData(prev, data);
 }
 
@@ -107,6 +101,27 @@ void RiderList::deleteData(RiderNode *riderNode) {
             }
         }
         delete temp;
+    }
+}
+
+void RiderList::generatePositions() {
+    RiderNode* temp(header);
+    RiderNode* prev(nullptr);
+    int i = 1;
+
+    temp->getDataReference()->setPosition(i);
+    prev = temp;
+    temp = temp->getNext();
+
+    while(temp != nullptr){
+        if(prev->getData().getPoints() == temp->getData().getPoints()){
+            temp->getDataReference()->setPosition(i);
+        } else {
+            i++;
+            temp->getDataReference()->setPosition(i);
+        }
+        prev = temp;
+        temp = temp->getNext();
     }
 }
 
@@ -148,14 +163,14 @@ RiderNode *RiderList::retrievePos(Rider &rider) {
     RiderNode* last(getLastPos());
 
     if(temp == last){
-        if(temp->getData() == rider){
+        if(temp->getData().getNumber() == rider.getNumber()){
             return temp;
         } else {
             return nullptr;
         }
     } else {
         while(temp != nullptr){
-            if(temp->getData() == rider){
+            if(temp->getData().getNumber() == rider.getNumber()){
                 return temp;
             }
             temp = temp->getNext();
@@ -227,20 +242,20 @@ string RiderList::toStringIndexed(){
     return result;
 }
 
-/*
+
 string* RiderList::toStringArray() {
-    string *result[] = {};
+    string *result = new string;
     RiderNode* temp(header);
     int i = 0;
 
     while(temp != nullptr){
-        *result[i] = "\t" + temp->getData().toString();
+        result[i] = "\t" + temp->getData().toString();
         temp = temp->getNext();
         i++;
     }
 
-    return *result;
-}*/
+    return result;
+}
 
 void RiderList::deleteAll() {
     RiderNode* temp(header);
