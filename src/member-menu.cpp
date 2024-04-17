@@ -5,7 +5,6 @@
 MemberMenu::MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName) {
     errorMessage = "";
     this->memberList = new MemberList(memberList->getFirstPos(), &errorMessage);
-    cout << "error message location: " << &errorMessage << endl;
     this->riderList = riderList;
     this->seasonName = seasonName;
     saveChanges = false;

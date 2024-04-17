@@ -146,11 +146,11 @@ MemberNode *MemberList::split(MemberNode *head) {
 }
 
 MemberNode *MemberList::tieBreaker(MemberNode *firstMember, MemberNode *secondMember, RiderNode *riderHead) {
-    //rider picks of each player (firstMember, secondMember)
+    //rider picks of each player (first, second)
     RiderNode* firstPicks = firstMember->getDataPointer()->getRiderList()->getFirstPos();
     RiderNode* secondPicks = secondMember->getDataPointer()->getRiderList()->getFirstPos();
     RiderNode* tempRider = riderHead;
-    bool samePicks = true, tieBreakerFound = false;
+    bool samePicks = true;
     int i = 1;
 
     //if one of the members have one of the top 5 riders correctly guessed, the one that chose correctly will be ahead
