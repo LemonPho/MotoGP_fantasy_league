@@ -347,12 +347,12 @@ bool MemberMenu::deleteMember() {
 }
 
 bool MemberMenu::modifyMember() {
-    system(CLEAR);
     bool exit = false;
     int option;
     bool changes = false;
 
     do {
+        system(CLEAR);
         cout << "Modify Member" << endl;
         cout << "1. Change Username" << endl;
         cout << "2. Change Rider" << endl;
@@ -371,7 +371,8 @@ bool MemberMenu::modifyMember() {
                 cout << memberList->toString() << endl;
                 cout << "Input the username of the member you would like to modify" << endl;
                 cout << "-> ";
-                getline(cin, userName);
+                cin.ignore();getline(cin, userName);
+                tempMember.setUserName(userName);
                 tempNode = memberList->retrievePos(tempMember);
 
                 while(!endModify && tempNode == nullptr){
@@ -418,6 +419,7 @@ bool MemberMenu::modifyMember() {
                 cout << "Input the username of the member's riders you would like to modify (0 to cancel)" << endl;
                 cout << "-> ";
                 cin.ignore();getline(cin, userName);
+                tempMember.setUserName(userName);
                 tempMemberNode = memberList->retrievePos(tempMember);
 
                 while(!endModify && tempMemberNode == nullptr){
