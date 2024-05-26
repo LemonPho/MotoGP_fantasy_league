@@ -1,5 +1,7 @@
 #include "member-list.h"
 
+#include <utility>
+
 bool MemberList::isValidPos(MemberNode *memberNode) {
     MemberNode* temp(header);
 
@@ -14,10 +16,9 @@ bool MemberList::isValidPos(MemberNode *memberNode) {
 
 MemberList::MemberList() : header(nullptr), errorMessage(){}
 
-MemberList::MemberList(MemberNode* header, string* errorMessage){
-    cout << "error message location in memberlist constructor: " << errorMessage << endl;
+MemberList::MemberList(MemberNode* header, string errorMessage){
     this->header = header;
-    this->errorMessage = errorMessage;
+    this->errorMessage = std::move(errorMessage);
 }
 
 MemberList::~MemberList() {
@@ -91,6 +92,22 @@ void MemberList::deleteData(MemberNode *memberNode) {
     }
 }
 
+string MemberList::getErrorMessage() {
+    return errorMessage;
+}
+
+void MemberList::setErrorMessage(string errorMessage) {
+    this->errorMessage = std::move(errorMessage);
+}
+
+void MemberList::addErrorMessage(string errorMessage) {
+    if(!this->errorMessage.empty()){
+        this->errorMessage += errorMessage;
+    } else {
+        this->errorMessage = errorMessage;
+    }
+}
+
 MemberNode *MemberList::getFirstPos() {
     if(!isEmpty()){
         return header;
@@ -128,6 +145,93 @@ MemberNode *MemberList::retrievePos(const Member &data) {
         temp = temp->getNext();
     }
     return nullptr;
+}
+
+void MemberList::retrieveMemberPicks(RiderList *riderList) {
+    MemberNode* tempMemberNode(header);
+    Member tempMember;
+    Rider tempRookie;
+    Rider rider;
+    string tempNumber;
+    int tempMemberPoints=0;
+
+
+    //complete the rider lists and rookies of each member, because readFromDisk only assigns riders with only their numbers
+    while(tempMemberNode != nullptr){
+        //retrieve rookie number and get full rookie data to assign
+        tempMember = tempMemberNode->getData();
+        tempMemberPoints = 0;
+        //node to go through member rider list
+        RiderNode* tempRiderNode1(tempMember.getRiderList()->getFirstPos());
+        while(tempRiderNode1 != nullptr){
+            //get full data of each rider, same method as rookie
+            RiderNode* tempRiderNode2;
+            tempNumber = tempRiderNode1->getData().getNumber();
+            rider.setNumber(tempNumber);
+            tempRiderNode2 = riderList->retrievePos(rider);
+            rider = tempRiderNode2->getData();
+            tempMemberPoints += rider.getPoints();
+            tempRiderNode1->setData(rider);
+            tempRiderNode1 = tempRiderNode1->getNext();
+        }
+        tempMember.setPoints(tempMemberPoints);
+        tempMemberNode->setData(tempMember);
+        tempMemberNode = tempMemberNode->getNext();
+    }
+}
+
+void MemberList::updateMembersPoints() {
+    int totalPoints;
+    MemberNode* tempMemberNode(header);
+    Member tempMember;
+    Rider tempRookie;
+    RiderNode* tempRiderNode = new RiderNode();
+
+    while(tempMemberNode != nullptr){
+        totalPoints = 0;
+        tempMember = tempMemberNode->getData();
+        tempRiderNode = tempMember.getRiderList()->getFirstPos();
+        while(tempRiderNode != nullptr) {
+            totalPoints += tempRiderNode->getData().getPoints();
+            tempRiderNode = tempRiderNode->getNext();
+        }
+        tempMember.setPoints(totalPoints);
+        tempMemberNode->setData(tempMember);
+        tempMemberNode = tempMemberNode->getNext();
+    }
+}
+
+void MemberList::updateMembersRiders(RiderList* riderList) {
+    int totalPoints;
+    MemberNode* tempMemberNode(header);
+    Rider tempRider;
+    Member tempMember;
+    RiderNode* tempRiderNode1;
+    RiderNode* tempRiderNode2;
+
+    while(tempMemberNode != nullptr){
+        totalPoints = 0;
+        tempMember = tempMemberNode->getData();
+        tempRiderNode1 = tempMember.getRiderList()->getFirstPos();
+        while(tempRiderNode1 != nullptr){
+            tempRider = tempRiderNode1->getData();
+            tempRiderNode2 = riderList->getFirstPos();
+            while(tempRiderNode2 != nullptr){
+                if(tempRiderNode2->getData().getNumber() == tempRider.getNumber()){
+                    tempRider = tempRiderNode2->getData();
+                    break;
+                }
+                tempRiderNode2 = tempRiderNode2->getNext();
+            }
+            tempRiderNode1->setData(tempRider);
+            totalPoints += tempRiderNode1->getData().getPoints();
+            tempRiderNode1 = tempRiderNode1->getNext();
+        }
+        totalPoints += tempMember.getPoints();
+        tempMember.setPoints(totalPoints);
+        tempMemberNode->setData(tempMember);
+        tempMemberNode = tempMemberNode->getNext();
+    }
 }
 
 void MemberList::sortMembers(RiderNode* riderHead) {
@@ -212,8 +316,8 @@ MemberNode *MemberList::tieBreaker(MemberNode *firstMember, MemberNode *secondMe
         samePicks = false;
     }
 
-    if(samePicks && errorMessage){
-        *errorMessage += firstMember->getData().getUserName() + " and " + secondMember->getData().getUserName() + " have the same rider picks!\n";
+    if(samePicks){
+        errorMessage += firstMember->getData().getUserName() + " and " + secondMember->getData().getUserName() + " have the same rider picks!\n";
     }
 
     //conditionals to find which player has a rider with more points
@@ -361,7 +465,7 @@ void MemberList::writeToDisk(const string &fileName) {
     file.close();
 }
 
-MemberList *MemberList::readFromDisk(const string &fileName) {
+MemberList *MemberList::copyFromDisk(const string &fileName) {
     ifstream file(fileName);
     MemberList *memberList = new MemberList();
     string tempString;
@@ -394,4 +498,39 @@ MemberList *MemberList::readFromDisk(const string &fileName) {
         tempMember = Member();
     }
     return memberList;
+}
+
+void MemberList::modifyFromDisk(const std::string &fileName) {
+    ifstream file(fileName);
+    string tempString;
+
+    string userName, rookieNumber;
+    Rider tempRider;
+    int pointsMember=0;
+    Member tempMember;
+
+    string number;
+
+    getline(file, tempString, '|');
+    if(tempString.empty() || tempString == " " || tempString == "/n"){
+        header = nullptr;
+        return;
+    }
+
+    while(tempString != " " && !tempString.empty()){
+        int i;
+        userName = tempString;
+        for(i = 0; i < RIDER_COUNT; i++){
+            getline(file, tempString, '|');
+            number = tempString;
+            tempRider.setNumber(number);
+            tempMember.insertRider(tempRider);
+        }
+        tempMember.setUserName(userName);
+        tempMember.setPoints(pointsMember);
+        insertData(header, tempMember);
+        getline(file, tempString);
+        getline(file, tempString, '|');
+        tempMember = Member();
+    }
 }

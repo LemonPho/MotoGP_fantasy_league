@@ -1,4 +1,5 @@
 #include "rider-menu.h"
+#include "util.h"
 
 RiderMenu::RiderMenu(MemberList* memberList, RiderList *riderList, string &seasonName) {
     this->memberList = memberList;
@@ -135,7 +136,7 @@ bool RiderMenu::addRaceResults() {
     cout << "Add Race Results" << endl;
     while(temp != nullptr){
         riderPoints = 0;
-        line = temp->getData().toStringSmall(true);
+        line = temp->getData().toStringSmallFullName();
         tempRider = temp->getData();
         cout << line << endl;
         cout << "Input final race position" << endl;
@@ -149,7 +150,7 @@ bool RiderMenu::addRaceResults() {
         }
         temp = temp->getNext();
     }
-    updateMembersRiders();
+    memberList->updateMembersRiders(riderList);
     return true;
 }
 
@@ -166,7 +167,7 @@ bool RiderMenu::addSprintRaceResults() {
     cout << "Add Sprint Race Results" << endl;
     while(temp != nullptr){
         riderPoints = 0;
-        line = temp->getData().toStringSmall(true);
+        line = temp->getData().toStringSmallFullName();
         tempRider = temp->getData();
         cout << line << endl;
         cout << "Input final race position" << endl;
@@ -180,7 +181,7 @@ bool RiderMenu::addSprintRaceResults() {
         }
         temp = temp->getNext();
     }
-    updateMembersRiders();
+    memberList->updateMembersRiders(riderList);
     return true;
 }
 
@@ -215,42 +216,4 @@ bool RiderMenu::deleteRider() {
     enterToContinue();
     return false;
 
-}
-
-void RiderMenu::updateMembersRiders() {
-    int totalPoints;
-    MemberNode* tempMemberNode(memberList->getFirstPos());
-    Rider tempRider;
-    Member tempMember;
-    RiderNode* tempRiderNode1;
-    RiderNode* tempRiderNode2;
-
-    while(tempMemberNode != nullptr){
-        totalPoints = 0;
-        tempMember = tempMemberNode->getData();
-        tempRiderNode1 = tempMember.getRiderList()->getFirstPos();
-        while(tempRiderNode1 != nullptr){
-            tempRider = tempRiderNode1->getData();
-            tempRiderNode2 = riderList->getFirstPos();
-            while(tempRiderNode2 != nullptr){
-                if(tempRiderNode2->getData().getNumber() == tempRider.getNumber()){
-                    tempRider = tempRiderNode2->getData();
-                    break;
-                }
-                tempRiderNode2 = tempRiderNode2->getNext();
-            }
-            tempRiderNode1->setData(tempRider);
-            totalPoints += tempRiderNode1->getData().getPoints();
-            tempRiderNode1 = tempRiderNode1->getNext();
-        }
-        totalPoints += tempMember.getPoints();
-        tempMember.setPoints(totalPoints);
-        tempMemberNode->setData(tempMember);
-        tempMemberNode = tempMemberNode->getNext();
-    }
-}
-
-void RiderMenu::enterToContinue() {
-    cout << "Press enter to continue" << endl;
-    getchar();
 }

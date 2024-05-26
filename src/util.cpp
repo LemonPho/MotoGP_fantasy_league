@@ -38,6 +38,16 @@ void clearSelection(int start, int end, int left, int right){
     }
 }
 
+void clearBuffer(){
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+void enterToContinue(){
+    cout << "Press enter to continue..." << endl;
+    getchar();
+}
+
 int checkIfSelected(const int selections[], int selectionsLength, int query){
     for(int i = 0; i < selectionsLength; i++){
         if(selections[i] == query){

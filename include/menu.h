@@ -39,7 +39,6 @@ public:
     void startProgram();
     void menu();
     void exit();
-    void enterToContinue();
 };
 
 enum{

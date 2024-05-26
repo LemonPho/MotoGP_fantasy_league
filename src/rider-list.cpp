@@ -294,7 +294,7 @@ void RiderList::writeToDisk(const string &fileName) {
     file.close();
 }
 
-RiderList *RiderList::readFromDisk(const string &fileName) {
+RiderList *RiderList::copyFromDisk(const std::string &fileName) {
     ifstream file(fileName);
     RiderList* riderList = new RiderList();
     string tempString;
@@ -327,6 +327,41 @@ RiderList *RiderList::readFromDisk(const string &fileName) {
     }
     delete tempRider;
     return riderList;
+}
+
+void RiderList::modifyFromDisk(const string &fileName) {
+    ifstream file(fileName);
+    RiderList* riderList = new RiderList();
+    string tempString;
+
+    string firstName, lastName, country, team, number;
+    int points;
+    bool chosen;
+    Rider *tempRider = new Rider();
+
+    getline(file, tempString, '|');
+    if(tempString.empty() || tempString == " "){
+        header = nullptr;
+        return;
+    }
+    while(tempString != " " && !tempString.empty()){
+        number = tempString;
+        getline(file, tempString, '|');
+        firstName = tempString;
+        getline(file, tempString, '|');
+        lastName = tempString;
+        getline(file, tempString, '|');
+        country = tempString;
+        getline(file, tempString, '|');
+        team = tempString;
+        getline(file, tempString, '|');
+        points = stoi(tempString);
+        getline(file, tempString);
+        tempRider->setData(firstName, lastName, number, country, team, points);
+        insertOrdered(*tempRider);
+        getline(file, tempString, '|');
+    }
+    delete tempRider;
 }
 
 RiderList &RiderList::operator=(RiderList *riderList) {

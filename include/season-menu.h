@@ -12,16 +12,13 @@ private:
     RiderList* riderList;
     string* seasonName;
 public:
-    SeasonMenu(MemberList* memberList, RiderList* riderList, string* seasonName);
+    SeasonMenu(MemberList *memberList, RiderList *riderList, string *seasonName);
 
     void menu();
 
     void createSeason();
     void changeSeason();
     void changeDefaultSeason();
-
-
-    void enterToContinue();
 };
 
 enum{

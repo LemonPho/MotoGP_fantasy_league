@@ -3,35 +3,13 @@
 #include "util.h"
 
 MemberMenu::MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName) {
-    errorMessage = "";
-    this->memberList = new MemberList(memberList->getFirstPos(), &errorMessage);
+    this->memberList = memberList;
     this->riderList = riderList;
     this->seasonName = seasonName;
     saveChanges = false;
-    updateMemberPoints();
+    this->memberList->updateMembersPoints();
     this->memberList->sortMembers(riderList->getFirstPos());
     menu();
-}
-
-void MemberMenu::updateMemberPoints() {
-    int totalPoints;
-    MemberNode* tempMemberNode(memberList->getFirstPos());
-    Member tempMember;
-    Rider tempRookie;
-    RiderNode* tempRiderNode = new RiderNode();
-
-    while(tempMemberNode != nullptr){
-        totalPoints = 0;
-        tempMember = tempMemberNode->getData();
-        tempRiderNode = tempMember.getRiderList()->getFirstPos();
-        while(tempRiderNode != nullptr) {
-            totalPoints += tempRiderNode->getData().getPoints();
-            tempRiderNode = tempRiderNode->getNext();
-        }
-        tempMember.setPoints(totalPoints);
-        tempMemberNode->setData(tempMember);
-        tempMemberNode = tempMemberNode->getNext();
-    }
 }
 
 void MemberMenu::menu() {
@@ -41,8 +19,8 @@ void MemberMenu::menu() {
         system(CLEAR);
         cout << "Member Menu, " << seasonName << endl;
 
-        if(!errorMessage.empty()){
-            cout << errorMessage;
+        if(!memberList->getErrorMessage().empty()){
+            cout << memberList->getErrorMessage();
         }
 
         cout << "1. Add Member" << endl;
@@ -55,7 +33,7 @@ void MemberMenu::menu() {
         cout << "8. Exit" << endl;
         cout << "Option: ";
         cin >> option;
-        errorMessage = "";
+        memberList->setErrorMessage("");
         switch(option){
             case ADD_MEMBER: {
                 if(!saveChanges){
@@ -63,7 +41,7 @@ void MemberMenu::menu() {
                 } else {
                     addMember();
                 }
-                updateMemberPoints();
+                this->memberList->updateMembersPoints();
                 break;
             }
             case DELETE_MEMBER: {
@@ -80,7 +58,7 @@ void MemberMenu::menu() {
                 } else {
                     modifyMember();
                 }
-                updateMemberPoints();
+                this->memberList->updateMembersPoints();
                 this->memberList->sortMembers(riderList->getFirstPos());
                 break;
             }
@@ -519,10 +497,4 @@ bool MemberMenu::modifyMember() {
     }while(!exit);
     system(CLEAR);
     return changes;
-}
-
-
-void MemberMenu::enterToContinue() {
-    cout << "Press enter to continue" << endl;
-    getchar();
 }

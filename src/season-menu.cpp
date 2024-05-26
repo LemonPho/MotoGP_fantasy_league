@@ -1,4 +1,5 @@
 #include "season-menu.h"
+#include "util.h"
 
 SeasonMenu::SeasonMenu(MemberList *memberList, RiderList *riderList, string* seasonName) {
     this->memberList = memberList;
@@ -17,6 +18,7 @@ void SeasonMenu::menu() {
         cout << "2. Select season" << endl;
         cout << "3. Change default season" << endl;
         cout << "4. Exit" << endl;
+        cout << "Option: ";
         cin >> option;
         switch(option){
             case CREATE_SEASON: {
@@ -141,34 +143,12 @@ void SeasonMenu::changeSeason() {
     riderList->deleteAll();
     memberList->deleteAll();
 
-    riderList = riderList->readFromDisk(seasons[selection-1] + '-' + RIDER_DATA);
-    memberList = memberList->readFromDisk(seasons[selection-1] + '-' + MEMBER_DATA);
+    riderList->modifyFromDisk(seasons[selection-1] + '-' + RIDER_DATA);
+    riderList->generatePositions();
+    memberList->modifyFromDisk(seasons[selection-1] + '-' + MEMBER_DATA);
+    memberList->retrieveMemberPicks(riderList);
+    memberList->updateMembersPoints();
     *seasonName = seasons[selection-1];
-
-    MemberNode* tempMemberNode(memberList->getFirstPos());
-    Member tempMember;
-    Rider rider;
-    string tempNumber;
-
-    while(tempMemberNode != nullptr){
-        tempMember = tempMemberNode->getData();
-        RiderNode* tempRiderNode1(tempMember.getRiderList()->getFirstPos());
-        while(tempRiderNode1 != nullptr){
-            RiderNode* tempRiderNode2(riderList->getFirstPos());
-            tempNumber = tempRiderNode1->getData().getNumber();
-            rider.setNumber(tempNumber);
-            while(tempRiderNode2 != nullptr){
-                if(tempRiderNode2->getData() == rider){
-                    rider = tempRiderNode2->getData();
-                    tempRiderNode1->setData(rider);
-                }
-                tempRiderNode2 = tempRiderNode2->getNext();
-            }
-            tempRiderNode1 = tempRiderNode1->getNext();
-        }
-        tempMemberNode = tempMemberNode->getNext();
-    }
-
 }
 
 void SeasonMenu::changeDefaultSeason() {
@@ -180,11 +160,18 @@ void SeasonMenu::changeDefaultSeason() {
     bool validSelection = false;
     int selection;
     int i = 0;
-    ifstream file(PROGRAM_DATA);
+    ifstream fileRead(PROGRAM_DATA);
 
-    getline(file, auxString);
-    while(auxString != ""){
+    if(!fileRead){
+        cout << "There was an error loading the file" << endl;
+        enterToContinue();
+        return;
+    }
+
+    getline(fileRead, auxString);
+    while(auxString != "" && i != 100){
         seasons[i++] = auxString;
+        getline(fileRead, auxString);
     }
     for(int j = 0; j < i; j++){
         cout << j+1 << " " << seasons[j] << endl;
@@ -204,11 +191,19 @@ void SeasonMenu::changeDefaultSeason() {
     seasons[selection-1] = seasons[0];
     seasons[0] = auxString;
 
-    cout << "Restart the application to take effect" << endl;\
-    enterToContinue();
-}
+    ofstream fileWrite(PROGRAM_DATA);
 
-void SeasonMenu::enterToContinue() {
-    cout << "Press enter to continue" << endl;
-    getchar();
+    if(!fileWrite){
+        cout << "There was an error when trying to write to the program file" << endl;
+        enterToContinue();
+        return;
+    }
+
+    for(int j = 0; j < i; j++){
+        fileWrite << seasons[j] << endl;
+    }
+
+    cout << "Restart the application to take effect" << endl;
+    clearBuffer();
+    enterToContinue();
 }

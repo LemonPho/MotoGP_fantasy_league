@@ -19,10 +19,6 @@ public:
     bool addRaceResults();
     bool addSprintRaceResults();
     bool deleteRider();
-
-    void updateMembersRiders();
-
-    void enterToContinue();
 };
 
 enum{

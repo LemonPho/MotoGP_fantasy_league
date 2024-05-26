@@ -1,4 +1,5 @@
 #include "menu.h"
+#include "util.h"
 
 Menu::Menu() {
     system(CLEAR);
@@ -46,38 +47,10 @@ void Menu::startProgram() {
     }
     getline(file, seasonName);
     //open data files for riders and members
-    riderList = riderList->readFromDisk(seasonName + '-' + RIDER_DATA);
+    riderList = riderList->copyFromDisk(seasonName + '-' + RIDER_DATA);
     riderList->generatePositions();
-    memberList = memberList->readFromDisk(seasonName + '-' + MEMBER_DATA);
-
-    //variables
-    MemberNode* tempMemberNode(memberList->getFirstPos());
-    RiderNode* tempRookieNode;
-    Member tempMember;
-    Rider tempRookie;
-    Rider rider;
-    string tempNumber;
-
-
-    //complete the rider lists and rookies of each member, because readFromDisk only assigns riders with only their numbers
-    while(tempMemberNode != nullptr){
-        //retrieve rookie number and get full rookie data to assign
-        tempMember = tempMemberNode->getData();
-        //node to go through member rider list
-        RiderNode* tempRiderNode1(tempMember.getRiderList()->getFirstPos());
-        while(tempRiderNode1 != nullptr){
-            //get full data of each rider, same method as rookie
-            RiderNode* tempRiderNode2;
-            tempNumber = tempRiderNode1->getData().getNumber();
-            rider.setNumber(tempNumber);
-            tempRiderNode2 = riderList->retrievePos(rider);
-            rider = tempRiderNode2->getData();
-            tempRiderNode1->setData(rider);
-            tempRiderNode1 = tempRiderNode1->getNext();
-        }
-        tempMemberNode->setData(tempMember);
-        tempMemberNode = tempMemberNode->getNext();
-    }
+    memberList = memberList->copyFromDisk(seasonName + '-' + MEMBER_DATA);
+    memberList->retrieveMemberPicks(riderList);
 }
 
 //main menu
@@ -122,10 +95,6 @@ void Menu::menu() {
 }
 
 void Menu::exit() {
-    //doesn't do anything but could be usefull
-}
-
-void Menu::enterToContinue() {
-    cout << "Press enter to continue..." << endl;
-    getchar();
+   delete memberList;
+   delete riderList;
 }

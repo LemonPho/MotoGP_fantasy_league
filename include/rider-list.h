@@ -31,7 +31,8 @@ public:
     string toStringIndexed();
     void deleteAll();
     void writeToDisk(const string& fileName);
-    RiderList* readFromDisk(const string& fileName);
+    RiderList* copyFromDisk(const string& fileName);
+    void modifyFromDisk(const string &fileName);
 
     RiderList& operator = (RiderList* riderList);
 

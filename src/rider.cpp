@@ -117,6 +117,16 @@ string Rider::toStringSmall(bool spacing) {
     return result;
 }
 
+string Rider::toStringSmallFullName() {
+    string result;
+
+    result = firstName;
+    result += " ";
+    result += lastName;
+
+    return result;
+}
+
 string Rider::toStringDisk() {
     string result;
 
