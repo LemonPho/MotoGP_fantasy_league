@@ -169,10 +169,15 @@ void MemberList::retrieveMemberPicks(RiderList *riderList) {
             tempNumber = tempRiderNode1->getData().getNumber();
             rider.setNumber(tempNumber);
             tempRiderNode2 = riderList->retrievePos(rider);
-            rider = tempRiderNode2->getData();
-            tempMemberPoints += rider.getPoints();
-            tempRiderNode1->setData(rider);
-            tempRiderNode1 = tempRiderNode1->getNext();
+            if(tempRiderNode2 == nullptr){
+                //ADD TO MENU ERROR MESSAGE ATTRIBUTE
+                cout << "Rider #" << tempNumber << " from " << tempMember.getUserName() << " picks not found" << endl;
+            } else {
+                rider = tempRiderNode2->getData();
+                tempMemberPoints += rider.getPoints();
+                tempRiderNode1->setData(rider);
+                tempRiderNode1 = tempRiderNode1->getNext();
+            }
         }
         tempMember.setPoints(tempMemberPoints);
         tempMemberNode->setData(tempMember);

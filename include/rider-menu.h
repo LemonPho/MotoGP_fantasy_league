@@ -4,6 +4,7 @@
 #include <iostream>
 #include "menu.h"
 #include "member-menu.h"
+#include "race-result-scraper.h"
 
 class RiderMenu {
 private:
@@ -17,12 +18,14 @@ public:
     void menu();
     bool addRider();
     bool addRaceResults();
+    bool addRaceResultsAutomatic();
     bool addSprintRaceResults();
     bool deleteRider();
 };
 
 enum{
     ADD_RIDER = 1,
+    AUTOMATIC_ADD_RACE_RESULTS,
     ADD_RACE_RESULTS,
     ADD_SPRINT_RACE_RESULTS,
     DELETE_RIDER,

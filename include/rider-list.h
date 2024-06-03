@@ -26,7 +26,6 @@ public:
     RiderNode* retrievePos(Rider& rider);
     RiderNode* retrievePosIndex(int index);
     Rider retrieveData(RiderNode* riderNode);
-    //string* toStringArray();
     string toString();
     string toStringIndexed();
     void deleteAll();
@@ -35,8 +34,6 @@ public:
     void modifyFromDisk(const string &fileName);
 
     RiderList& operator = (RiderList* riderList);
-
-    string *toStringArray();
 };
 
 #endif //MOTOGP_FANTASY_LEAGUE_RIDER_LIST_H

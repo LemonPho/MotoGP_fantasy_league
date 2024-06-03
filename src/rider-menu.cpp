@@ -16,13 +16,14 @@ void RiderMenu::menu() {
         system(CLEAR);
         cout << "Rider Menu" << endl;
         cout << "1. Add Rider" << endl;
-        cout << "2. Add Race Results" << endl;
-        cout << "3. Add Sprint Race Results" << endl;
-        cout << "4. Delete Rider" << endl;
-        cout << "5. List Riders" << endl;
-        cout << "6. Delete ALL Riders" << endl;
-        cout << "7. Save Changes" << endl;
-        cout << "8. Exit" << endl;
+        cout << "2. Import Race Results from motosport.com" << endl;
+        cout << "3. Add Race Results" << endl;
+        cout << "4. Add Sprint Race Results" << endl;
+        cout << "5. Delete Rider" << endl;
+        cout << "6. List Riders" << endl;
+        cout << "7. Delete ALL Riders" << endl;
+        cout << "8. Save Changes" << endl;
+        cout << "9. Exit" << endl;
         cout << "Option: ";
         cin >> option;
         switch(option){
@@ -30,6 +31,12 @@ void RiderMenu::menu() {
                 saveChanges = addRider();
                 break;
             }
+
+            case AUTOMATIC_ADD_RACE_RESULTS: {
+                saveChanges = addRaceResultsAutomatic();
+                break;
+            }
+
             case ADD_RACE_RESULTS: {
                 saveChanges = addRaceResults();
                 break;
@@ -152,6 +159,117 @@ bool RiderMenu::addRaceResults() {
     }
     memberList->updateMembersRiders(riderList);
     return true;
+}
+
+bool RiderMenu::addRaceResultsAutomatic() {
+    system(CLEAR);
+    string url;
+    bool changes = false;
+
+    cout << "Add Race Results Automatic" << endl;
+    cout << "Paste the link of the race result from motorsport.com" << endl;
+    cout << "->";
+    cin >> url;
+
+    RaceResultScraper raceResultScraper = RaceResultScraper(riderList, url);
+    if(!raceResultScraper.get()){
+        //MUST CONVERT THESE TO AN ERROR MESSAGE INSIDE THE RIDERMENU OBJECT
+        cout << "Error retrieving results, be sure the link is correct" << endl;
+        clearBuffer();
+        enterToContinue();
+        return changes;
+    }
+
+    if(!raceResultScraper.saveHTML()){
+        cout << "Error creating the temporary html file" << endl;
+        clearBuffer();
+        enterToContinue();
+        return changes;
+    }
+
+    if(!raceResultScraper.parseHTML()){
+        cout << "Error reading the html file" << endl;
+        clearBuffer();
+        enterToContinue();
+        return changes;
+    }
+
+    cout << "Retrieved race results" << endl;
+    //be sure to free the rider list
+    bool error = false;
+    RiderList* tempRiderList = new RiderList();
+    RiderNode* tempRiderNode = new RiderNode();
+    Rider tempRider = Rider();
+    string tempNumber;
+    int tempPoints, tempPosition;
+    for(int i = 0; i < raceResultScraper.getRidersIndex(); i++){
+        tempNumber = raceResultScraper.getRider(i).getNumber();
+        tempPoints = raceResultScraper.getRider(i).getPoints();
+        tempPosition = raceResultScraper.getRider(i).getPosition();
+
+        tempRider.setNumber(tempNumber);
+        tempRiderNode = riderList->retrievePos(tempRider);
+
+        if(tempRiderNode == nullptr){
+            cout << "Couldn't find data for rider #" << tempRider.getNumber() << endl;
+            error = true;
+        } else {
+            tempRider = tempRiderNode->getData();
+            tempRider.setPoints(tempPoints);
+            tempRider.setPosition(tempPosition);
+            tempRiderList->insertOrdered(tempRider);
+        }
+    }
+
+    if(error){
+        cout << "Results wont be saved" << endl;
+        clearBuffer();
+        enterToContinue();
+
+        return changes;
+    }
+
+    system(CLEAR);
+    int confirmChanges;
+    cout << tempRiderList->toString();
+    cout << "1. Accept race result" << endl;
+    cout << "2. Cancel race result" << endl;
+    cout << "Option: ";
+    cin >> confirmChanges;
+    if(confirmChanges == 1){
+        changes = true;
+        for(int i = 0; i < raceResultScraper.getRidersIndex(); i++){
+            tempNumber = raceResultScraper.getRider(i).getNumber();
+            tempPoints = raceResultScraper.getRider(i).getPoints();
+
+            tempRider.setNumber(tempNumber);
+            tempRiderNode = riderList->retrievePos(tempRider);
+
+            if(tempRiderNode == nullptr){
+                cout << "Couldn't find data for rider #" << tempRider.getNumber() << endl;
+                error = true;
+            } else {
+                tempPoints += tempRiderNode->getData().getPoints();
+                tempRider = tempRiderNode->getData();
+                tempRider.setPoints(tempPoints);
+                tempRiderNode->setData(tempRider);
+            }
+        }
+    }
+
+    delete tempRiderList;
+
+    if(!raceResultScraper.deleteHTML()){
+        cout << "Error deleting the temporary html file" << endl;
+        clearBuffer();
+        enterToContinue();
+        return changes;
+    }
+
+    memberList->updateMembersRiders(riderList);
+    memberList->updateMembersPoints();
+
+    return changes;
 }
 
 bool RiderMenu::addSprintRaceResults() {

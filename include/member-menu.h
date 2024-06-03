@@ -17,6 +17,8 @@ class MemberMenu {
         RiderList* riderList;
         string seasonName;
         bool saveChanges;
+
+        //string errorMessage;
     public:
         MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName);
 

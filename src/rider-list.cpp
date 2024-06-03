@@ -28,7 +28,14 @@ RiderList::RiderList() :header(nullptr) {}
 RiderList::RiderList(RiderList &riderList) {}
 
 RiderList::~RiderList() {
-    delete header;
+    RiderNode* current = header->getNext();
+    RiderNode* prev = header;
+
+    while(current != nullptr){
+        delete prev;
+        prev = current;
+        current = current->getNext();
+    }
 }
 
 bool RiderList::isEmpty() {
@@ -236,21 +243,6 @@ string RiderList::toStringIndexed(){
     while(temp != nullptr){
         result += temp->getData().toStringIndexed(i);
         result += "\n";
-        temp = temp->getNext();
-        i++;
-    }
-
-    return result;
-}
-
-
-string* RiderList::toStringArray() {
-    string *result = new string;
-    RiderNode* temp(header);
-    int i = 0;
-
-    while(temp != nullptr){
-        result[i] = "\t" + temp->getData().toString();
         temp = temp->getNext();
         i++;
     }

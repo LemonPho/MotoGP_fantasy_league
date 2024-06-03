@@ -17,6 +17,8 @@ add_executable(MotoGP_fantasy_league
         include/menu.h
         src/menu.cpp
         src/util.cpp
+        include/race-result-scraper.h
+        src/race-result-scraper.cpp
         include/rider-node.h
         include/rider-list.h
         src/rider-node.cpp
@@ -29,5 +31,16 @@ add_executable(MotoGP_fantasy_league
         src/rider-menu.cpp)
 
 target_link_libraries(MotoGP_fantasy_league -static)
-
 target_include_directories(MotoGP_fantasy_league PRIVATE ./include)
+
+set(LibXml2_INCLUDE_DIR "C:/msys64/mingw64/include")
+set(LibXml2_LIBRARIES "C:/msys64/mingw64/lib/libxml2.dll.a")
+set(CURL_INCLUDE_DIR "C:/msys64/mingw64/include")
+set(CURL_LIBRARIES "C:/msys64/mingw64/lib/libcurl.dll.a")
+
+include_directories(${CURL_INCLUDE_DIR})
+include_directories(${LibXml2_INCLUDE_DIR})
+link_directories("C:/msys64/mingw64/lib")
+
+target_link_libraries(MotoGP_fantasy_league ${CURL_LIBRARIES})
+target_link_libraries(MotoGP_fantasy_league ${LibXml2_LIBRARIES})
