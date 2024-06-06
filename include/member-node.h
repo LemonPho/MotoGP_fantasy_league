@@ -23,7 +23,7 @@ public:
     void setPrevious(MemberNode* previous);
 
     Member getData();
-    Member* getDataPointer();
+    Member* getDataReference();
     MemberNode* getNext();
     MemberNode* getPrevious();
 

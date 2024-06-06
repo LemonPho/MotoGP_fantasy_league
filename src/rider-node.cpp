@@ -1,22 +1,22 @@
 #include "rider-node.h"
 
 RiderNode::RiderNode() {
-    data = Rider();
+    data = RiderManager();
     next = nullptr;
     previous = nullptr;
 }
 
-RiderNode::RiderNode(const Rider &rider) {
-    data = rider;
+RiderNode::RiderNode(const RiderManager &riderManager) {
+    data = riderManager;
     next = nullptr;
     previous = nullptr;
 }
 
-Rider RiderNode::getData() {
+RiderManager RiderNode::getData() {
     return data;
 }
 
-Rider* RiderNode::getDataReference() {
+RiderManager* RiderNode::getDataReference() {
     return &data;
 }
 
@@ -28,7 +28,7 @@ RiderNode *RiderNode::getPrevious() {
     return previous;
 }
 
-void RiderNode::setData(const Rider &data) {
+void RiderNode::setData(const RiderManager &data) {
     this->data = data;
 }
 

@@ -23,35 +23,46 @@ int RiderList::riderCount() {
     return i;
 }
 
-RiderList::RiderList() :header(nullptr) {}
+RiderList::RiderList() :header(nullptr), errorMessage(nullptr){}
 
-RiderList::RiderList(RiderList &riderList) {}
+RiderList::RiderList(RiderNode *header, ErrorMessage *errorMessage) {
+    this->header = header;
+    this->errorMessage = errorMessage;
+}
 
 RiderList::~RiderList() {
-    RiderNode* current = header->getNext();
-    RiderNode* prev = header;
+    RiderNode* current = header;
+    RiderNode* prev = new RiderNode();
 
     while(current != nullptr){
-        delete prev;
         prev = current;
         current = current->getNext();
+        delete prev;
     }
+}
+
+void RiderList::setErrorMessage(ErrorMessage *errorMessage) {
+    this->errorMessage = errorMessage;
 }
 
 bool RiderList::isEmpty() {
     return header == nullptr;
 }
 
-void RiderList::insertData(RiderNode *riderNode, const Rider &data) {
+void RiderList::insertData(RiderNode *riderNode, const RiderManager &data) {
     if(riderNode != nullptr && !isValidPos(riderNode)){
-        cout << "Error when inserting data" << endl;
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage("Error when inserting data\n");
+        }
         throw exception();
     }
 
     RiderNode* toInsert(new RiderNode(data));
 
     if(toInsert == nullptr){
-        cout << "No more ram space available" << endl;
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage("No more ram space available");
+        }
         throw exception();
     }
 
@@ -73,11 +84,11 @@ void RiderList::insertData(RiderNode *riderNode, const Rider &data) {
 
 }
 
-void RiderList::insertOrdered(Rider &data) {
+void RiderList::insertOrdered(RiderManager &data) {
     RiderNode* temp(header);
     RiderNode* prev(nullptr);
 
-    while(temp != nullptr && data <= temp->getData()){
+    while(temp != nullptr && data.getPoints() <= temp->getData().getPoints()){
         prev = temp;
         temp = temp->getNext();
     }
@@ -92,7 +103,9 @@ void RiderList::deleteData(RiderNode *riderNode) {
     RiderNode* trail(nullptr);
 
     if(!isValidPos(riderNode)){
-        cout << "Rider not found" << endl;
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage("Rider not found\n");
+        }
         getchar();
     }
     if(temp->getNext() == nullptr && temp == riderNode){
@@ -166,32 +179,37 @@ RiderNode *RiderList::getNextPos(RiderNode* riderNode) {
     return riderNode->getNext();
 }
 
-RiderNode *RiderList::retrievePos(Rider &rider) {
+RiderNode *RiderList::retrievePos(RiderManager &riderManager) {
     RiderNode* temp(header);
     RiderNode* last(getLastPos());
 
     if(temp == last){
-        if(temp->getData().getNumber() == rider.getNumber()){
+        if(temp->getData() == riderManager){
             return temp;
         } else {
+            if(errorMessage != nullptr){
+                errorMessage->addErrorMessage("Rider with #" + riderManager.getRider().getNumber() + " was not found\n");
+            }
             return nullptr;
         }
     } else {
         while(temp != nullptr){
-            if(temp->getData().getNumber() == rider.getNumber()){
+            if(temp->getData() == riderManager){
                 return temp;
             }
             temp = temp->getNext();
         }
+    }
+
+    if(errorMessage != nullptr){
+        errorMessage->addErrorMessage("Rider with #" + riderManager.getRider().getNumber() + " was not found\n");
     }
     return nullptr;
 }
 
 RiderNode *RiderList::retrievePosIndex(int index) {
     RiderNode* temp(header);
-    int riderCount = this->riderCount();
-
-    if(index > riderCount){
+    if(index > riderCount() || index < 0){
         return nullptr;
     }
 
@@ -202,13 +220,14 @@ RiderNode *RiderList::retrievePosIndex(int index) {
     return temp;
 }
 
-Rider RiderList::retrieveData(RiderNode *riderNode) {
+RiderManager RiderList::retrieveData(RiderNode *riderNode) {
     RiderNode* temp(header);
     RiderNode* last(getLastPos());
 
     if(!isValidPos(riderNode)){
-        cout << "Error: rider not found" << endl;
-        getchar();
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage("Error: rider not found\n");
+        }
     }
 
     return riderNode->getData();
@@ -275,7 +294,9 @@ void RiderList::writeToDisk(const string &fileName) {
     string tempString;
 
     if(!file.is_open()){
-        cout << "Couldn't open " << fileName << endl;
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage("Couldn't open " + fileName + "\n");
+        }
         return;
     }
     while(temp != nullptr){
@@ -288,17 +309,27 @@ void RiderList::writeToDisk(const string &fileName) {
 
 RiderList *RiderList::copyFromDisk(const std::string &fileName) {
     ifstream file(fileName);
-    RiderList* riderList = new RiderList();
+    RiderList* riderList = new RiderList(nullptr, errorMessage);
     string tempString;
 
     string firstName, lastName, country, team, number;
     int points;
     bool chosen;
-    Rider *tempRider = new Rider();
+    Rider tempRider;
+    RiderManager tempRiderManager;
+
+    deleteAll();
+
+    if(!file.is_open()){
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage("There was an error opening the rider data file\n");
+            return new RiderList(nullptr, errorMessage);
+        }
+    }
 
     getline(file, tempString, '|');
     if(tempString.empty() || tempString == " "){
-        return new RiderList();
+        return new RiderList(nullptr, errorMessage);
     }
     while(tempString != " " && !tempString.empty()){
         number = tempString;
@@ -313,23 +344,29 @@ RiderList *RiderList::copyFromDisk(const std::string &fileName) {
         getline(file, tempString, '|');
         points = stoi(tempString);
         getline(file, tempString);
-        tempRider->setData(firstName, lastName, number, country, team, points);
-        riderList->insertOrdered(*tempRider);
+        tempRider.setData(firstName, lastName, number, country, team);
+        tempRiderManager.setRider(tempRider);
+        tempRiderManager.setPoints(points);
+        riderList->insertOrdered(tempRiderManager);
         getline(file, tempString, '|');
     }
-    delete tempRider;
+
+    riderList->generatePositions();
+
     return riderList;
 }
 
 void RiderList::modifyFromDisk(const string &fileName) {
+    deleteAll();
+
     ifstream file(fileName);
-    RiderList* riderList = new RiderList();
     string tempString;
 
     string firstName, lastName, country, team, number;
     int points;
     bool chosen;
-    Rider *tempRider = new Rider();
+    Rider tempRider;
+    RiderManager tempRiderEntry;
 
     getline(file, tempString, '|');
     if(tempString.empty() || tempString == " "){
@@ -349,31 +386,105 @@ void RiderList::modifyFromDisk(const string &fileName) {
         getline(file, tempString, '|');
         points = stoi(tempString);
         getline(file, tempString);
-        tempRider->setData(firstName, lastName, number, country, team, points);
-        insertOrdered(*tempRider);
+        tempRider.setData(firstName, lastName, number, country, team);
+        tempRiderEntry.setRider(tempRider);
+        tempRiderEntry.setPoints(points);
+        insertOrdered(tempRiderEntry);
         getline(file, tempString, '|');
     }
-    delete tempRider;
+
+    generatePositions();
+}
+
+//when this function is run, it generates a new list of the same elements,
+//unlike operator= where it just copies the node references, basically the same list
+RiderList &RiderList::deepCopy(RiderList *riderList){
+    RiderNode *sourceHeader(riderList->getFirstPos());
+    RiderNode *sourceFooter(riderList->getLastPos());
+
+    deleteAll();
+
+    if(!sourceHeader){
+        this->header = nullptr;
+        return *this;
+    }
+
+    if(sourceHeader == sourceFooter){
+        this->header = new RiderNode(*(sourceHeader->getDataReference()));
+        return *this;
+    }
+
+    header = new RiderNode(*(sourceHeader->getDataReference()));
+    RiderNode* node = header;
+    RiderNode* prev = new RiderNode();
+    sourceHeader = sourceHeader->getNext();
+
+    while(sourceHeader){
+        RiderNode *newNode = new RiderNode(*(sourceHeader->getDataReference()));
+        node->setNext(newNode);
+        prev = node;
+        node = node->getNext();
+        node->setPrevious(prev);
+        sourceHeader = sourceHeader->getNext();
+    }
+
+    if(riderList->errorMessage != nullptr){
+        this->errorMessage = riderList->errorMessage;
+    } else {
+        this->errorMessage = nullptr;
+    }
+
+    return *this;
 }
 
 RiderList &RiderList::operator=(RiderList *riderList) {
-    RiderNode* trailDest(nullptr);
-    RiderNode* trailSrc(nullptr);
-    RiderNode* tempDest(header);
-    RiderNode* tempSrc(riderList->getFirstPos());
-    RiderNode* lastDest(getLastPos());
-    RiderNode* lastSrc(riderList->getLastPos());
+    RiderNode *sourceHeader(riderList->getFirstPos());
+    RiderNode *sourceFooter(riderList->getLastPos());
 
-    if(tempSrc == lastSrc){
-        tempSrc = tempDest;
+    deleteAll();
+
+    if(!sourceHeader){
+        this->header = nullptr;
         return *this;
     }
-    while(tempSrc != nullptr){
-        trailDest = tempDest;
-        trailSrc = tempSrc;
-        tempSrc = tempSrc->getNext();
-        tempDest = tempDest->getNext();
-        trailDest = trailSrc;
+
+    if(sourceHeader == sourceFooter){
+        this->header = sourceHeader;
+        return *this;
     }
+
+    RiderNode* node = header;
+    RiderNode* prev;
+    sourceHeader = sourceHeader->getNext();
+
+    while(sourceHeader != nullptr){
+        prev = node;
+        node->setNext(sourceHeader);
+        node = node->getNext();
+        node->setPrevious(prev);
+        sourceHeader = sourceHeader->getNext();
+    }
+
+    if(riderList->errorMessage){
+        this->errorMessage = riderList->errorMessage;
+    } else {
+        this->errorMessage = nullptr;
+    }
+
     return *this;
+}
+
+vector<RiderManager> RiderList::copyToVector(){
+    RiderNode* node = header;
+    vector<RiderManager> result;
+    RiderManager tempRiderManager;
+
+    while(node != nullptr){
+        tempRiderManager = RiderManager();
+        tempRiderManager = node->getData();
+        result.push_back(tempRiderManager);
+        node = node->getNext();
+    }
+
+    return result;
 }

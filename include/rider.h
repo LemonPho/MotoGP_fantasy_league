@@ -25,30 +25,19 @@ private:
     string number;
     string country;
     string team;
-    int points;
-    int position;
 public:
     //functions
     Rider();
 
-    bool setData(string &firstName, string &lastName, string &number, string &country, string &team, int &points);
+    bool setData(string &firstName, string &lastName, string &number, string &country, string &team);
     void setNumber(string &number);
-    void setPoints(int &points);
-    void setPosition(int &position);
+    void setFirstName(string &firstName);
 
     string getFirstName();
     string getLastName();
     string getNumber();
     string getCountry();
     string getTeam();
-    int getPoints();
-    int getPosition();
-
-    string toString();
-    string toStringIndexed(int index);
-    string toStringSmall(bool spacing);
-    string toStringSmallFullName();
-    string toStringDisk();
 
     Rider& operator = (const Rider &rider);
     bool operator == (const Rider &rider);

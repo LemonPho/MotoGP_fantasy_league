@@ -3,29 +3,37 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+
 #include "rider-node.h"
+#include "error-message.h"
+#include "rider-manager.h"
 
 class RiderList {
 private:
     RiderNode* header;
+    ErrorMessage* errorMessage;
+
     bool isValidPos(RiderNode* riderNode);
 public:
     RiderList();
-    RiderList(RiderList& riderList);
+    RiderList(RiderNode *header, ErrorMessage *errorMessage);
     ~RiderList();
+
+    void setErrorMessage(ErrorMessage *errorMessage);
 
     bool isEmpty();
     int riderCount();
-    void insertData(RiderNode* riderNode, const Rider &data);
-    void insertOrdered(Rider& data);
+    void insertData(RiderNode* riderNode, const RiderManager &data);
+    void insertOrdered(RiderManager& data);
     void deleteData(RiderNode* riderNode);
     void generatePositions(); //should be called after riders are inserted
     RiderNode* getFirstPos();
     RiderNode* getLastPos();
     RiderNode* getNextPos(RiderNode *riderNode);
-    RiderNode* retrievePos(Rider& rider);
+    RiderNode* retrievePos(RiderManager& riderManager);
     RiderNode* retrievePosIndex(int index);
-    Rider retrieveData(RiderNode* riderNode);
+    RiderManager retrieveData(RiderNode* riderNode);
     string toString();
     string toStringIndexed();
     void deleteAll();
@@ -33,6 +41,9 @@ public:
     RiderList* copyFromDisk(const string& fileName);
     void modifyFromDisk(const string &fileName);
 
+    vector<RiderManager> copyToVector();
+
+    RiderList& deepCopy(RiderList *riderList);
     RiderList& operator = (RiderList* riderList);
 };
 

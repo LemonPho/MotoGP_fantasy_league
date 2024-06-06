@@ -64,7 +64,7 @@ void SeasonMenu::createSeason() {
     readFile.close();
     ofstream writeFile(PROGRAM_DATA, ios::out);
     cout << "Creating season" << endl;
-    cout << "Input the season name (change spaces for -): ";
+    cout << "Input the season name (replace spaces with -): ";
     cin.ignore();getline(cin, seasonName);
     while(!finish) {
         int j = 1;
@@ -86,6 +86,7 @@ void SeasonMenu::createSeason() {
     cin >> option;
     ofstream file2(seasonName + '-' + MEMBER_DATA, ios::out);
     ofstream file3(seasonName + '-' + RIDER_DATA, ios::out);
+    ofstream file4(seasonName + '-' + RACE_DATA, ios::out);
     int j;
     if (option == 'S' || option == 's') {
         seasons[0] = seasonName;
@@ -139,9 +140,6 @@ void SeasonMenu::changeSeason() {
             validSelection = true;
         }
     }
-
-    riderList->deleteAll();
-    memberList->deleteAll();
 
     riderList->modifyFromDisk(seasons[selection-1] + '-' + RIDER_DATA);
     riderList->generatePositions();

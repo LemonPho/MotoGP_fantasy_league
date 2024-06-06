@@ -2,9 +2,12 @@
 #define MOTOGP_FANTASY_LEAGUE_RIDER_MENU_H
 
 #include <iostream>
+
+#include "race-results-menu.h"
 #include "menu.h"
 #include "member-menu.h"
 #include "race-result-scraper.h"
+#include "error-message.h"
 
 class RiderMenu {
 private:
@@ -12,22 +15,19 @@ private:
     RiderList* riderList;
     string seasonName;
     bool saveChanges;
+
+    ErrorMessage *errorMessage;
 public:
-    RiderMenu(MemberList* memberList, RiderList *riderList, string &seasonName);
+    RiderMenu(MemberList* memberList, RiderList *riderList, string &seasonName, ErrorMessage *errorMessage);
 
     void menu();
     bool addRider();
-    bool addRaceResults();
-    bool addRaceResultsAutomatic();
-    bool addSprintRaceResults();
     bool deleteRider();
 };
 
 enum{
-    ADD_RIDER = 1,
-    AUTOMATIC_ADD_RACE_RESULTS,
-    ADD_RACE_RESULTS,
-    ADD_SPRINT_RACE_RESULTS,
+    RACE_RESULTS_MENU = 1,
+    ADD_RIDER,
     DELETE_RIDER,
     LIST_RIDERS,
     DELETE_ALL_RIDERS,

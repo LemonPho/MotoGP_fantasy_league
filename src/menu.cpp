@@ -4,8 +4,9 @@
 Menu::Menu() {
     system(CLEAR);
     ifstream file(PROGRAM_DATA);
-    memberList = new MemberList();
-    riderList = new RiderList();
+    memberErrorMessage = ErrorMessage();
+    memberList = new MemberList(nullptr, &memberErrorMessage);
+    riderList = new RiderList(nullptr, &riderErrorMessage);
 
     //if the file exists, we start program normally
     if(file.is_open()){
@@ -70,14 +71,20 @@ void Menu::menu() {
         switch(option){
             case SEASONS_MANAGER: {
                 new SeasonMenu(memberList, riderList, &seasonName);
+                memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
+                riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
                 break;
             }
             case MEMBERS_MANAGER: {
-                new MemberMenu(memberList, riderList, seasonName);
+                new MemberMenu(memberList, riderList, seasonName, &memberErrorMessage);
+                memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
+                riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
                 break;
             }
             case RIDERS_MANAGER: {
-                new RiderMenu(memberList, riderList, seasonName);
+                new RiderMenu(memberList, riderList, seasonName, &riderErrorMessage);
+                memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
+                riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
                 break;
             }
             case EXIT_MENU: {

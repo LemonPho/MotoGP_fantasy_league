@@ -6,8 +6,8 @@
 #include <conio.h>
 #include <string>
 
-
 #include "member-list.h"
+#include "error-message.h"
 
 using namespace std;
 
@@ -18,9 +18,9 @@ class MemberMenu {
         string seasonName;
         bool saveChanges;
 
-        //string errorMessage;
+        ErrorMessage *errorMessage;
     public:
-        MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName);
+        MemberMenu(MemberList *memberList, RiderList *riderList, string &seasonName, ErrorMessage *errorMessage);
 
         void menu();
         bool addMember();

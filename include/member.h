@@ -5,6 +5,7 @@
 
 #include "rider.h"
 #include "rider-list.h"
+#include "error-message.h"
 
 using namespace std;
 
@@ -18,12 +19,14 @@ private:
     RiderList *riderList;
     int points;
 
+    ErrorMessage *errorMessage;
 public:
     Member();
-    Member(const Member &member);
+    Member(ErrorMessage *errorMessage);
+    Member(const Member &member, ErrorMessage *errorMessage);
 
     bool setUserName(string &userName);
-    void insertRider(Rider &rider);
+    void insertRider(RiderManager &rider);
     void setRiderList(RiderList* riderList);
     void setPoints(int &points);
 

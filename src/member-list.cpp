@@ -1,7 +1,5 @@
 #include "member-list.h"
 
-#include <utility>
-
 bool MemberList::isValidPos(MemberNode *memberNode) {
     MemberNode* temp(header);
 
@@ -16,14 +14,18 @@ bool MemberList::isValidPos(MemberNode *memberNode) {
 
 MemberList::MemberList() : header(nullptr), errorMessage(){}
 
-MemberList::MemberList(MemberNode* header, string errorMessage){
+MemberList::MemberList(MemberNode* header, ErrorMessage *errorMessage){
     this->header = header;
-    this->errorMessage = std::move(errorMessage);
+    this->errorMessage = errorMessage;
 }
 
 MemberList::~MemberList() {
     deleteAll();
     delete header;
+}
+
+void MemberList::setErrorMessage(ErrorMessage *errorMessage) {
+    this->errorMessage = errorMessage;
 }
 
 bool MemberList::isEmpty() {
@@ -32,7 +34,9 @@ bool MemberList::isEmpty() {
 
 void MemberList::insertData(MemberNode *memberNode, const Member &data) {
     if(memberNode != nullptr && !isValidPos(memberNode)){
-        cout << "Invalid position when inserting member, try again after restart" << endl;
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage("Invalid position when inserting member, try again after restart\n");
+        }
         throw exception();
     }
 
@@ -43,7 +47,9 @@ void MemberList::insertData(MemberNode *memberNode, const Member &data) {
     MemberNode* toInsert(new MemberNode(data));
 
     if(toInsert == nullptr){
-        cout << "No more space found for program, maybe out of system ram" << endl;
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage("No more space found for program, maybe out of system ram\n");
+        }
         throw exception();
     }
 
@@ -60,7 +66,9 @@ void MemberList::deleteData(MemberNode *memberNode) {
     MemberNode* temp(header);
 
     if(memberNode == nullptr){
-        cout << "Error when deleting, member doesn't exist" << endl;
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage("Error when deleting, member doesn't exist\n");
+        }
         throw exception();
     } else if(temp == nullptr){
         return;
@@ -89,22 +97,6 @@ void MemberList::deleteData(MemberNode *memberNode) {
             temp->getPrevious()->setNext(temp->getNext());
             free(memberNode);
         }
-    }
-}
-
-string MemberList::getErrorMessage() {
-    return errorMessage;
-}
-
-void MemberList::setErrorMessage(string errorMessage) {
-    this->errorMessage = std::move(errorMessage);
-}
-
-void MemberList::addErrorMessage(string errorMessage) {
-    if(!this->errorMessage.empty()){
-        this->errorMessage += errorMessage;
-    } else {
-        this->errorMessage = errorMessage;
     }
 }
 
@@ -150,7 +142,8 @@ MemberNode *MemberList::retrievePos(const Member &data) {
 void MemberList::retrieveMemberPicks(RiderList *riderList) {
     MemberNode* tempMemberNode(header);
     Member tempMember;
-    Rider tempRookie;
+    RiderManager tempRookie;
+    RiderManager riderEntry;
     Rider rider;
     string tempNumber;
     int tempMemberPoints=0;
@@ -166,16 +159,19 @@ void MemberList::retrieveMemberPicks(RiderList *riderList) {
         while(tempRiderNode1 != nullptr){
             //get full data of each rider, same method as rookie
             RiderNode* tempRiderNode2;
-            tempNumber = tempRiderNode1->getData().getNumber();
+            tempNumber = tempRiderNode1->getData().getRider().getNumber();
             rider.setNumber(tempNumber);
-            tempRiderNode2 = riderList->retrievePos(rider);
+            riderEntry.setRider(rider);
+            tempRiderNode2 = riderList->retrievePos(riderEntry);
             if(tempRiderNode2 == nullptr){
-                //ADD TO MENU ERROR MESSAGE ATTRIBUTE
-                cout << "Rider #" << tempNumber << " from " << tempMember.getUserName() << " picks not found" << endl;
+                if(errorMessage != nullptr){
+                    string tempMessage = "Rider #" + tempNumber + " from " + tempMember.getUserName() + " picks not found\n";
+                    errorMessage->addErrorMessage(tempMessage);
+                }
             } else {
-                rider = tempRiderNode2->getData();
-                tempMemberPoints += rider.getPoints();
-                tempRiderNode1->setData(rider);
+                riderEntry = tempRiderNode2->getData();
+                tempMemberPoints += riderEntry.getPoints();
+                tempRiderNode1->setData(riderEntry);
                 tempRiderNode1 = tempRiderNode1->getNext();
             }
         }
@@ -209,6 +205,7 @@ void MemberList::updateMembersPoints() {
 void MemberList::updateMembersRiders(RiderList* riderList) {
     int totalPoints;
     MemberNode* tempMemberNode(header);
+    RiderManager tempRiderManager;
     Rider tempRider;
     Member tempMember;
     RiderNode* tempRiderNode1;
@@ -219,16 +216,16 @@ void MemberList::updateMembersRiders(RiderList* riderList) {
         tempMember = tempMemberNode->getData();
         tempRiderNode1 = tempMember.getRiderList()->getFirstPos();
         while(tempRiderNode1 != nullptr){
-            tempRider = tempRiderNode1->getData();
+            tempRiderManager = tempRiderNode1->getData();
             tempRiderNode2 = riderList->getFirstPos();
             while(tempRiderNode2 != nullptr){
-                if(tempRiderNode2->getData().getNumber() == tempRider.getNumber()){
-                    tempRider = tempRiderNode2->getData();
+                if(tempRiderNode2->getData() == tempRiderManager){
+                    tempRiderManager = tempRiderNode2->getData();
                     break;
                 }
                 tempRiderNode2 = tempRiderNode2->getNext();
             }
-            tempRiderNode1->setData(tempRider);
+            tempRiderNode1->setData(tempRiderManager);
             totalPoints += tempRiderNode1->getData().getPoints();
             tempRiderNode1 = tempRiderNode1->getNext();
         }
@@ -256,8 +253,8 @@ MemberNode *MemberList::split(MemberNode *head) {
 
 MemberNode *MemberList::tieBreaker(MemberNode *firstMember, MemberNode *secondMember, RiderNode *riderHead) {
     //rider picks of each player (first, second)
-    RiderNode* firstPicks = firstMember->getDataPointer()->getRiderList()->getFirstPos();
-    RiderNode* secondPicks = secondMember->getDataPointer()->getRiderList()->getFirstPos();
+    RiderNode* firstPicks = firstMember->getDataReference()->getRiderList()->getFirstPos();
+    RiderNode* secondPicks = secondMember->getDataReference()->getRiderList()->getFirstPos();
     RiderNode* tempRider = riderHead;
     bool samePicks = true;
     int i = 1;
@@ -282,8 +279,8 @@ MemberNode *MemberList::tieBreaker(MemberNode *firstMember, MemberNode *secondMe
         tempRider = tempRider->getNext();
     }
 
-    firstPicks = firstMember->getDataPointer()->getRiderList()->getFirstPos();
-    secondPicks = secondMember->getDataPointer()->getRiderList()->getFirstPos();
+    firstPicks = firstMember->getDataReference()->getRiderList()->getFirstPos();
+    secondPicks = secondMember->getDataReference()->getRiderList()->getFirstPos();
     //check to see if one of the members has a rider in the correct position
     //only goes to getNext to not lcheck the independant rider, as they would be read as 6th position instead of idnependant
     while(secondPicks->getNext() != nullptr && firstPicks->getNext() != nullptr){
@@ -306,13 +303,13 @@ MemberNode *MemberList::tieBreaker(MemberNode *firstMember, MemberNode *secondMe
         secondPicks = secondPicks->getNext();
     }
 
-    firstPicks = firstMember->getDataPointer()->getRiderList()->getFirstPos();
-    secondPicks = secondMember->getDataPointer()->getRiderList()->getFirstPos();
+    firstPicks = firstMember->getDataReference()->getRiderList()->getFirstPos();
+    secondPicks = secondMember->getDataReference()->getRiderList()->getFirstPos();
     //iterate until points are not the same
     while((firstPicks->getData().getPoints() == secondPicks->getData().getPoints()) && (firstPicks->getNext() != nullptr && firstPicks->getNext() != nullptr)){
         firstPicks = firstPicks->getNext();
         secondPicks = secondPicks->getNext();
-        if(secondPicks->getData().getNumber() != firstPicks->getData().getNumber()){
+        if(secondPicks->getData() != firstPicks->getData()){
             samePicks = false;
         }
     }
@@ -322,7 +319,9 @@ MemberNode *MemberList::tieBreaker(MemberNode *firstMember, MemberNode *secondMe
     }
 
     if(samePicks){
-        errorMessage += firstMember->getData().getUserName() + " and " + secondMember->getData().getUserName() + " have the same rider picks!\n";
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage(firstMember->getData().getUserName() + " and " + secondMember->getData().getUserName() + " have the same rider picks!\n");
+        }
     }
 
     //conditionals to find which player has a rider with more points
@@ -400,7 +399,7 @@ string MemberList::toStringSmallHTML() {
     MemberNode* tempMemberNode(header);
     RiderNode* tempRiderNode = new RiderNode();
     Member tempMember;
-    Rider tempRider;
+    RiderManager tempRiderManager;
     string result = "";
 
     int i = 1;
@@ -419,9 +418,9 @@ string MemberList::toStringSmallHTML() {
         result += "</td>";
         tempRiderNode = tempMember.getRiderList()->getFirstPos();
         while(tempRiderNode != nullptr){
-            tempRider = tempRiderNode->getData();
+            tempRiderManager = tempRiderNode->getData();
             result += "<td>";
-            result += tempRider.toStringSmall(false);
+            result += tempRiderManager.toStringSmall(false);
             tempRiderNode = tempRiderNode->getNext();
             result += "</td>";
         }
@@ -446,13 +445,16 @@ void MemberList::deleteAll() {
     header = nullptr;
 }
 
+//should create a toStringDisk function
 void MemberList::writeToDisk(const string &fileName) {
     ofstream file(fileName, ios::out);
     MemberNode* temp(header);
     string tempString;
 
     if(!file.is_open()){
-        cout << "Couldn't open " << fileName << endl;
+        if(errorMessage != nullptr){
+            errorMessage->addErrorMessage("Couldn't open " + fileName + "\n");
+        }
         return;
     }
     while(temp != nullptr){
@@ -460,7 +462,7 @@ void MemberList::writeToDisk(const string &fileName) {
         tempString = temp->getData().getUserName();
         tempString += "|";
         while(tempRiderNode != nullptr) {
-            tempString += tempRiderNode->getData().getNumber();
+            tempString += tempRiderNode->getData().getRider().getNumber();
             tempString += "|";
             tempRiderNode = tempRiderNode->getNext();
         }
@@ -472,11 +474,12 @@ void MemberList::writeToDisk(const string &fileName) {
 
 MemberList *MemberList::copyFromDisk(const string &fileName) {
     ifstream file(fileName);
-    MemberList *memberList = new MemberList();
+    MemberList *memberList = new MemberList(nullptr, errorMessage);
     string tempString;
 
     string userName, rookieNumber;
     Rider tempRider;
+    RiderManager tempRiderManager;
     int pointsMember=0;
     Member tempMember;
 
@@ -493,7 +496,8 @@ MemberList *MemberList::copyFromDisk(const string &fileName) {
             getline(file, tempString, '|');
             number = tempString;
             tempRider.setNumber(number);
-            tempMember.insertRider(tempRider);
+            tempRiderManager.setRider(tempRider);
+            tempMember.insertRider(tempRiderManager);
         }
         tempMember.setUserName(userName);
         tempMember.setPoints(pointsMember);
@@ -511,6 +515,7 @@ void MemberList::modifyFromDisk(const std::string &fileName) {
 
     string userName, rookieNumber;
     Rider tempRider;
+    RiderManager tempRiderManager;
     int pointsMember=0;
     Member tempMember;
 
@@ -529,7 +534,8 @@ void MemberList::modifyFromDisk(const std::string &fileName) {
             getline(file, tempString, '|');
             number = tempString;
             tempRider.setNumber(number);
-            tempMember.insertRider(tempRider);
+            tempRiderManager.setRider(tempRider);
+            tempMember.insertRider(tempRiderManager);
         }
         tempMember.setUserName(userName);
         tempMember.setPoints(pointsMember);
@@ -538,4 +544,80 @@ void MemberList::modifyFromDisk(const std::string &fileName) {
         getline(file, tempString, '|');
         tempMember = Member();
     }
+}
+
+MemberList& MemberList::deepCopy(MemberList *memberList) {
+    MemberNode *sourceHeader(memberList->getFirstPos());
+    MemberNode *sourceFooter(memberList->getLastPos());
+
+    deleteAll();
+
+    if(!sourceHeader){
+        this->header = nullptr;
+        return *this;
+    }
+
+    if(sourceHeader == sourceFooter){
+        this->header = new MemberNode(*(sourceHeader->getDataReference()));
+        return *this;
+    }
+
+    header = new MemberNode(*(sourceHeader->getDataReference()));
+    MemberNode* node = header;
+    MemberNode* prev = new MemberNode();
+    sourceHeader = sourceHeader->getNext();
+
+    while(sourceHeader){
+        MemberNode *newNode = new MemberNode(*(sourceHeader->getDataReference()));
+        node->setNext(newNode);
+        prev = node;
+        node = node->getNext();
+        node->setPrevious(prev);
+        sourceHeader = sourceHeader->getNext();
+    }
+
+    if(memberList->errorMessage != nullptr){
+        this->errorMessage = memberList->errorMessage;
+    } else {
+        this->errorMessage = nullptr;
+    }
+
+    return *this;
+}
+
+MemberList& MemberList::operator=(MemberList *memberList) {
+    MemberNode *sourceHeader(memberList->getFirstPos());
+    MemberNode *sourceFooter(memberList->getLastPos());
+
+    deleteAll();
+
+    if(!sourceHeader){
+        this->header = nullptr;
+        return *this;
+    }
+
+    if(sourceHeader == sourceFooter){
+        this->header = sourceHeader;
+        return *this;
+    }
+
+    MemberNode* node = header;
+    MemberNode* prev;
+    sourceHeader = sourceHeader->getNext();
+
+    while(sourceHeader != nullptr){
+        prev = node;
+        node->setNext(sourceHeader);
+        node = node->getNext();
+        node->setPrevious(prev);
+        sourceHeader = sourceHeader->getNext();
+    }
+
+    if(memberList->errorMessage){
+        this->errorMessage = memberList->errorMessage;
+    } else {
+        this->errorMessage = nullptr;
+    }
+
+    return *this;
 }

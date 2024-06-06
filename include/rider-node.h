@@ -3,21 +3,22 @@
 
 #include <iostream>
 #include "rider.h"
+#include "rider-manager.h"
 
 class RiderNode {
 private:
-    Rider data;
+    RiderManager data;
     RiderNode* next;
     RiderNode* previous;
 public:
     RiderNode();
-    RiderNode(const Rider &rider);
+    explicit RiderNode(const RiderManager &riderManager);
 
-    Rider getData();
-    Rider* getDataReference();
+    RiderManager getData();
+    RiderManager* getDataReference();
     RiderNode* getNext();
     RiderNode* getPrevious();
-    void setData(const Rider &data);
+    void setData(const RiderManager &data);
     void setNext(RiderNode* riderNode);
     void setPrevious(RiderNode* riderNode);
 };

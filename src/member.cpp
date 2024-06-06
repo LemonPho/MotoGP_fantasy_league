@@ -1,15 +1,24 @@
 #include "member.h"
 
-Member::Member() {
+Member::Member(){
     userName = "";
     riderList = new RiderList();
     points = 0;
+    errorMessage = nullptr;
 }
 
-Member::Member(const Member &member) {
+Member::Member(ErrorMessage *errorMessage) {
+    userName = "";
+    riderList = new RiderList(nullptr, errorMessage);
+    points = 0;
+    this->errorMessage = errorMessage;
+}
+
+Member::Member(const Member &member, ErrorMessage *errorMessage) {
     this->userName = member.userName;
     this->riderList = member.riderList;
     this->points = member.points;
+    this->errorMessage = errorMessage;
 }
 
 bool Member::setUserName(string &userName) {
@@ -20,7 +29,7 @@ bool Member::setUserName(string &userName) {
     return true;
 }
 
-void Member::insertRider(Rider &rider) {
+void Member::insertRider(RiderManager &rider) {
     RiderNode* temp(riderList->getFirstPos());
     if(temp == nullptr){
         riderList->insertData(temp, rider);

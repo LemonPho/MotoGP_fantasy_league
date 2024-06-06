@@ -6,25 +6,26 @@
 
 #include "member-node.h"
 #include "rider-list.h"
+#include "error-message.h"
 
 using namespace std;
 
 class MemberList {
     MemberNode* header;
-    string errorMessage;
+    ErrorMessage *errorMessage;
+
     bool isValidPos(MemberNode* memberNode);
 public:
 
     MemberList();
-    MemberList(MemberNode* header, string errorMessage);
+    MemberList(MemberNode* header, ErrorMessage *errorMessage);
     ~MemberList();
+
+    void setErrorMessage(ErrorMessage *errorMessage);
 
     bool isEmpty();
     void insertData(MemberNode* memberNode, const Member& data);
     void deleteData(MemberNode* memberNode);
-    string getErrorMessage();
-    void setErrorMessage(string errorMessage);
-    void addErrorMessage(string errorMessage);
     MemberNode* getFirstPos();
     MemberNode* getLastPos();
     MemberNode* getNextPos(MemberNode *memberNode);
@@ -43,6 +44,9 @@ public:
     void writeToDisk(const string &fileName);
     MemberList* copyFromDisk(const string &fileName);
     void modifyFromDisk(const string &fileName);
+
+    MemberList& deepCopy(MemberList *memberList);
+    MemberList& operator=(MemberList *memberList);
 };
 
 #endif //MOTOGP_FANTASY_LEAGUE_MEMBER_LIST_H

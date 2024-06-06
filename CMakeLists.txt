@@ -28,7 +28,12 @@ add_executable(MotoGP_fantasy_league
         include/rider-menu.h
         src/season-menu.cpp
         src/member-menu.cpp
-        src/rider-menu.cpp)
+        src/rider-menu.cpp
+        src/rider-manager.cpp
+        src/error-message.cpp
+        src/race-result.cpp
+        src/race-results-menu.cpp
+        src/race-result-list.cpp)
 
 target_link_libraries(MotoGP_fantasy_league -static)
 target_include_directories(MotoGP_fantasy_league PRIVATE ./include)

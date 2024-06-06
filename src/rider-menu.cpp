@@ -1,7 +1,8 @@
 #include "rider-menu.h"
 #include "util.h"
 
-RiderMenu::RiderMenu(MemberList* memberList, RiderList *riderList, string &seasonName) {
+RiderMenu::RiderMenu(MemberList* memberList, RiderList *riderList, string &seasonName, ErrorMessage *errorMessage) {
+    this->errorMessage = errorMessage;
     this->memberList = memberList;
     this->riderList = riderList;
     this->seasonName = seasonName;
@@ -15,34 +16,29 @@ void RiderMenu::menu() {
     do{
         system(CLEAR);
         cout << "Rider Menu" << endl;
-        cout << "1. Add Rider" << endl;
-        cout << "2. Import Race Results from motosport.com" << endl;
-        cout << "3. Add Race Results" << endl;
-        cout << "4. Add Sprint Race Results" << endl;
-        cout << "5. Delete Rider" << endl;
-        cout << "6. List Riders" << endl;
-        cout << "7. Delete ALL Riders" << endl;
-        cout << "8. Save Changes" << endl;
-        cout << "9. Exit" << endl;
+
+        if(errorMessage != nullptr && !errorMessage->isEmpty()){
+            cout << endl << errorMessage->getErrorMessage() << endl;
+        }
+
+        cout << "1. Race Results Menu" << endl;
+        cout << "2. Add Rider" << endl;
+        cout << "3. Delete Rider" << endl;
+        cout << "4. List Riders" << endl;
+        cout << "5. Delete ALL Riders" << endl;
+        cout << "6. Save Changes" << endl;
+        cout << "7. Exit" << endl;
         cout << "Option: ";
         cin >> option;
         switch(option){
+            case RACE_RESULTS_MENU: {
+                new RaceResultsMenu(riderList, memberList, seasonName);
+                riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
+                memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
+                break;
+            }
             case ADD_RIDER: {
                 saveChanges = addRider();
-                break;
-            }
-
-            case AUTOMATIC_ADD_RACE_RESULTS: {
-                saveChanges = addRaceResultsAutomatic();
-                break;
-            }
-
-            case ADD_RACE_RESULTS: {
-                saveChanges = addRaceResults();
-                break;
-            }
-            case ADD_SPRINT_RACE_RESULTS: {
-                saveChanges = addSprintRaceResults();
                 break;
             }
             case DELETE_RIDER: {
@@ -52,7 +48,7 @@ void RiderMenu::menu() {
             case LIST_RIDERS: {
                 system(CLEAR);
                 cout << riderList->toString() << endl;
-                cin.ignore();
+                clearBuffer();
                 enterToContinue();
                 break;
             }
@@ -80,6 +76,7 @@ void RiderMenu::menu() {
                     cin >> opt;
                     if(opt == 'S' || opt == 's'){
                         riderList->writeToDisk(seasonName + '-' + RIDER_DATA);
+                        memberList->writeToDisk(seasonName + '-' + MEMBER_DATA);
                         saveChanges = false;
                     }
                 }
@@ -88,7 +85,7 @@ void RiderMenu::menu() {
             }
             default: {
                 cout << "Select a valid option" << endl;
-                cin.ignore();
+                clearBuffer();
                 enterToContinue();
             }
         }
@@ -100,6 +97,7 @@ bool RiderMenu::addRider() {
     bool rookie = false, testRider = false;
     int points;
     Rider tempRider;
+    RiderManager tempRiderManager;
     char option;
 
     system(CLEAR);
@@ -124,17 +122,21 @@ bool RiderMenu::addRider() {
     cout << "->";
     cin >> points;
 
-    tempRider.setData(firstName, lastName, number, country, team, points);
+    tempRider.setData(firstName, lastName, number, country, team);
+    tempRiderManager.setPoints(points);
+    tempRiderManager.setRider(tempRider);
 
-    riderList->insertOrdered(tempRider);
+    riderList->insertOrdered(tempRiderManager);
     return true;
 }
 
+/*
 bool RiderMenu::addRaceResults() {
     system(CLEAR);
 
     RiderNode* temp(riderList->getFirstPos());
     Rider tempRider;
+    RiderManager tempRiderManager;
     int position;
     int points[25] = {25, 20, 16, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
     int riderPoints;
@@ -144,16 +146,16 @@ bool RiderMenu::addRaceResults() {
     while(temp != nullptr){
         riderPoints = 0;
         line = temp->getData().toStringSmallFullName();
-        tempRider = temp->getData();
+        tempRiderManager = temp->getData();
         cout << line << endl;
         cout << "Input final race position" << endl;
         cout << "->";
         cin >> position;
         if(position < 16 && position > 0) {
-            riderPoints += tempRider.getPoints();
+            riderPoints += tempRiderManager.getPoints();
             riderPoints += points[position-1];
-            tempRider.setPoints(riderPoints);
-            temp->setData(tempRider);
+            tempRiderManager.setPoints(riderPoints);
+            temp->setData(tempRiderManager);
         }
         temp = temp->getNext();
     }
@@ -171,7 +173,7 @@ bool RiderMenu::addRaceResultsAutomatic() {
     cout << "->";
     cin >> url;
 
-    RaceResultScraper raceResultScraper = RaceResultScraper(riderList, url);
+    RaceResultScraper raceResultScraper = RaceResultScraper(riderList, url, errorMessage);
     if(!raceResultScraper.get()){
         //MUST CONVERT THESE TO AN ERROR MESSAGE INSIDE THE RIDERMENU OBJECT
         cout << "Error retrieving results, be sure the link is correct" << endl;
@@ -194,40 +196,8 @@ bool RiderMenu::addRaceResultsAutomatic() {
         return changes;
     }
 
-    cout << "Retrieved race results" << endl;
-    //be sure to free the rider list
-    bool error = false;
-    RiderList* tempRiderList = new RiderList();
-    RiderNode* tempRiderNode = new RiderNode();
-    Rider tempRider = Rider();
-    string tempNumber;
-    int tempPoints, tempPosition;
-    for(int i = 0; i < raceResultScraper.getRidersIndex(); i++){
-        tempNumber = raceResultScraper.getRider(i).getNumber();
-        tempPoints = raceResultScraper.getRider(i).getPoints();
-        tempPosition = raceResultScraper.getRider(i).getPosition();
+    cout << "Retrieved race result" << endl;
 
-        tempRider.setNumber(tempNumber);
-        tempRiderNode = riderList->retrievePos(tempRider);
-
-        if(tempRiderNode == nullptr){
-            cout << "Couldn't find data for rider #" << tempRider.getNumber() << endl;
-            error = true;
-        } else {
-            tempRider = tempRiderNode->getData();
-            tempRider.setPoints(tempPoints);
-            tempRider.setPosition(tempPosition);
-            tempRiderList->insertOrdered(tempRider);
-        }
-    }
-
-    if(error){
-        cout << "Results wont be saved" << endl;
-        clearBuffer();
-        enterToContinue();
-
-        return changes;
-    }
 
     system(CLEAR);
     int confirmChanges;
@@ -239,20 +209,25 @@ bool RiderMenu::addRaceResultsAutomatic() {
     if(confirmChanges == 1){
         changes = true;
         for(int i = 0; i < raceResultScraper.getRidersIndex(); i++){
-            tempNumber = raceResultScraper.getRider(i).getNumber();
-            tempPoints = raceResultScraper.getRider(i).getPoints();
+            tempNumber = raceResultScraper.getRiderManager(i).getRider().getNumber();
+            tempPoints = raceResultScraper.getRiderManager(i).getPoints();
 
             tempRider.setNumber(tempNumber);
-            tempRiderNode = riderList->retrievePos(tempRider);
+            tempRiderManager.setRider(tempRider);
+            tempRiderNode = riderList->retrievePos(tempRiderManager);
 
             if(tempRiderNode == nullptr){
-                cout << "Couldn't find data for rider #" << tempRider.getNumber() << endl;
-                error = true;
+                if(errorMessage != nullptr){
+                    errorMessage->addErrorMessage("Couldn't find data for rider #" + tempRider.getNumber() + "\n");
+                } else {
+                    cout << "Couldn't find data for rider #" << tempRider.getNumber() << endl;
+                }
+                return false;
             } else {
                 tempPoints += tempRiderNode->getData().getPoints();
-                tempRider = tempRiderNode->getData();
-                tempRider.setPoints(tempPoints);
-                tempRiderNode->setData(tempRider);
+                tempRiderManager = tempRiderNode->getData();
+                tempRiderManager.setPoints(tempPoints);
+                tempRiderNode->setData(tempRiderManager);
             }
         }
     }
@@ -277,6 +252,7 @@ bool RiderMenu::addSprintRaceResults() {
 
     RiderNode* temp(riderList->getFirstPos());
     Rider tempRider;
+    RiderManager tempRiderManager;
     int position;
     int points[25] = {12, 9, 7, 6, 5, 4, 3, 2, 1};
     int riderPoints;
@@ -286,28 +262,30 @@ bool RiderMenu::addSprintRaceResults() {
     while(temp != nullptr){
         riderPoints = 0;
         line = temp->getData().toStringSmallFullName();
-        tempRider = temp->getData();
+        tempRiderManager = temp->getData();
         cout << line << endl;
         cout << "Input final race position" << endl;
         cout << "->";
         cin >> position;
         if(position < 10 && position > 0) {
-            riderPoints += tempRider.getPoints();
+            riderPoints += tempRiderManager.getPoints();
             riderPoints += points[position-1];
-            tempRider.setPoints(riderPoints);
-            temp->setData(tempRider);
+            tempRiderManager.setPoints(riderPoints);
+            temp->setData(tempRiderManager);
         }
         temp = temp->getNext();
     }
     memberList->updateMembersRiders(riderList);
     return true;
 }
+ */
 
 bool RiderMenu::deleteRider() {
     system(CLEAR);
 
     string riderNumber;
     Rider tempRider;
+    RiderManager tempRiderManager;
     bool found = false;
     RiderNode *tempNode(riderList->getFirstPos());
 
@@ -316,9 +294,10 @@ bool RiderMenu::deleteRider() {
     cout << "Input rider number to delete: ";
     cin.ignore();getline(cin, riderNumber);
     tempRider.setNumber(riderNumber);
+    tempRiderManager.setRider(tempRider);
 
     while(tempNode != nullptr){
-        if(tempNode->getData() == tempRider){
+        if(tempNode->getData() == tempRiderManager){
             riderList->deleteData(tempNode);
             found = true;
         }
@@ -330,7 +309,13 @@ bool RiderMenu::deleteRider() {
         enterToContinue();
         return true;
     }
-    cout << "Rider not deleted successfully" << endl;
+
+    if(errorMessage != nullptr){
+        errorMessage->addErrorMessage("Rider not found with number: " + riderNumber);
+        return false;
+    }
+
+    cout << "Rider not found with number: " << riderNumber << endl;
     enterToContinue();
     return false;
 

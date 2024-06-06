@@ -34,7 +34,7 @@ Member MemberNode::getData() {
     return *dataPointer;
 }
 
-Member *MemberNode::getDataPointer() {
+Member *MemberNode::getDataReference() {
     return dataPointer;
 }
 

@@ -18,11 +18,13 @@
 #include "season-menu.h"
 #include "member-menu.h"
 #include "rider-menu.h"
+#include "error-message.h"
 
 using namespace std;
 
 #define MEMBER_DATA "member-data.txt"
 #define RIDER_DATA "rider-data.txt"
+#define RACE_DATA "race-data.txt"
 #define PROGRAM_DATA "program-data.txt"
 #define CURRENT_STANDINGS "current-standings.txt"
 #define CURRENT_STANDINGS_HTML "current-standings.html"
@@ -32,6 +34,9 @@ private:
     MemberList* memberList;
     RiderList* riderList;
     string seasonName;
+
+    ErrorMessage memberErrorMessage;
+    ErrorMessage riderErrorMessage;
 public:
     Menu();
 
