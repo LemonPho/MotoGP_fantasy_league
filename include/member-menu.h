@@ -26,6 +26,8 @@ class MemberMenu {
         bool addMember();
         bool deleteMember();
         bool modifyMember();
+
+        int optionSelector(string option);
 };
 
 enum{

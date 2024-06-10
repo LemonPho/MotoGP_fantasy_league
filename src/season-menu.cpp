@@ -10,7 +10,7 @@ SeasonMenu::SeasonMenu(MemberList *memberList, RiderList *riderList, string* sea
 
 void SeasonMenu::menu() {
     bool end = false;
-    int option;
+    string option;
     do{
         system(CLEAR);
         cout << "Season Menu: " << *seasonName << endl;
@@ -20,7 +20,7 @@ void SeasonMenu::menu() {
         cout << "4. Exit" << endl;
         cout << "Option: ";
         cin >> option;
-        switch(option){
+        switch(optionSelector(option)){
             case CREATE_SEASON: {
                 createSeason();
                 break;
@@ -39,6 +39,7 @@ void SeasonMenu::menu() {
             }
             default: {
                 cout << "Select a valid option" << endl;
+                clearBuffer();
                 enterToContinue();
             }
         }
@@ -204,4 +205,12 @@ void SeasonMenu::changeDefaultSeason() {
     cout << "Restart the application to take effect" << endl;
     clearBuffer();
     enterToContinue();
+}
+
+int SeasonMenu::optionSelector(std::string option) {
+    if(option == "1") return CREATE_SEASON;
+    if(option == "2") return SELECT_SEASON;
+    if(option == "3") return CHANGE_DEFAULT_SEASON;
+    if(option == "4") return EXIT_SEASON;
+    return 0;
 }

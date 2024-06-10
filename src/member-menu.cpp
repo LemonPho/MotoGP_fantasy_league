@@ -15,7 +15,7 @@ MemberMenu::MemberMenu(MemberList *memberList, RiderList *riderList, string &sea
 
 void MemberMenu::menu() {
     bool end = false;
-    int option;
+    string option;
     do{
         system(CLEAR);
         cout << "Member Menu, " << seasonName << endl;
@@ -34,7 +34,7 @@ void MemberMenu::menu() {
         cout << "8. Exit" << endl;
         cout << "Option: ";
         cin >> option;
-        switch(option){
+        switch(optionSelector(option)){
             case ADD_MEMBER: {
                 if(!saveChanges){
                     saveChanges = addMember();
@@ -507,4 +507,16 @@ bool MemberMenu::modifyMember() {
     }while(!exit);
     system(CLEAR);
     return changes;
+}
+
+int MemberMenu::optionSelector(string option) {
+    if(option == "1") return ADD_MEMBER;
+    if(option == "2") return DELETE_MEMBER;
+    if(option == "3") return MODIFY_MEMBER;
+    if(option == "4") return LIST_MEMBERS;
+    if(option == "5") return DELETE_ALL_MEMBERS;
+    if(option == "6") return CREATE_STANDINGS_FILE;
+    if(option == "7") return SAVE_CHANGES_MEMBER;
+    if(option == "8") return EXIT_MEMBER;
+    return 0;
 }

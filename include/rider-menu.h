@@ -23,6 +23,8 @@ public:
     void menu();
     bool addRider();
     bool deleteRider();
+
+    int optionSelector(string option);
 };
 
 enum{

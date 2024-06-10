@@ -25,6 +25,11 @@ int RiderList::riderCount() {
 
 RiderList::RiderList() :header(nullptr), errorMessage(nullptr){}
 
+RiderList::RiderList(ErrorMessage *errorMessage) {
+    this->header = nullptr;
+    this->errorMessage = errorMessage;
+}
+
 RiderList::RiderList(RiderNode *header, ErrorMessage *errorMessage) {
     this->header = header;
     this->errorMessage = errorMessage;
@@ -126,6 +131,10 @@ void RiderList::deleteData(RiderNode *riderNode) {
 }
 
 void RiderList::generatePositions() {
+    if(isEmpty()){
+        return;
+    }
+
     RiderNode* temp(header);
     RiderNode* prev(nullptr);
     int i = 1;
@@ -309,7 +318,7 @@ void RiderList::writeToDisk(const string &fileName) {
 
 RiderList *RiderList::copyFromDisk(const std::string &fileName) {
     ifstream file(fileName);
-    RiderList* riderList = new RiderList(nullptr, errorMessage);
+    RiderList* riderList = new RiderList(errorMessage);
     string tempString;
 
     string firstName, lastName, country, team, number;
@@ -323,13 +332,13 @@ RiderList *RiderList::copyFromDisk(const std::string &fileName) {
     if(!file.is_open()){
         if(errorMessage != nullptr){
             errorMessage->addErrorMessage("There was an error opening the rider data file\n");
-            return new RiderList(nullptr, errorMessage);
+            return new RiderList(errorMessage);
         }
     }
 
     getline(file, tempString, '|');
     if(tempString.empty() || tempString == " "){
-        return new RiderList(nullptr, errorMessage);
+        return new RiderList(errorMessage);
     }
     while(tempString != " " && !tempString.empty()){
         number = tempString;
@@ -350,6 +359,7 @@ RiderList *RiderList::copyFromDisk(const std::string &fileName) {
         riderList->insertOrdered(tempRiderManager);
         getline(file, tempString, '|');
     }
+    file.close();
 
     riderList->generatePositions();
 
@@ -393,6 +403,7 @@ void RiderList::modifyFromDisk(const string &fileName) {
         getline(file, tempString, '|');
     }
 
+    file.close();
     generatePositions();
 }
 

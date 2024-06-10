@@ -19,6 +19,8 @@ public:
     void createSeason();
     void changeSeason();
     void changeDefaultSeason();
+
+    int optionSelector(string option);
 };
 
 enum{

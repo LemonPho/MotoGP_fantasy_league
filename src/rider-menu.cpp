@@ -12,7 +12,7 @@ RiderMenu::RiderMenu(MemberList* memberList, RiderList *riderList, string &seaso
 
 void RiderMenu::menu() {
     bool end = false;
-    int option;
+    string option;
     do{
         system(CLEAR);
         cout << "Rider Menu" << endl;
@@ -30,7 +30,7 @@ void RiderMenu::menu() {
         cout << "7. Exit" << endl;
         cout << "Option: ";
         cin >> option;
-        switch(option){
+        switch(optionSelector(option)){
             case RACE_RESULTS_MENU: {
                 new RaceResultsMenu(riderList, memberList, seasonName);
                 riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
@@ -319,4 +319,15 @@ bool RiderMenu::deleteRider() {
     enterToContinue();
     return false;
 
+}
+
+int RiderMenu::optionSelector(std::string option) {
+    if(option == "1") return RACE_RESULTS_MENU;
+    if(option == "2") return ADD_RIDER;
+    if(option == "3") return DELETE_RIDER;
+    if(option == "4") return LIST_RIDERS;
+    if(option == "5") return DELETE_ALL_RIDERS;
+    if(option == "6") return SAVE_CHANGES_RIDERS;
+    if(option == "7") return EXIT_RIDER;
+    return 0;
 }

@@ -17,6 +17,7 @@ private:
     bool isValidPos(RiderNode* riderNode);
 public:
     RiderList();
+    RiderList(ErrorMessage *errorMessage);
     RiderList(RiderNode *header, ErrorMessage *errorMessage);
     ~RiderList();
 

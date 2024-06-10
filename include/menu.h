@@ -44,6 +44,8 @@ public:
     void startProgram();
     void menu();
     void exit();
+
+    int optionSelector(string option);
 };
 
 enum{

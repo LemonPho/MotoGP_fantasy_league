@@ -57,7 +57,7 @@ void Menu::startProgram() {
 //main menu
 void Menu::menu() {
     bool end = false;
-    int option;
+    string option;
     do{
         //main menu options
         system(CLEAR);
@@ -68,23 +68,26 @@ void Menu::menu() {
         cout << "4. Exit" << endl;
         cout << "Option: ";
         cin >> option;
-        switch(option){
+        switch(optionSelector(option)){
             case SEASONS_MANAGER: {
                 new SeasonMenu(memberList, riderList, &seasonName);
                 memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
                 riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
+                memberList->retrieveMemberPicks(riderList);
                 break;
             }
             case MEMBERS_MANAGER: {
                 new MemberMenu(memberList, riderList, seasonName, &memberErrorMessage);
                 memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
                 riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
+                memberList->retrieveMemberPicks(riderList);
                 break;
             }
             case RIDERS_MANAGER: {
                 new RiderMenu(memberList, riderList, seasonName, &riderErrorMessage);
                 memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
                 riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
+                memberList->retrieveMemberPicks(riderList);
                 break;
             }
             case EXIT_MENU: {
@@ -104,4 +107,12 @@ void Menu::menu() {
 void Menu::exit() {
    delete memberList;
    delete riderList;
+}
+
+int Menu::optionSelector(std::string option) {
+    if(option == "1") return SEASONS_MANAGER;
+    if(option == "2") return MEMBERS_MANAGER;
+    if(option == "3") return RIDERS_MANAGER;
+    if(option == "4") return EXIT_MENU;
+    return 0;
 }

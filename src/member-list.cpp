@@ -14,6 +14,11 @@ bool MemberList::isValidPos(MemberNode *memberNode) {
 
 MemberList::MemberList() : header(nullptr), errorMessage(){}
 
+MemberList::MemberList(ErrorMessage *errorMessage) {
+    this->header = nullptr;
+    this->errorMessage = errorMessage;
+}
+
 MemberList::MemberList(MemberNode* header, ErrorMessage *errorMessage){
     this->header = header;
     this->errorMessage = errorMessage;
@@ -140,6 +145,10 @@ MemberNode *MemberList::retrievePos(const Member &data) {
 }
 
 void MemberList::retrieveMemberPicks(RiderList *riderList) {
+    if(isEmpty()){
+        return;
+    }
+
     MemberNode* tempMemberNode(header);
     Member tempMember;
     RiderManager tempRookie;
@@ -474,7 +483,7 @@ void MemberList::writeToDisk(const string &fileName) {
 
 MemberList *MemberList::copyFromDisk(const string &fileName) {
     ifstream file(fileName);
-    MemberList *memberList = new MemberList(nullptr, errorMessage);
+    MemberList *memberList = new MemberList(errorMessage);
     string tempString;
 
     string userName, rookieNumber;
@@ -487,7 +496,7 @@ MemberList *MemberList::copyFromDisk(const string &fileName) {
 
     getline(file, tempString, '|');
     if(tempString.empty() || tempString == " " || tempString == "/n"){
-        return new MemberList();
+        return new MemberList(errorMessage);
     }
     while(tempString != " " && !tempString.empty()){
         int i;
@@ -518,8 +527,9 @@ void MemberList::modifyFromDisk(const std::string &fileName) {
     RiderManager tempRiderManager;
     int pointsMember=0;
     Member tempMember;
-
     string number;
+
+    deleteAll();
 
     getline(file, tempString, '|');
     if(tempString.empty() || tempString == " " || tempString == "/n"){

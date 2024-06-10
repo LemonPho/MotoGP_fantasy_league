@@ -18,6 +18,7 @@ class MemberList {
 public:
 
     MemberList();
+    MemberList(ErrorMessage *errorMessage);
     MemberList(MemberNode* header, ErrorMessage *errorMessage);
     ~MemberList();
 

@@ -19,7 +19,7 @@ RaceResultsMenu::RaceResultsMenu(RiderList *riderList, MemberList *memberList, s
 RaceResultsMenu::~RaceResultsMenu() {}
 
 void RaceResultsMenu::menu() {
-    size_t option;
+    string option;
     bool exit = false;
     int changes = 0;
 
@@ -42,7 +42,7 @@ void RaceResultsMenu::menu() {
         cout << "Option: " << endl;
         cout << "-> ";
         cin >> option;
-        switch(option){
+        switch(optionSelector(option)){
             case AUTOMATIC_ADD_RESULT: {
                 changes += addRaceResultAutomatic(false);
                 break;
@@ -223,4 +223,15 @@ bool RaceResultsMenu::deleteRaceResult() {
     raceResultList.getRaceResults()[index].deleteRaceResult(riderList);
     raceResultList.eraseRaceResult(index);
     return true;
+}
+
+int RaceResultsMenu::optionSelector(std::string option) {
+    if(option == "1") return AUTOMATIC_ADD_RESULT;
+    if(option == "2") return AUTOMATIC_ADD_RESULT_LINK;
+    if(option == "3") return MANUAL_ADD_RACE_RESULT;
+    if(option == "4") return MANUAL_ADD_SPRINT_RESULT;
+    if(option == "5") return VIEW_RACE_RESULTS;
+    if(option == "6") return DELETE_RACE_RESULT;
+    if(option == "7") return EXIT_RACE_RESULT_MENU;
+    return 0;
 }

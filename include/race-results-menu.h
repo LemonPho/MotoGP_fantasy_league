@@ -32,6 +32,8 @@ public:
     void showRaceResultsSmall();
     void showRaceResults();
     bool deleteRaceResult();
+
+    int optionSelector(string option);
 };
 
 enum{
