@@ -421,9 +421,15 @@ void RaceResultScraper::generateRiderPositions(xmlNode* node, RiderList *riderLi
 
     Rider tempRider;
     RiderNode* riderNode;
+    vector<RiderManager> tempRiderPositions = raceResult.getRiderPositions();
     for(size_t i = 0;i < raceResult.getRiderPositions().size(); i++){
         riderNode = riderList->retrievePos(raceResult.getRiderPositions()[i]);
-        tempRider = riderNode->getData().getRider();
+        if(!riderNode){
+            errorMessage->addErrorMessage("Competitor with #" + raceResult.getRiderPositions()[i].getRider().getNumber() + " was not found in the rider list, be sure to have him added in the list of riders");
+            tempRider = Rider();
+        } else {
+            tempRider = riderNode->getData().getRider();
+        }
         raceResult.setRider(tempRider, i);
     }
 }
