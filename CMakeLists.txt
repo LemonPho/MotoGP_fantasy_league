@@ -38,9 +38,9 @@ add_executable(MotoGP_fantasy_league
 target_link_libraries(MotoGP_fantasy_league -static)
 target_include_directories(MotoGP_fantasy_league PRIVATE ./include)
 
-set(LibXml2_INCLUDE_DIR "C:/msys64/mingw64/include")
+set(LibXml2_INCLUDE_DIR "C:/msys64/mingw64/include/libxml2")
 set(LibXml2_LIBRARIES "C:/msys64/mingw64/lib/libxml2.dll.a")
-set(CURL_INCLUDE_DIR "C:/msys64/mingw64/include")
+set(CURL_INCLUDE_DIR "C:/msys64/mingw64/include/curl")
 set(CURL_LIBRARIES "C:/msys64/mingw64/lib/libcurl.dll.a")
 
 include_directories(${CURL_INCLUDE_DIR})
