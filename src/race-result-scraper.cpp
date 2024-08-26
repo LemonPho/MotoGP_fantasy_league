@@ -292,6 +292,13 @@ xmlNode* RaceResultScraper::findTableBody(xmlNode *node) {
         }
     }
 
+    //skpi script tags
+    if(node->name != nullptr){
+        if(strcmp(reinterpret_cast<const char *>(node->name), "script") == 0){
+            return nullptr;
+        }
+    }
+
     //element is the table body
     if(strcmp(reinterpret_cast<const char *>(node->name), "tbody") == 0){
         return node->children;
@@ -421,7 +428,6 @@ void RaceResultScraper::generateRiderPositions(xmlNode* node, RiderList *riderLi
 
     Rider tempRider;
     RiderNode* riderNode;
-    vector<RiderManager> tempRiderPositions = raceResult.getRiderPositions();
     for(size_t i = 0;i < raceResult.getRiderPositions().size(); i++){
         riderNode = riderList->retrievePos(raceResult.getRiderPositions()[i]);
         if(!riderNode){

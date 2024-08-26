@@ -4,6 +4,7 @@
 #include <iostream>
 #include <curl/curl.h>
 #include <libxml/HTMLparser.h>
+#include <libxml/xmlreader.h>
 #include <fstream>
 #include <cstdio>
 
