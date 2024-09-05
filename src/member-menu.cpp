@@ -195,7 +195,7 @@ bool MemberMenu::addMember() {
 
     int messageLine = 8+riderCount, messageStart = 10, acceptLine = riderCount+1;
     while(!exit){
-        lineOption = option+5;
+        lineOption = option+1;
 
         updateMenu(lineOption, left, right);
         key = _getch();
@@ -254,7 +254,7 @@ bool MemberMenu::addMember() {
                         i = 5;
                     }
                     selections[i] = option-1;
-                    gotoxy(right + 5, option + 5);
+                    gotoxy(right + 5, option + 1);
                     if(i == 5){
                         cout << "i";
                     } else {
