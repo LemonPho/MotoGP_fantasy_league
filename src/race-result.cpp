@@ -5,7 +5,6 @@
 RaceResult::RaceResult() {
     name = "";
     isSprint = false;
-
     errorMessage = nullptr;
 }
 
@@ -172,5 +171,19 @@ RaceResult& RaceResult::operator=(RaceResult raceResult) {
 }
 
 void RaceResult::pushRiderPosition(RiderManager newRider) {
+    if(riderPositions.empty()){
+        riderPositions.push_back(newRider);
+        return;
+    }
+
+    vector<RiderManager>::iterator i;
+
+    for(i = riderPositions.begin(); i < riderPositions.end(); i++){
+        if(newRider.getPosition() < i->getPosition()){
+            riderPositions.insert(i, newRider);
+            return;
+        }
+    }
+
     riderPositions.push_back(newRider);
 }

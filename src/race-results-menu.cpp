@@ -156,11 +156,10 @@ bool RaceResultsMenu::addRaceResultManual(bool isSprint) {
     RiderNode* node = riderList->getFirstPos();
     Rider tempRider;
     RiderManager tempRiderManager;
-    int position, option;
+    int position, option, tempPoints;
     const int *points = isSprint ? POINTS_SPR : POINTS_RAC;
     const int pointsLimit = isSprint ? LIMIT_SPR : LIMIT_RAC;
     string line, raceTitle;
-
 
     cout << "Add Race Results" << endl;
     cout << "Input the race title" << endl;
@@ -171,29 +170,33 @@ bool RaceResultsMenu::addRaceResultManual(bool isSprint) {
 
     while(node != nullptr){
         line = node->getData().toStringSmallFullName();
-        tempRiderManager = node->getData();
         cout << line << endl;
         cout << "Input final race position" << endl;
         cout << "->";
         cin >> position;
+        tempRiderManager = node->getData();
+        tempRiderManager.setPosition(position);
+        tempRiderManager.setPoints(0);
         position--;
-        if(position <= pointsLimit && position >= 0) {
-            tempRiderManager.setPoints(points[position-1]);
-            raceResult.getRiderPositions().push_back(tempRiderManager);
+        if(position < pointsLimit && position >= 0) {
+            tempRiderManager.setPoints(points[position]);
         }
+        raceResult.pushRiderPosition(tempRiderManager);
         node = node->getNext();
     }
-    delete points;
     cout << raceResult.toString();
     cout << "1. Accept results" << endl;
     cout << "2. Decline results" << endl;
     cout << "Option: ";
     cin >> option;
     if(option == 1){
-        return false;
-    } else {
+        raceResultList.pushRaceResult(raceResult);
         raceResult.updateRiderList(riderList);
+        memberList->updateMembersRiders(riderList);
+        memberList->updateMembersPoints();
         return true;
+    } else {
+        return false;
     }
 }
 

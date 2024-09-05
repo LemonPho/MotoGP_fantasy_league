@@ -3,6 +3,11 @@ project(MotoGP_fantasy_league)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(LibXml2_INCLUDE_DIRS "C:/msys64/mingw64/include/libxml2")
+set(LibXml2_LIBRARIES "C:/msys64/mingw64/lib/libxml2.dll.a")
+find_package(OpenSSL REQUIRED)
+find_package(CURL REQUIRED)
+
 add_executable(MotoGP_fantasy_league
         src/main.cpp
         include/member.h
@@ -35,17 +40,5 @@ add_executable(MotoGP_fantasy_league
         src/race-results-menu.cpp
         src/race-result-list.cpp)
 
-target_link_libraries(MotoGP_fantasy_league -static)
-target_include_directories(MotoGP_fantasy_league PRIVATE ./include)
-
-set(LibXml2_INCLUDE_DIR "C:/msys64/mingw64/include/libxml2")
-set(LibXml2_LIBRARIES "C:/msys64/mingw64/lib/libxml2.dll.a")
-set(CURL_INCLUDE_DIR "C:/msys64/mingw64/include/curl")
-set(CURL_LIBRARIES "C:/msys64/mingw64/lib/libcurl.dll.a")
-
-include_directories(${CURL_INCLUDE_DIR})
-include_directories(${LibXml2_INCLUDE_DIR})
-link_directories("C:/msys64/mingw64/lib")
-
-target_link_libraries(MotoGP_fantasy_league ${CURL_LIBRARIES})
-target_link_libraries(MotoGP_fantasy_league ${LibXml2_LIBRARIES})
+target_link_libraries(MotoGP_fantasy_league ${CURL_LIBRARIES} ${LibXml2_LIBRARIES} ${OPENSSL_LIBRARIES})
+target_include_directories(MotoGP_fantasy_league PRIVATE ./include ${CURL_INCLUDE_DIRS} ${LibXml2_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIRS})

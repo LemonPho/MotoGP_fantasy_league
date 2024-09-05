@@ -10,8 +10,15 @@ Menu::Menu() {
 
     //if the file exists, we start program normally
     if(file.is_open()){
-        startProgram();
-        menu();
+        string temp;
+        getline(file, temp);
+        //make sure there is actually data in the file
+        if(temp.empty()){
+            firstStart();
+        } else {
+            startProgram();
+            menu();
+        }
     //if the file doesn't exist, we create it in firstStart()
     } else {
         firstStart();

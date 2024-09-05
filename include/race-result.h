@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 #include "rider-list.h"
 #include "error-message.h"
@@ -34,12 +35,11 @@ public:
     void setIsSprint(const bool &isSprint);
     void setRider(Rider rider, size_t index);
     void setRiderPositions(vector<RiderManager> riderPositions);
+    void pushRiderPosition(RiderManager newRider);
 
     vector<RiderManager> getRiderPositions();
     string& getName();
     bool& getIsSprint();
-
-    void pushRiderPosition(RiderManager newRider);
 
     bool updateRiderList(RiderList* riderList);
     bool deleteRaceResult(RiderList* riderList);
