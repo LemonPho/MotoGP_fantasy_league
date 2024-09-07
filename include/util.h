@@ -20,5 +20,6 @@ void clearBuffer();
 void enterToContinue();
 int checkIfSelected(const int selections[], int selectionsLength, int query);
 int custom_getch();
+void update_program();
 
 #endif //MOTOGP_FANTASY_LEAGUE_UTIL_H

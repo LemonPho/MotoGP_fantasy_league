@@ -19,6 +19,7 @@
 #include "member-menu.h"
 #include "rider-menu.h"
 #include "error-message.h"
+#include "util.h"
 
 using namespace std;
 
@@ -52,6 +53,7 @@ enum{
     SEASONS_MANAGER = 1,
     MEMBERS_MANAGER,
     RIDERS_MANAGER,
+    UPDATE_PROGRAM,
     EXIT_MENU
 };
 

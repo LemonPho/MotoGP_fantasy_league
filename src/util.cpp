@@ -85,4 +85,15 @@ int custom_getch(){
 
     return key;
 }
+
+void update_program(){
+    char input;
+    cout << "Are you sure you want to update the program? It will be close to update. (Y/N): ";
+    cin >> input;
+
+    if(input == 'Y' || input == 'y'){
+        system("./update_macos.sh");
+        exit(0);
+    }
+}
 #endif

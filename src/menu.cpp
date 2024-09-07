@@ -72,7 +72,8 @@ void Menu::menu() {
         cout << "1. Seasons Manager" << endl;
         cout << "2. Members Manager" << endl;
         cout << "3. Riders Manager" << endl;
-        cout << "4. Exit" << endl;
+        cout << "4. Update Program" << endl;
+        cout << "5. Exit" << endl;
         cout << "Option: ";
         cin >> option;
         switch(optionSelector(option)){
@@ -96,6 +97,10 @@ void Menu::menu() {
                 riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
                 memberList->retrieveMemberPicks(riderList);
                 break;
+            }
+            case UPDATE_PROGRAM: {
+                update_program();
+                break;   
             }
             case EXIT_MENU: {
                 exit();
