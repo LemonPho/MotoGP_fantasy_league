@@ -103,7 +103,6 @@ void Menu::menu() {
                 break;   
             }
             case EXIT_MENU: {
-                exit();
                 end = true;
                 break;
             }
@@ -125,6 +124,7 @@ int Menu::optionSelector(std::string option) {
     if(option == "1") return SEASONS_MANAGER;
     if(option == "2") return MEMBERS_MANAGER;
     if(option == "3") return RIDERS_MANAGER;
-    if(option == "4") return EXIT_MENU;
+    if(option == "4") return UPDATE_PROGRAM;
+    if(option == "5") return EXIT_MENU;
     return 0;
 }

@@ -92,8 +92,19 @@ void update_program(){
     cin >> input;
 
     if(input == 'Y' || input == 'y'){
+        cout << "Be sure to copy the update_macos.sh file into the home directory" << endl;
+        cout << "This is done by copying the file, clicking on Go in the top bar, then selecting home" << endl;
+        cout << "Once in the home directory you may paste the file there" << endl;
+        cout << "When the file is pasted in the home directory, ";
+        clearBuffer();
+        enterToContinue();
+        system("rm -rf MotoGP_fantasy_league");
+        system("chmod +x update_macos.sh");
         system("./update_macos.sh");
-        exit(0);
+        enterToContinue();
     }
+
+    cout << "\033[40m"; // black background
+    cout << "\x1b[37m"; // white text
 }
 #endif
