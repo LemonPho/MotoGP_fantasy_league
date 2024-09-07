@@ -57,3 +57,26 @@ int checkIfSelected(const int selections[], int selectionsLength, int query){
 
     return -1;
 }
+
+int unix_getch(){
+	struct termios oldSettings, newSettings;
+	int key;
+
+    //current settings
+	tcgetattr(STDIN_FILENO, &oldSettings);
+
+    //save settings temporarily
+    newSettings = oldSettings;
+
+    //disable buffered io and echoing
+    newSettings.c_lflag &= ~(ICANON | ECHO);
+
+    // apply settings 
+    tcsetattr(STDIN_FILENO, TCSANOW, &newSettings);
+
+    key = getchar();
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldSettings);
+
+    return key;
+}

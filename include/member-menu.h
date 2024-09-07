@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <conio.h>
+#include <ncurses.h>
 #include <string>
 
 #include "member-list.h"
@@ -29,6 +29,22 @@ class MemberMenu {
 
         int optionSelector(string option);
 };
+
+#ifdef _WIN32
+enum{
+    UP_KEY = 72,
+    DOWN_KEY = 80,
+    ENTER_KEY = 13,
+    BACKSPACE_KEY = 8,
+};
+#else
+enum{
+    UP_KEY = 66,
+    DOWN_KEY = 65,
+    ENTER_KEY = 10,
+    BACKSPACE_KEY = 127,
+};
+#endif
 
 enum{
     ADD_MEMBER = 1,

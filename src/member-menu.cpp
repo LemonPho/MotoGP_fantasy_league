@@ -193,15 +193,16 @@ bool MemberMenu::addMember() {
     cout << "\t\x1B[32mAccept" << endl; // green
     cout << "\x1b[37m"; // white
 
+
     int messageLine = 8+riderCount, messageStart = 10, acceptLine = riderCount+1;
     while(!exit){
-        lineOption = option+1;
+        lineOption = option+6;
 
         updateMenu(lineOption, left, right);
-        key = _getch();
+	    key = custom_getch();
 
         switch(key){
-            case 80: {
+            case UP_KEY: {
                 if(option == riderCount+1){
                     option = 1;
                 } else {
@@ -210,7 +211,7 @@ bool MemberMenu::addMember() {
                 break;
             }
 
-            case 72:{
+            case DOWN_KEY:{
                 if(option == 1){
                     option = riderCount+1;
                 } else {
@@ -219,7 +220,7 @@ bool MemberMenu::addMember() {
                 break;
             }
 
-            case 13: {
+            case ENTER_KEY: {
                 gotoxy(messageStart, messageLine);
                 cout << "                                                     ";
 
@@ -254,7 +255,7 @@ bool MemberMenu::addMember() {
                         i = 5;
                     }
                     selections[i] = option-1;
-                    gotoxy(right + 5, option + 1);
+                    gotoxy(right + 5, option + 6);
                     if(i == 5){
                         cout << "i";
                     } else {
@@ -267,7 +268,7 @@ bool MemberMenu::addMember() {
                 break;
             }
 
-            case 8: {
+            case BACKSPACE_KEY: {
                 int selected;
 
                 gotoxy(messageStart, messageLine);
@@ -276,7 +277,7 @@ bool MemberMenu::addMember() {
                 selected = checkIfSelected(selections, RIDER_COUNT, option-1);
                 if(selected != -1){
                     selections[selected] = -1;
-                    gotoxy(right+5, option+5);
+                    gotoxy(right+5, option+6);
                     cout << " ";
                     amountSelected--;
                 }
