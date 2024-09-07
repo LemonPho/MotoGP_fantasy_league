@@ -8,6 +8,8 @@ Menu::Menu() {
     memberList = new MemberList(nullptr, &memberErrorMessage);
     riderList = new RiderList(nullptr, &riderErrorMessage);
 
+    int test = macos::testDirectory("~/Library/'Application Support'/'MotoGP Fantasy League'");
+
     //if the file exists, we start program normally
     if(file.is_open()){
         string temp;

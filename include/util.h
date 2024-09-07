@@ -2,6 +2,8 @@
 #define MOTOGP_FANTASY_LEAGUE_UTIL_H
 
 #include <iostream>
+#include <cstdlib>
+
 #ifdef _WIN32
 #include <conio.h>
 #else
@@ -21,5 +23,10 @@ void enterToContinue();
 int checkIfSelected(const int selections[], int selectionsLength, int query);
 int custom_getch();
 void update_program();
+
+namespace macos{
+	bool testDirectory(string directory);
+	bool makeDirectory(string directory);
+};
 
 #endif //MOTOGP_FANTASY_LEAGUE_UTIL_H

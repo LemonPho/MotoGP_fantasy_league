@@ -88,12 +88,12 @@ int custom_getch(){
 
 void update_program(){
     char input;
-    cout << "Are you sure you want to update the program? It will be close to update. (Y/N): ";
+    cout << "Are you sure you want to update the program? (Y/N): ";
     cin >> input;
 
     if(input == 'Y' || input == 'y'){
         cout << "Be sure to copy the update_macos.sh file into the home directory" << endl;
-        cout << "This is done by copying the file, clicking on Go in the top bar, then selecting home" << endl;
+        cout << "This is done by copying the file, clicking on Go in the top bar, then selecting home." << endl;
         cout << "Once in the home directory you may paste the file there" << endl;
         cout << "When the file is pasted in the home directory, ";
         clearBuffer();
@@ -105,3 +105,30 @@ void update_program(){
     }
 }
 #endif
+
+namespace macos{
+    bool testDirectory(string directory){
+        int result;
+        string command = "test -d " + directory;
+
+        result = system(command.c_str());
+
+        if(result == 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    bool makeDirectory(string directory){
+        int result;
+        string command = "mkdir -p " + directory;
+
+        result = system(command.c_str());
+
+        if(result == 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
