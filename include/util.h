@@ -24,9 +24,8 @@ int checkIfSelected(const int selections[], int selectionsLength, int query);
 int custom_getch();
 void update_program();
 
-namespace macos{
-	bool testDirectory(string directory);
-	bool makeDirectory(string directory);
-};
+bool testDirectory(string directory);
+bool makeDirectory(string directory);
+bool makeFile(string file);
 
 #endif //MOTOGP_FANTASY_LEAGUE_UTIL_H

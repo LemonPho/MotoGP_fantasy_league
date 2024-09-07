@@ -2,7 +2,7 @@
 
 RaceResultsMenu::RaceResultsMenu(RiderList *riderList, MemberList *memberList, string seasonName) {
     this->raceResultList = RaceResultList(&errorMessage);
-    this->raceResultList.readFromDisk(seasonName + '-' + RACE_DATA, riderList);
+    this->raceResultList.readFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RACE_DATA, riderList);
 
     this->seasonName = seasonName;
 
@@ -82,9 +82,9 @@ void RaceResultsMenu::menu() {
                     cout << "-> ";
                     cin >> saveChangesOption;
                     if(saveChangesOption == 1){
-                        raceResultList.writeToDisk(seasonName + '-' + RACE_DATA);
-                        riderList->writeToDisk(seasonName + '-' + RIDER_DATA);
-                        memberList->writeToDisk(seasonName + '-' + MEMBER_DATA);
+                        raceResultList.writeToDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RACE_DATA);
+                        riderList->writeToDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RIDER_DATA);
+                        memberList->writeToDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA);
                     }
                 }
                 delete riderList;

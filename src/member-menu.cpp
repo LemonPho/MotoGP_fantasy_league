@@ -83,8 +83,8 @@ void MemberMenu::menu() {
             case CREATE_STANDINGS_FILE: {
                 system(CLEAR);
 
-                ofstream fileTXT(seasonName + '-' + CURRENT_STANDINGS, ios::out);
-                ofstream fileHTML(seasonName + '-' + CURRENT_STANDINGS_HTML, ios::out);
+                ofstream fileTXT(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + CURRENT_STANDINGS, ios::out);
+                ofstream fileHTML(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + CURRENT_STANDINGS_HTML, ios::out);
 
                 if(!fileTXT.is_open() || !fileHTML.is_open()){
                     cout << "Standings file not created successfully, check if administrator privileges are necessary" << endl;
@@ -102,18 +102,18 @@ void MemberMenu::menu() {
                 }
             }
             case SAVE_CHANGES_MEMBER: {
-                memberList->writeToDisk(seasonName + '-' + MEMBER_DATA);
+                memberList->writeToDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA);
                 saveChanges = false;
                 break;
             }
             case EXIT_MEMBER: {
                 if(saveChanges) {
                     char opt;
-                    cout << "Would you like to save the unsaved changes? (S/N)" << endl;
+                    cout << "Would you like to save the unsaved changes? (Y/N)" << endl;
                     cout << "->";
                     cin >> opt;
-                    if(opt == 's' || opt == 'S'){
-                        memberList->writeToDisk(seasonName + '-' + MEMBER_DATA);
+                    if(opt == 'y' || opt == 'Y'){
+                        memberList->writeToDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA);
                     }
                 }
                 end = true;

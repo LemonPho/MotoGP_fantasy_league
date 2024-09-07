@@ -33,8 +33,8 @@ void RiderMenu::menu() {
         switch(optionSelector(option)){
             case RACE_RESULTS_MENU: {
                 new RaceResultsMenu(riderList, memberList, seasonName);
-                riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
-                memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
+                riderList->modifyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RIDER_DATA);
+                memberList->modifyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA);
                 break;
             }
             case ADD_RIDER: {
@@ -64,7 +64,8 @@ void RiderMenu::menu() {
                 break;
             }
             case SAVE_CHANGES_RIDERS: {
-                riderList->writeToDisk(seasonName + '-' + RIDER_DATA);
+                riderList->writeToDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RIDER_DATA);
+                memberList->writeToDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA);
                 saveChanges = false;
                 break;
             }
@@ -75,8 +76,8 @@ void RiderMenu::menu() {
                     cout << "->";
                     cin >> opt;
                     if(opt == 'S' || opt == 's'){
-                        riderList->writeToDisk(seasonName + '-' + RIDER_DATA);
-                        memberList->writeToDisk(seasonName + '-' + MEMBER_DATA);
+                        riderList->writeToDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RIDER_DATA);
+                        memberList->writeToDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA);
                         saveChanges = false;
                     }
                 }

@@ -106,29 +106,42 @@ void update_program(){
 }
 #endif
 
-namespace macos{
-    bool testDirectory(string directory){
-        int result;
-        string command = "test -d " + directory;
+bool testDirectory(string directory){
+    int result;
+    string command = "test -d " + directory;
 
-        result = system(command.c_str());
+    result = system(command.c_str());
 
-        if(result == 0){
-            return true;
-        } else {
-            return false;
-        }
-    }
-    bool makeDirectory(string directory){
-        int result;
-        string command = "mkdir -p " + directory;
-
-        result = system(command.c_str());
-
-        if(result == 0){
-            return true;
-        } else {
-            return false;
-        }
+    if(result == 0){
+        return true;
+    } else {
+        return false;
     }
 }
+bool makeDirectory(string directory){
+    int result;
+    string command = "mkdir -p " + directory;
+
+    result = system(command.c_str());
+
+    if(result == 0){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool makeFile(string file){
+    int result;
+    string command = "touch " + file;
+
+    result = system(command.c_str());
+
+    if(result == 0){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+

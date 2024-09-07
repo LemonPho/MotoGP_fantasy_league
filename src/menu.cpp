@@ -3,42 +3,43 @@
 
 Menu::Menu() {
     system(CLEAR);
-    ifstream file(PROGRAM_DATA);
     memberErrorMessage = ErrorMessage();
+    riderErrorMessage = ErrorMessage();
     memberList = new MemberList(nullptr, &memberErrorMessage);
     riderList = new RiderList(nullptr, &riderErrorMessage);
 
-    int test = macos::testDirectory("~/Library/'Application Support'/'MotoGP Fantasy League'");
-
-    //if the file exists, we start program normally
-    if(file.is_open()){
-        string temp;
-        getline(file, temp);
-        //make sure there is actually data in the file
-        if(temp.empty()){
+    int result = testDirectory(MAIN_DIRECTORY);
+    if(!result){
+        result = makeDirectory(MAIN_DIRECTORY);
+        if(!result){
+            cout << "Was not able to create the main directory for the program: ~/Library/'Application Support'/'MotoGP Fantasy League'" << endl;
+            enterToContinue();
+            exit();
+        } else {
+            firstStart();
+        }
+    } else {
+        result = testDirectory(MAIN_DIRECTORY + PROGRAM_DATA);
+        if(!result){
             firstStart();
         } else {
             startProgram();
-            menu();
         }
-    //if the file doesn't exist, we create it in firstStart()
-    } else {
-        firstStart();
-        menu();
     }
+
+    startProgram();
 }
 
 void Menu::firstStart() {
     //create a new season since programdata is empty in this case
-    ofstream file(PROGRAM_DATA, ios::out);
-
+    ofstream file(MAIN_DIRECTORY_WITHOUT_QUOTES + PROGRAM_DATA, ios::out);
     cout << "Wellcome to the MotoGP Fantasy League Manager" << endl;
     cout << "Input a name for the current season (replace spaces with: - ): ";
     getline(cin, seasonName);
 
     //create member and rider data
-    ofstream file2(seasonName + '-' + MEMBER_DATA, ios::out);
-    ofstream file3(seasonName + '-' + RIDER_DATA, ios::out);
+    ofstream file2(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA, ios::out);
+    ofstream file3(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RIDER_DATA, ios::out);
     file << seasonName << endl;
 
     //close the three files to save the changes
@@ -57,9 +58,9 @@ void Menu::startProgram() {
     }
     getline(file, seasonName);
     //open data files for riders and members
-    riderList = riderList->copyFromDisk(seasonName + '-' + RIDER_DATA);
+    riderList = riderList->copyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RIDER_DATA);
     riderList->generatePositions();
-    memberList = memberList->copyFromDisk(seasonName + '-' + MEMBER_DATA);
+    memberList = memberList->copyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA);
     memberList->retrieveMemberPicks(riderList);
 }
 
@@ -81,22 +82,22 @@ void Menu::menu() {
         switch(optionSelector(option)){
             case SEASONS_MANAGER: {
                 new SeasonMenu(memberList, riderList, &seasonName);
-                memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
-                riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
+                memberList->modifyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA);
+                riderList->modifyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RIDER_DATA);
                 memberList->retrieveMemberPicks(riderList);
                 break;
             }
             case MEMBERS_MANAGER: {
                 new MemberMenu(memberList, riderList, seasonName, &memberErrorMessage);
-                memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
-                riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
+                memberList->modifyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA);
+                riderList->modifyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RIDER_DATA);
                 memberList->retrieveMemberPicks(riderList);
                 break;
             }
             case RIDERS_MANAGER: {
                 new RiderMenu(memberList, riderList, seasonName, &riderErrorMessage);
-                memberList->modifyFromDisk(seasonName + '-' + MEMBER_DATA);
-                riderList->modifyFromDisk(seasonName + '-' + RIDER_DATA);
+                memberList->modifyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + MEMBER_DATA);
+                riderList->modifyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + RIDER_DATA);
                 memberList->retrieveMemberPicks(riderList);
                 break;
             }

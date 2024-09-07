@@ -13,6 +13,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fstream>
+#include <cstdlib>
 
 #include "member-list.h"
 #include "season-menu.h"
@@ -23,12 +24,14 @@
 
 using namespace std;
 
-#define MEMBER_DATA "member-data.txt"
-#define RIDER_DATA "rider-data.txt"
-#define RACE_DATA "race-data.txt"
-#define PROGRAM_DATA "program-data.txt"
-#define CURRENT_STANDINGS "current-standings.txt"
-#define CURRENT_STANDINGS_HTML "current-standings.html"
+const string MAIN_DIRECTORY = "Library/'Application Support'/'MotoGP Fantasy League'/";
+const string MAIN_DIRECTORY_WITHOUT_QUOTES = "Library/Application Support/MotoGP Fantasy League/";
+const string MEMBER_DATA = "member-data.txt";
+const string RIDER_DATA =  "rider-data.txt";
+const string RACE_DATA = "race-data.txt";
+const string PROGRAM_DATA = "program-data.txt";
+const string CURRENT_STANDINGS = "current-standings.txt";
+const string CURRENT_STANDINGS_HTML = "current-standings.html";
 
 class Menu {
 private:
