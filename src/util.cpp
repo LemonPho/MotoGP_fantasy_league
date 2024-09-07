@@ -58,8 +58,13 @@ int checkIfSelected(const int selections[], int selectionsLength, int query){
     return -1;
 }
 
-int unix_getch(){
-	struct termios oldSettings, newSettings;
+#ifdef _WIN32
+int custom_getch(){
+    return _getch();
+}
+#else
+int custom_getch(){
+    struct termios oldSettings, newSettings;
 	int key;
 
     //current settings
@@ -71,7 +76,7 @@ int unix_getch(){
     //disable buffered io and echoing
     newSettings.c_lflag &= ~(ICANON | ECHO);
 
-    // apply settings 
+    // apply settings
     tcsetattr(STDIN_FILENO, TCSANOW, &newSettings);
 
     key = getchar();
@@ -80,3 +85,4 @@ int unix_getch(){
 
     return key;
 }
+#endif

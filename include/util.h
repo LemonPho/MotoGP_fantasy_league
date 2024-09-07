@@ -3,6 +3,7 @@
 
 #include <iostream>
 #ifdef _WIN32
+#include <conio.h>
 #else
 #include <termios.h>
 #include <unistd.h>
@@ -18,18 +19,6 @@ void clearSelection(int start, int end, int left, int right);
 void clearBuffer();
 void enterToContinue();
 int checkIfSelected(const int selections[], int selectionsLength, int query);
-int windows_getch();
-int unix_getch();
-
-#ifdef _WIN32
-int custom_getch(){
-	return windows_getch();
-}
-#else
-int custom_getch(){
-	return unix_getch();
-}
-#endif
-
+int custom_getch();
 
 #endif //MOTOGP_FANTASY_LEAGUE_UTIL_H

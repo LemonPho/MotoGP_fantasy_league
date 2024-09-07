@@ -3,8 +3,11 @@
 
 #include <iostream>
 #include <fstream>
-#include <ncurses.h>
 #include <string>
+
+#ifndef _WIN32
+#include <ncurses.h>
+#endif
 
 #include "member-list.h"
 #include "error-message.h"
@@ -32,8 +35,8 @@ class MemberMenu {
 
 #ifdef _WIN32
 enum{
-    UP_KEY = 72,
-    DOWN_KEY = 80,
+    UP_KEY = 80,
+    DOWN_KEY = 72,
     ENTER_KEY = 13,
     BACKSPACE_KEY = 8,
 };
