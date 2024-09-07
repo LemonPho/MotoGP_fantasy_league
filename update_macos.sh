@@ -10,6 +10,6 @@ g++ $(xml2-config --cflags) -IMotoGP_fantasy_league/include MotoGP_fantasy_leagu
 
 echo "${GREEN}Build successful${NC}, moving program to downloads folder"
 
-mv "MotoGP Fantasy League" ~/Applications
+mv "MotoGP Fantasy League" ~/Downloads
 
-echo "You may close the program, updated program was placed in the applications folder"
+echo "You may close the program, updated program was placed in the downloads folder"
