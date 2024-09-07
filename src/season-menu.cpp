@@ -142,9 +142,9 @@ void SeasonMenu::changeSeason() {
         }
     }
 
-    riderList->modifyFromDisk(seasons[selection-1] + '-' + RIDER_DATA);
+    riderList->modifyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasons[selection-1] + '-' + RIDER_DATA);
     riderList->generatePositions();
-    memberList->modifyFromDisk(seasons[selection-1] + '-' + MEMBER_DATA);
+    memberList->modifyFromDisk(MAIN_DIRECTORY_WITHOUT_QUOTES + seasons[selection-1] + '-' + MEMBER_DATA);
     memberList->retrieveMemberPicks(riderList);
     memberList->updateMembersPoints();
     *seasonName = seasons[selection-1];
