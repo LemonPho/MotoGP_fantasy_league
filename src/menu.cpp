@@ -19,15 +19,15 @@ Menu::Menu() {
             firstStart();
         }
     } else {
-        result = testDirectory(MAIN_DIRECTORY + PROGRAM_DATA);
+        result = testFile(MAIN_DIRECTORY + PROGRAM_DATA);
         if(!result){
             firstStart();
         } else {
             startProgram();
         }
     }
-
     startProgram();
+    menu();
 }
 
 void Menu::firstStart() {
@@ -49,11 +49,11 @@ void Menu::firstStart() {
 }
 
 void Menu::startProgram() {
-    ifstream file(PROGRAM_DATA);
+    ifstream file(MAIN_DIRECTORY_WITHOUT_QUOTES + PROGRAM_DATA);
 
     //get season name
     if(!file.is_open()){
-        cout << "Error when opening " << PROGRAM_DATA << endl;
+        cout << "Error when opening " << MAIN_DIRECTORY_WITHOUT_QUOTES + PROGRAM_DATA << endl;
         throw exception();
     }
     getline(file, seasonName);

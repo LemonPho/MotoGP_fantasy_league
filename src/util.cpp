@@ -88,6 +88,7 @@ int custom_getch(){
 
 void update_program(){
     char input;
+    int result;
     cout << "Are you sure you want to update the program? (Y/N): ";
     cin >> input;
 
@@ -98,9 +99,28 @@ void update_program(){
         cout << "When the file is pasted in the home directory, ";
         clearBuffer();
         enterToContinue();
+        result = system("chmod +x ~/Library/'Application Support'/'MotoGP Fantasy League'/update_macos.sh");
+        if(result != 0){
+            cout << "There was an error enabling the script" << endl;
+            enterToContinue();
+            return;
+        }
+
+        result = system("~/Library/'Application Support'/'MotoGP Fantasy League'/update_macos.sh");
+        if(result != 0){
+            cout << "There was an error running the update script" << endl;
+            enterToContinue();
+            return;
+        }
+
+        result = system("mv MotoGP_fantasy_league/update_macos.sh ~/Library/'Application Support'/'MotoGP Fantasy League'");
+        if(result != 0){
+            cout << "Error saving new update script" << endl;
+            enterToContinue();
+            return;
+        }
+
         system("rm -rf MotoGP_fantasy_league");
-        system("chmod +x update_macos.sh");
-        system("./update_macos.sh");
         enterToContinue();
     }
 }
@@ -118,6 +138,20 @@ bool testDirectory(string directory){
         return false;
     }
 }
+
+bool testFile(string file){
+    int result;
+    string command = "test -f " + file;
+
+    result = system(command.c_str());
+
+    if(result == 0){
+        return true;
+    } else {
+        return false;
+    }
+}
+
 bool makeDirectory(string directory){
     int result;
     string command = "mkdir -p " + directory;

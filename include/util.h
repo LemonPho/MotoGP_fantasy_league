@@ -25,6 +25,7 @@ int custom_getch();
 void update_program();
 
 bool testDirectory(string directory);
+bool testFile(string file);
 bool makeDirectory(string directory);
 bool makeFile(string file);
 
