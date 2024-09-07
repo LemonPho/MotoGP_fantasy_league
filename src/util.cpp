@@ -103,8 +103,5 @@ void update_program(){
         system("./update_macos.sh");
         enterToContinue();
     }
-
-    cout << "\033[40m"; // black background
-    cout << "\x1b[37m"; // white text
 }
 #endif

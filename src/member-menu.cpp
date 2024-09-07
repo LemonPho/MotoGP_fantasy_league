@@ -191,7 +191,7 @@ bool MemberMenu::addMember() {
 
     printMenu(riderStringArray, riderCount);
     cout << "\t\x1B[32mAccept" << endl; // green
-    cout << "\x1b[37m"; // white
+    cout << "\033[0m"; // reset
 
 
     int messageLine = 8+riderCount, messageStart = 10, acceptLine = riderCount+1;
