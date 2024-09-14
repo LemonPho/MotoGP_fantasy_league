@@ -9,17 +9,25 @@
 #include <cstdlib>
 
 namespace logger{
-    enum {
+    enum LogLevel{
         LogLevelInfo = 0,
         LogLevelWarning,
         LogLevelError,
     };
 
-    enum {
+    enum LogResult{
         LogLevelIncorrect = 0,
-        LogFileNotOpen = 1,
-        LogSuccessful = 2,
+        LogLevelInvalid,
+        LogFileNotOpen,
+        LogSuccessful,
     };
+
+    enum LogTo{
+        LogConsoleFile = 0,
+        LogConsole = 1,
+        LogFile = 2,
+    };
+
     class Logger {
 
     private:
@@ -34,8 +42,9 @@ namespace logger{
         void InitializeFile(const std::filesystem::path& appDirectory);
 
         //log to console automatically logs to file
-        void LogToConsole(const std::string &message, const int logLevel);
-        int LogToFile(const std::string &message, const int logLevel);
+        void Log(const std::string &message, LogLevel logLevel, LogTo logDestination);
+        LogResult LogToConsole(const std::string &message, LogLevel logLevel);
+        LogResult LogToFile(const std::string &message, LogLevel logLevel);
 
         void PrintLog();
         void ResetLogString();

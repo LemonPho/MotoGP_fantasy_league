@@ -1,32 +1,16 @@
 #include "Menu.h"
 
 Menu::Menu(){
-    const char* appDataPath = getenv("APPDATA");
-    std::filesystem::path tempDirectory = appDataPath;
-    std::filesystem::path tempLogDirectory = appDataPath;
+    m_Logger = nullptr;
+}
 
-    if(!std::filesystem::exists(tempDirectory)){
-        std::cout << "The appdata roaming path was not found, closing app" << std::endl;
-        std::cin.ignore();
-        exit(0);
-    }
-
-    m_AppDirectory = tempDirectory / "MotoGP Fantasy League";
-    tempLogDirectory = m_AppDirectory / "Logs";
-
-    if(!std::filesystem::exists(m_AppDirectory)){
-        std::filesystem::create_directory(m_AppDirectory);
-    }
-
-    if(!std::filesystem::exists(tempLogDirectory)){
-        std::filesystem::create_directory(tempLogDirectory);
-    }
+Menu::Menu(std::shared_ptr<logger::Logger> logger){
+    m_Logger = logger;
 }
 
 //basically initialize the whole program
 void Menu::InitializeMenu() {
-    m_Logger.InitializeFile(m_AppDirectory);
-
+    m_Logger->Log("Menu initialized", logger::LogLevelInfo, logger::LogFile);
     MainMenu();
 }
 
@@ -34,7 +18,7 @@ void Menu::PrintMenu(){
     system(CLEAR);
 
     std::cout << "Main Menu" << std::endl;
-    m_Logger.PrintLog();
+    m_Logger->PrintLog();
     std::cout << "1. Seasons Menu" << std::endl;
     std::cout << "2. Members Menu" << std::endl;
     std::cout << "3. Riders Menu" << std::endl;
@@ -46,6 +30,8 @@ void Menu::PrintMenu(){
 }
 
 void Menu::MainMenu() {
+    m_Logger->Log("Opening Main Menu", logger::LogLevelInfo, logger::LogFile);
+
     bool end = false;
     std::string option;
 
@@ -55,42 +41,37 @@ void Menu::MainMenu() {
         //menu selection
         switch(OptionSelector(option)){
             case INVALID_OPTION: {
-                m_Logger.LogToFile("Invalid Option", logger::LogLevelInfo);
+                m_Logger->Log("Invalid Option (" + option + ")", logger::LogLevelInfo, logger::LogConsoleFile);
                 break;
             }
             case SEASONS_MENU: {
-                m_Logger.LogToFile("Opening Seasons Menu", logger::LogLevelInfo);
                 break;
             }
 
             case MEMBERS_MENU: {
-                m_Logger.LogToFile("Opening Members Menu", logger::LogLevelInfo);
                 break;
             }
 
             case RIDERS_MENU: {
-                m_Logger.LogToFile("Opening Riders Menu", logger::LogLevelInfo);
                 break;
             }
 
             case RACES_MENU: {
-                m_Logger.LogToFile("Opening Races Menu", logger::LogLevelInfo);
                 break;
             }
 
             case SETTINGS_MENU: {
-                m_Logger.LogToFile("Opening Settings Menu", logger::LogLevelInfo);
                 break;
             }
 
             case EXIT_MAIN_MENU: {
-                m_Logger.LogToFile("Exiting Main Menu", logger::LogLevelInfo);
+                m_Logger->Log("Exiting Main Menu", logger::LogLevelInfo, logger::LogFile);
                 end = true;
                 break;
             }
 
             default: {
-                m_Logger.LogToFile("Invalid Option", logger::LogLevelInfo);
+                m_Logger->Log("Invalid Option (" + option + ")", logger::LogLevelInfo, logger::LogConsoleFile);
                 break;
             }
         }

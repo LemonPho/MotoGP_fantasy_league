@@ -7,6 +7,8 @@
 #define CLEAR "clear"
 #endif
 
+#include <iostream>
+
 #include "Logger.h"
 
 class Menu {
@@ -22,11 +24,11 @@ public:
     };
 
 private:
-    logger::Logger m_Logger;
-    std::filesystem::path m_AppDirectory;
+    std::shared_ptr<logger::Logger> m_Logger;
 
 public:
     Menu();
+    explicit Menu(std::shared_ptr<logger::Logger> logger);
     void InitializeMenu();
 
     void PrintMenu();

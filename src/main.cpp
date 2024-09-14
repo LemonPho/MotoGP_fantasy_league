@@ -1,7 +1,7 @@
-#include "Menu.h"
+#include "Core.h"
 
 int main() {
-    Menu menu;
-    menu.InitializeMenu();
+    Core core;
+    core.InitializeCore();
     return 0;
 }
