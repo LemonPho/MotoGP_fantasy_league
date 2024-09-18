@@ -4,13 +4,13 @@ Menu::Menu(){
     m_Logger = nullptr;
 }
 
-Menu::Menu(std::shared_ptr<logger::Logger> logger){
+Menu::Menu(std::shared_ptr<Logger> logger){
     m_Logger = logger;
 }
 
 //basically initialize the whole program
 void Menu::InitializeMenu() {
-    m_Logger->Log("Menu initialized", logger::LogLevelInfo, logger::LogFile);
+    m_Logger->Log("Menu initialized", Logger::LogLevelSuccess, Logger::LogFile);
     MainMenu();
 }
 
@@ -30,7 +30,7 @@ void Menu::PrintMenu(){
 }
 
 void Menu::MainMenu() {
-    m_Logger->Log("Opening Main Menu", logger::LogLevelInfo, logger::LogFile);
+    m_Logger->Log("Opening Main Menu", Logger::LogLevelInfo, Logger::LogFile);
 
     bool end = false;
     std::string option;
@@ -41,7 +41,7 @@ void Menu::MainMenu() {
         //menu selection
         switch(OptionSelector(option)){
             case INVALID_OPTION: {
-                m_Logger->Log("Invalid Option (" + option + ")", logger::LogLevelInfo, logger::LogConsoleFile);
+                m_Logger->Log("Invalid Option (" + option + ")", Logger::LogLevelError, Logger::LogConsoleFile);
                 break;
             }
             case SEASONS_MENU: {
@@ -65,13 +65,13 @@ void Menu::MainMenu() {
             }
 
             case EXIT_MAIN_MENU: {
-                m_Logger->Log("Exiting Main Menu", logger::LogLevelInfo, logger::LogFile);
+                m_Logger->Log("Exiting Main Menu", Logger::LogLevelInfo, Logger::LogFile);
                 end = true;
                 break;
             }
 
             default: {
-                m_Logger->Log("Invalid Option (" + option + ")", logger::LogLevelInfo, logger::LogConsoleFile);
+                m_Logger->Log("Invalid Option (" + option + ")", Logger::LogLevelError, Logger::LogConsoleFile);
                 break;
             }
         }

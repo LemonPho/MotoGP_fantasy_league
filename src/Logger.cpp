@@ -4,10 +4,8 @@
 
 #include "Logger.h"
 
-using namespace logger;
-
 Logger::Logger() {
-    m_LogLevel = LogLevelInfo;
+    m_LogLevel = LogLevelSuccess;
     m_LogString = "";
 }
 
@@ -68,12 +66,11 @@ void Logger::Log(const std::string &message, LogLevel logLevel, LogTo logDestina
 
             if(consoleResult == LogLevelInvalid){
                 LogToFile(message, logLevel);
-            }
-
-            if(consoleResult == LogLevelIncorrect){
+            } else if(consoleResult == LogLevelIncorrect){
                 tempString = "Incorrect log level set for console message: " + message + " with log level: " + std::to_string(logLevel);
                 LogToFile(tempString, LogLevelWarning);
             }
+
             break;
         }
 
@@ -83,9 +80,7 @@ void Logger::Log(const std::string &message, LogLevel logLevel, LogTo logDestina
 
             if(fileResult == LogFileNotOpen){
                 LogToConsole("It was not possible to create the log file", LogLevelWarning);
-            }
-
-            if(fileResult == LogLevelIncorrect){
+            } else if(fileResult == LogLevelIncorrect){
                 tempString = "Incorrect log level set for message: " + message + " with log level: " + std::to_string(logLevel);
                 LogToFile(tempString, LogLevelError);
             }
@@ -105,7 +100,7 @@ void Logger::Log(const std::string &message, LogLevel logLevel, LogTo logDestina
 }
 
 //only to be used by the log function, to log to console use Log(message, logLevel, logger::LogConsole)
-LogResult Logger::LogToConsole(const std::string &message, LogLevel logLevel) {
+Logger::LogResult Logger::LogToConsole(const std::string &message, LogLevel logLevel) {
     //check the log level that is wanted to be created is the log level saved in the instance
     if(logLevel < m_LogLevel){
         return LogLevelInvalid;
@@ -114,6 +109,10 @@ LogResult Logger::LogToConsole(const std::string &message, LogLevel logLevel) {
     //save to log string and file based on log level
     std::string tempString;
     switch(logLevel){
+        case LogLevelSuccess: {
+            m_LogString += "\033[32m[SUCCESS]: \033[0m" + message + "\n";
+        }
+
         case LogLevelInfo: {
             m_LogString += "\033[36m[INFO]: \033[0m" + message + "\n";
             break;
@@ -137,8 +136,8 @@ LogResult Logger::LogToConsole(const std::string &message, LogLevel logLevel) {
     return LogSuccessful;
 }
 
-//only to be used by the log function, to log to console use Log(message, logLevel, logger::LogFile)
-LogResult Logger::LogToFile(const std::string &message, LogLevel logLevel) {
+//only to be used by the log function, to log to file use Log(message, logLevel, logger::LogFile)
+Logger::LogResult Logger::LogToFile(const std::string &message, LogLevel logLevel) {
     //if log level is below the one defined in the model then dont log
     if(logLevel < m_LogLevel){
         return LogLevelInvalid;
@@ -157,25 +156,29 @@ LogResult Logger::LogToFile(const std::string &message, LogLevel logLevel) {
 
     //save based on log level
     switch(logLevel){
+        case LogLevelSuccess: {
+            m_LogFile << timestamp << " [SUCCESS]: " << message << std::endl;
+            break;
+        }
+
         case LogLevelInfo: {
             m_LogFile << timestamp << " [INFO]: " << message << std::endl;
             break;
         }
 
         case LogLevelWarning: {
-            m_LogFile << timestamp << "[WARNING]: " << message << std::endl;
+            m_LogFile << timestamp << " [WARNING]: " << message << std::endl;
             break;
         }
 
         case LogLevelError: {
-            m_LogFile << timestamp << "[ERROR]: " << message << std::endl;
+            m_LogFile << timestamp << " [ERROR]: " << message << std::endl;
             break;
         }
 
         default: {
             m_LogFile << timestamp << "[ERROR]: Incorrect log level defined for message: " << message << std::endl;
             return LogLevelIncorrect;
-            break;
         }
     }
 

@@ -11,6 +11,12 @@ add_executable(MotoGP_Fantasy_League src/main.cpp
         include/SeasonMenu.h
         src/SeasonMenu.cpp
         include/Core.h
-        src/Core.cpp)
+        src/Core.cpp
+        include/Rider.h
+        src/Rider.cpp
+        include/RiderManager.h
+        src/RiderManager.cpp
+        include/Util.h
+        src/Util.cpp)
 
 target_include_directories(MotoGP_Fantasy_League PRIVATE ${CMAKE_SOURCE_DIR}/include)

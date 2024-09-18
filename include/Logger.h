@@ -8,9 +8,14 @@
 #include <filesystem>
 #include <cstdlib>
 
-namespace logger{
+
+
+
+class Logger {
+public:
     enum LogLevel{
-        LogLevelInfo = 0,
+        LogLevelSuccess = 0,
+        LogLevelInfo,
         LogLevelWarning,
         LogLevelError,
     };
@@ -28,28 +33,26 @@ namespace logger{
         LogFile = 2,
     };
 
-    class Logger {
+private:
+    int m_LogLevel;
+    std::string m_LogString;
+    std::ofstream m_LogFile;
+public:
+    Logger();
+    explicit Logger(int logLevel);
+    ~Logger();
 
-    private:
-        int m_LogLevel;
-        std::string m_LogString;
-        std::ofstream m_LogFile;
-    public:
-        Logger();
-        explicit Logger(int logLevel);
-        ~Logger();
+    void InitializeFile(const std::filesystem::path& appDirectory);
 
-        void InitializeFile(const std::filesystem::path& appDirectory);
+    //log to console automatically logs to file
+    void Log(const std::string &message, LogLevel logLevel, LogTo logDestination);
+    LogResult LogToConsole(const std::string &message, LogLevel logLevel);
+    LogResult LogToFile(const std::string &message, LogLevel logLevel);
 
-        //log to console automatically logs to file
-        void Log(const std::string &message, LogLevel logLevel, LogTo logDestination);
-        LogResult LogToConsole(const std::string &message, LogLevel logLevel);
-        LogResult LogToFile(const std::string &message, LogLevel logLevel);
+    void PrintLog();
+    void ResetLogString();
+};
 
-        void PrintLog();
-        void ResetLogString();
-    };
-}
 
 
 

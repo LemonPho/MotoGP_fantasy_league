@@ -24,11 +24,11 @@ public:
     };
 
 private:
-    std::shared_ptr<logger::Logger> m_Logger;
+    std::shared_ptr<Logger> m_Logger;
 
 public:
     Menu();
-    explicit Menu(std::shared_ptr<logger::Logger> logger);
+    explicit Menu(std::shared_ptr<Logger> logger);
     void InitializeMenu();
 
     void PrintMenu();
