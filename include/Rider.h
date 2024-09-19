@@ -2,6 +2,9 @@
 #define MOTOGP_FANTASY_LEAGUE_MODERN_RIDER_H
 
 #include <iostream>
+#include <memory>
+
+#include "Logger.h"
 
 class Rider {
 public:
@@ -17,8 +20,10 @@ private:
     std::string m_Number;
     std::string m_Country;
     std::string m_Team;
+    std::shared_ptr<Logger> m_Logger;
 public:
     Rider();
+    Rider(std::shared_ptr<Logger> logger);
 
     bool SetData(const std::string &firstName, const std::string &lastName, const std::string &number, const std::string &country, const std::string &team);
     bool SetNumber(const std::string &number);

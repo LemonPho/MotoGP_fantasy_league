@@ -8,8 +8,18 @@ Rider::Rider() {
     m_Team = "Team";
 }
 
+Rider::Rider(std::shared_ptr<Logger> logger) {
+    m_Logger = logger;
+    m_FirstName = "First name";
+    m_LastName = "Last name";
+    m_Number = "0";
+    m_Country = "Country";
+    m_Team = "Team";
+}
+
 bool Rider::SetData(const std::string &firstName, const std::string &lastName, const std::string &number, const std::string &country, const std::string &team) {
     if(std::stoi(number) < 1 || std::stoi(number) > 99){
+        m_Logger->Log("Invalid number: " + number, Logger::LogLevelError, Logger::LogConsoleFile);
         return false;
     }
 
@@ -24,6 +34,7 @@ bool Rider::SetData(const std::string &firstName, const std::string &lastName, c
 
 bool Rider::SetNumber(const std::string &number) {
     if(std::stoi(number) < 1 || std::stoi(number) > 99){
+        m_Logger->Log("Invalid number: " + number, Logger::LogLevelError, Logger::LogConsoleFile);
         return false;
     }
 

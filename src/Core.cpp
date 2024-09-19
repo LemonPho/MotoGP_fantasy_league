@@ -3,7 +3,6 @@
 Core::Core() {
     const char* appDataPath = getenv("APPDATA");
     std::filesystem::path tempDirectory = appDataPath;
-    std::filesystem::path tempLogDirectory;
 
     if(!std::filesystem::exists(tempDirectory)){
         std::cout << "The appdata roaming path was not found, press enter to close" << std::endl;
@@ -11,31 +10,30 @@ Core::Core() {
         exit(0);
     }
 
-    m_AppDirectory = tempDirectory / "MotoGP Fantasy League";
-    tempLogDirectory = m_AppDirectory / "logs";
-    m_AppDirectoryData = m_AppDirectory / "data";
+    util::APP_DIRECTORY = tempDirectory / "MotoGP Fantasy League";
+    util::APP_DIRECTORY_LOG = util::APP_DIRECTORY / "logs";
+    util::APP_DIRECTORY_DATA = util::APP_DIRECTORY / "data";
 
-    if(!std::filesystem::exists(m_AppDirectory)){
-        std::filesystem::create_directory(m_AppDirectory);
+    if(!std::filesystem::exists(util::APP_DIRECTORY)){
+        std::filesystem::create_directory(util::APP_DIRECTORY);
     }
 
-    if(!std::filesystem::exists(tempLogDirectory)){
-        std::filesystem::create_directory(tempLogDirectory);
+    if(!std::filesystem::exists(util::APP_DIRECTORY_LOG)){
+        std::filesystem::create_directory(util::APP_DIRECTORY_LOG);
     }
 
-    if(!std::filesystem::exists(m_AppDirectoryData)){
-        std::filesystem::create_directory(m_AppDirectoryData);
+    if(!std::filesystem::exists(util::APP_DIRECTORY_DATA)){
+        std::filesystem::create_directory(util::APP_DIRECTORY_DATA);
     }
 
     m_Menu = Menu(m_Logger);
 }
 
-//TODO: code what is needed for first start and all that
 void Core::InitializeCore() {
-    m_Logger->InitializeFile(m_AppDirectory);
+    m_Logger->InitializeFile(util::APP_DIRECTORY);
     m_Logger->Log("Finding program data file", Logger::LogLevelInfo, Logger::LogFile);
 
-    if(!std::filesystem::exists(m_AppDirectoryData)){
+    if(!std::filesystem::exists(util::APP_DIRECTORY_DATA)){
         m_Logger->Log("Data directory was not found, program was not able to create it", Logger::LogLevelError, Logger::LogConsoleFile);
         m_Logger->PrintLog();
         std::cout << "Press enter to exit" << std::endl;
@@ -43,7 +41,7 @@ void Core::InitializeCore() {
         exit(0);
     }
 
-    std::filesystem::path programData = m_AppDirectoryData / PROGRAM_DATA;
+    std::filesystem::path programData = util::APP_DIRECTORY_DATA / util::PROGRAM_DATA;
 
     if(!std::filesystem::exists(programData)){
         m_Logger->Log("Program data file not found, creating", Logger::LogLevelInfo, Logger::LogFile);
@@ -66,11 +64,11 @@ void Core::InitializeCore() {
             m_Logger->Log("Program data file empty, starting first start", Logger::LogLevelInfo, Logger::LogFile);
             FirstStart();
         } else {
-            *m_SelectedSeason = tempString;
+            m_SelectedSeason = tempString;
             m_Logger->Log("Checking data files with season: " + tempString, Logger::LogLevelInfo, Logger::LogFile);
-            std::ifstream membersFile(m_AppDirectoryData/(tempString + MEMBER_DATA));
-            std::ifstream ridersFile(m_AppDirectoryData/(tempString + RIDER_DATA));
-            std::ifstream racesFile(m_AppDirectoryData/(tempString + RACE_DATA));
+            std::ifstream membersFile(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::MEMBER_DATA));
+            std::ifstream ridersFile(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::RIDER_DATA));
+            std::ifstream racesFile(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::RACE_DATA));
 
             if(!membersFile.is_open() || !ridersFile.is_open() || !racesFile.is_open()){
                 m_Logger->Log("Could not open one of the program files", Logger::LogLevelError, Logger::LogConsoleFile);
@@ -86,12 +84,12 @@ void Core::InitializeCore() {
 
     m_Logger->Log("Core initialized", Logger::LogLevelSuccess, Logger::LogFile);
 
-    m_Menu.InitializeMenu();
+    m_Menu.InitializeMenu(m_SelectedSeason);
 }
 
 void Core::FirstStart() {
     m_Logger->Log("Creating program data files", Logger::LogLevelInfo, Logger::LogFile);
-    std::ofstream programData(m_AppDirectoryData/PROGRAM_DATA, std::ios::out);
+    std::ofstream programData(util::APP_DIRECTORY_DATA/util::PROGRAM_DATA, std::ios::out);
 
     if(!programData.is_open()){
         m_Logger->Log("Could not create the program data file", Logger::LogLevelError, Logger::LogConsoleFile);
@@ -112,9 +110,9 @@ void Core::FirstStart() {
 
         m_Logger->Log("Creating program files with season name: " + input, Logger::LogLevelInfo, Logger::LogFile);
 
-        std::ofstream file1(m_AppDirectoryData/(input + MEMBER_DATA));
-        std::ofstream file2(m_AppDirectoryData/(input + RACE_DATA));
-        std::ofstream file3(m_AppDirectoryData/(input + RIDER_DATA));
+        std::ofstream file1(util::APP_DIRECTORY_DATA/(input + util::MEMBER_DATA));
+        std::ofstream file2(util::APP_DIRECTORY_DATA/(input + util::RACE_DATA));
+        std::ofstream file3(util::APP_DIRECTORY_DATA/(input + util::RIDER_DATA));
 
         if(!file1.is_open() || !file2.is_open() || !file3.is_open()){
             m_Logger->Log("Could not create files with the season name: " + input, Logger::LogLevelError, Logger::LogFile);
@@ -131,6 +129,4 @@ void Core::FirstStart() {
     }
 
     m_Logger->Log("Files successfully created", Logger::LogLevelSuccess, Logger::LogFile);
-
-
 }

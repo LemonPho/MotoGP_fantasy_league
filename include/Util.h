@@ -1,6 +1,8 @@
-#include <iostream>
+#pragma once
 
 #include <iostream>
+#include <filesystem>
+
 #ifdef _WIN32
 #include <conio.h>
 #else
@@ -9,6 +11,14 @@
 #endif
 
 namespace util{
+    extern const std::string PROGRAM_DATA;
+    extern const std::string MEMBER_DATA;
+    extern const std::string RIDER_DATA;
+    extern const std::string RACE_DATA;
+    extern std::filesystem::path APP_DIRECTORY;
+    extern std::filesystem::path APP_DIRECTORY_DATA;
+    extern std::filesystem::path APP_DIRECTORY_LOG;
+
     std::string FillSpaces(std::string line, int spaces);
     void gotoxy(int x, int y);
     void PrintMenu(std::string menuOptions[], int optionCount);

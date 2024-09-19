@@ -6,10 +6,18 @@ Menu::Menu(){
 
 Menu::Menu(std::shared_ptr<Logger> logger){
     m_Logger = logger;
+    m_MemberList = MemberList(logger);
+    m_RiderManagerList = RiderManagerList(logger);
 }
 
-//basically initialize the whole program
-void Menu::InitializeMenu() {
+void Menu::InitializeMenu(const std::string &selectedSeason) {
+    RiderManagerList riderManagerList(m_Logger);
+    MemberList memberList(m_Logger);
+
+    m_Logger->Log("Loading data from files", Logger::LogLevelInfo, Logger::LogFile);
+
+    memberList.ReadFromDisk(util::APP_DIRECTORY_DATA/(selectedSeason + util::MEMBER_DATA));
+    riderManagerList.ReadFromDisk(util::APP_DIRECTORY_DATA/(selectedSeason + util::RIDER_DATA));
     m_Logger->Log("Menu initialized", Logger::LogLevelSuccess, Logger::LogFile);
     MainMenu();
 }

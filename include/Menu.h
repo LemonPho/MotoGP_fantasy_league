@@ -10,6 +10,9 @@
 #include <iostream>
 
 #include "Logger.h"
+#include "RiderManagerList.h"
+#include "MemberList.h"
+#include "Util.h"
 
 class Menu {
 public:
@@ -25,11 +28,12 @@ public:
 
 private:
     std::shared_ptr<Logger> m_Logger;
-
+    RiderManagerList m_RiderManagerList;
+    MemberList m_MemberList;
 public:
     Menu();
     explicit Menu(std::shared_ptr<Logger> logger);
-    void InitializeMenu();
+    void InitializeMenu(const std::string &selectedSeason);
 
     void PrintMenu();
     void MainMenu();

@@ -1,18 +1,28 @@
 #ifndef MOTOGP_FANTASY_LEAGUE_MODERN_RIDERMANAGER_H
 #define MOTOGP_FANTASY_LEAGUE_MODERN_RIDERMANAGER_H
 
+#include <iostream>
+#include <memory>
+#include <vector>
+#include <fstream>
+
 #include "Rider.h"
 #include "Util.h"
+#include "Logger.h"
 
 class RiderManager {
 private:
-    Rider m_Rider;
+    std::shared_ptr<Rider> m_Rider;
+    std::shared_ptr<Logger> m_Logger;
     int m_Points;
     int m_Position;
 public:
     RiderManager();
+    explicit RiderManager(std::shared_ptr<Logger> logger);
+    RiderManager(std::shared_ptr<Rider> rider, std::shared_ptr<Logger> m_Logger);
 
-    void SetRider(Rider rider);
+    void SetLogger(std::shared_ptr<Logger> logger);
+    void SetRider(std::shared_ptr<Rider> rider);
     bool SetPoints(int points);
     bool SetPosition(int position);
 
