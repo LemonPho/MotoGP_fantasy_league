@@ -19,8 +19,8 @@ void MemberList::RemoveMember(Member member) {
 std::string MemberList::ToString() {
     std::string result;
 
-    for(auto i : m_MemberList){
-        result += i.ToStringSmall() + "\n";
+    for(auto member : m_MemberList){
+        result += member.ToStringSmall() + "\n";
     }
 
     return result;
@@ -62,6 +62,14 @@ void MemberList::SortMembers() {
     std::sort(m_MemberList.begin(), m_MemberList.end());
 }
 
+void MemberList::DeleteAllMembers() {
+    m_MemberList.clear();
+    std::vector<Member> emptyMemberList;
+    m_MemberList.swap(emptyMemberList);
+
+    m_Logger->Log("Members deleted", Logger::LogLevelSuccess, Logger::LogConsoleFile);
+}
+
 void MemberList::WriteToDisk(const std::filesystem::path &fileName) {
     std::ofstream file(fileName, std::ios::out);
     std::string tempString;
@@ -83,16 +91,15 @@ void MemberList::WriteToDisk(const std::filesystem::path &fileName) {
     }
 
     file.close();
-    m_Logger->Log("Member data successfully saved", Logger::LogLevelSuccess, Logger::LogFile);
+    m_Logger->Log("Member data successfully saved", Logger::LogLevelSuccess, Logger::LogConsoleFile);
 }
 
-void MemberList::ReadFromDisk(const std::filesystem::path &fileName) {
+void MemberList::ReadFromDisk(const std::filesystem::path &fileName, RiderManagerList riderManagerList) {
     std::ifstream file(fileName);
     std::string tempString;
 
     std::string userName, independentNumber, number;
     std::shared_ptr<Rider> tempRider = std::make_shared<Rider>(m_Logger);
-    RiderManager tempRiderManager(m_Logger);
     int pointsMember = 0;
     Member tempMember(m_Logger);
 
@@ -112,11 +119,18 @@ void MemberList::ReadFromDisk(const std::filesystem::path &fileName) {
         userName = tempString;
         tempMember.SetUserName(userName);
         for(i = 0; i < Member::RIDER_COUNT; i++){
+            RiderManager tempRiderManager(m_Logger);
             getline(file, tempString, '|');
             number = tempString;
             tempRider->SetNumber(number);
             tempRiderManager.SetRider(tempRider);
-            tempMember.InsertRider(tempRiderManager);
+            tempRiderManager = riderManagerList.FindRiderManager(tempRiderManager);
+            tempRiderManager.SetPosition(i+1);
+            if(tempRiderManager.GetRiderPtr() == nullptr){
+                m_Logger->Log("Could not find rider #" + number, Logger::LogLevelError, Logger::LogConsoleFile);
+            } else {
+                tempMember.InsertRiderManager(tempRiderManager);
+            }
         }
         tempMember.SetPoints(pointsMember);
         m_MemberList.push_back(tempMember);

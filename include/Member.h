@@ -22,7 +22,7 @@ public:
     Member();
     explicit Member(std::shared_ptr<Logger> logger);
     bool SetUserName(const std::string &userName);
-    void InsertRider(RiderManager &riderManager);
+    void InsertRiderManager(RiderManager &riderManager);
     void SetRiderList(std::vector<RiderManager> riderList);
     bool SetPoints(int points);
 

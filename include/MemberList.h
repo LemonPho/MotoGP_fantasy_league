@@ -7,6 +7,7 @@
 
 #include "Member.h"
 #include "Logger.h"
+#include "RiderManagerList.h"
 
 class MemberList {
 private:
@@ -18,6 +19,7 @@ public:
 
     void AddMember(Member member);
     void RemoveMember(Member member);
+    void DeleteAllMembers();
 
     std::string ToString();
     std::string ToStringSmallHTML();
@@ -25,8 +27,7 @@ public:
     void SortMembers();
 
     void WriteToDisk(const std::filesystem::path &fileName);
-    void ReadFromDisk(const std::filesystem::path &fileName);
-
+    void ReadFromDisk(const std::filesystem::path &fileName, RiderManagerList riderManagerList);
 
 };
 

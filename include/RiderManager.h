@@ -26,6 +26,7 @@ public:
     bool SetPoints(int points);
     bool SetPosition(int position);
 
+    std::shared_ptr<Rider> GetRiderPtr();
     Rider& GetRider();
     int GetPoints();
     int GetPosition();

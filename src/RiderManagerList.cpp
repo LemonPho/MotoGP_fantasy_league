@@ -1,11 +1,15 @@
 #include "RiderManagerList.h"
 
 RiderManagerList::RiderManagerList() {
-    m_Logger = nullptr;
+    m_Logger = std::make_shared<Logger>();
 }
 
 RiderManagerList::RiderManagerList(std::shared_ptr<Logger> logger) {
     m_Logger = logger;
+}
+
+std::vector<RiderManager> RiderManagerList::GetRiderManagerList() {
+    return m_RiderManagerList;
 }
 
 void RiderManagerList::AddRiderManager(RiderManager riderManager) {
@@ -14,6 +18,18 @@ void RiderManagerList::AddRiderManager(RiderManager riderManager) {
 
 void RiderManagerList::RemoveRiderManager(RiderManager riderManager) {
     m_RiderManagerList.erase(std::remove(m_RiderManagerList.begin(), m_RiderManagerList.end(), riderManager), m_RiderManagerList.end());
+}
+
+RiderManager RiderManagerList::FindRiderManager(RiderManager riderManager) {
+    for(auto tempRiderManager : m_RiderManagerList){
+        if(tempRiderManager == riderManager){
+            return tempRiderManager;
+        }
+    }
+
+    RiderManager tempRiderManager;
+
+    return tempRiderManager;
 }
 
 void RiderManagerList::WriteToDisk(const std::filesystem::path &fileName) {
@@ -40,8 +56,6 @@ void RiderManagerList::ReadFromDisk(const std::filesystem::path &fileName) {
 
     std::string firstName, lastName, country, team, number;
     int points;
-    std::shared_ptr<Rider> tempRider = std::make_shared<Rider>(m_Logger);
-    RiderManager tempRiderManager(m_Logger);
 
     if(!file.is_open()){
         m_Logger->Log("Couldn't open the file at: " + fileName.string() + " to load the rider list", Logger::LogLevelError, Logger::LogConsoleFile);
@@ -55,6 +69,8 @@ void RiderManagerList::ReadFromDisk(const std::filesystem::path &fileName) {
     }
 
     while(tempString != " " && !tempString.empty()){
+        std::shared_ptr<Rider> tempRider = std::make_shared<Rider>(m_Logger);
+        RiderManager tempRiderManager(m_Logger);
         number = tempString;
         getline(file, tempString, '|');
         firstName = tempString;

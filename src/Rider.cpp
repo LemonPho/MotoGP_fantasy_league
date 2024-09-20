@@ -1,6 +1,7 @@
 #include "Rider.h"
 
 Rider::Rider() {
+    m_Logger = std::make_shared<Logger>();
     m_FirstName = "First name";
     m_LastName = "Last name";
     m_Number = "0";

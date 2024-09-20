@@ -17,8 +17,13 @@ public:
     RiderManagerList();
     explicit RiderManagerList(std::shared_ptr<Logger> logger);
 
+    std::vector<RiderManager> GetRiderManagerList();
+
     void AddRiderManager(RiderManager riderManager);
     void RemoveRiderManager(RiderManager riderManager);
+
+    RiderManager FindRiderManager(RiderManager riderManager);
+    //std::shared_ptr<Rider> FindRider(RiderManager riderManager);
 
     void WriteToDisk(const std::filesystem::path &fileName);
     void ReadFromDisk(const std::filesystem::path &fileName);

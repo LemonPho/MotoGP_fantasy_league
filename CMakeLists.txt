@@ -23,6 +23,8 @@ add_executable(MotoGP_Fantasy_League src/main.cpp
         include/RiderManagerList.h
         src/RiderManagerList.cpp
         include/MemberList.h
-        src/MemberList.cpp)
+        src/MemberList.cpp
+        include/MemberMenu.h
+        src/MemberMenu.cpp)
 
 target_include_directories(MotoGP_Fantasy_League PRIVATE ${CMAKE_SOURCE_DIR}/include)

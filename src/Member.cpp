@@ -21,7 +21,7 @@ bool Member::SetUserName(const std::string &userName) {
     return true;
 }
 
-void Member::InsertRider(RiderManager &riderManager) {
+void Member::InsertRiderManager(RiderManager &riderManager) {
     m_RiderList.push_back(riderManager);
     m_Logger->Log("Rider with number: " + riderManager.GetRider().GetNumber() + " was added to " + m_UserName, Logger::LogLevelSuccess, Logger::LogFile);
 }
@@ -62,8 +62,8 @@ std::string Member::ToStringSmall() {
 
     result = util::FillSpaces(result, SPACE_USERNAME - result.length());
 
-    for(auto &i: m_RiderList){
-        result += i.ToStringSmall(true);
+    for(auto rider: m_RiderList){
+        result += rider.ToStringSmall(true);
         result += " ";
     }
 

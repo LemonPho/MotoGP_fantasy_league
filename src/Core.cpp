@@ -1,6 +1,7 @@
 #include "Core.h"
 
 Core::Core() {
+#ifdef _WIN32
     const char* appDataPath = getenv("APPDATA");
     std::filesystem::path tempDirectory = appDataPath;
 
@@ -26,7 +27,24 @@ Core::Core() {
         std::filesystem::create_directory(util::APP_DIRECTORY_DATA);
     }
 
+    PWSTR downloadsPath = nullptr;
+
+    //locate downloads folder
+    if(SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Downloads, 0, NULL, &downloadsPath))){
+        util::DOWNLOADS_DIRECTORY = std::filesystem::path(downloadsPath);
+    } else {
+        m_Logger->Log("Could not locate downloads directory", Logger::LogLevelWarning, Logger::LogConsoleFile);
+    }
+
+    //free memory
+    if(downloadsPath){
+        CoTaskMemFree(downloadsPath);
+    }
+
     m_Menu = Menu(m_Logger);
+#else
+
+#endif
 }
 
 void Core::InitializeCore() {

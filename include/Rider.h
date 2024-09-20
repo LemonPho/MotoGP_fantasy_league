@@ -8,13 +8,16 @@
 
 class Rider {
 public:
-    static const int SPACE_POSITION = 2;
-    static const int SPACE_NUMBER = 2;
-    static const int SPACE_COUNTRY = 20;
-    static const int SPACE_TEAM = 40;
-    static const int SPACE_POINTS = 4;
-    static const int SPACE_NAME = 25;
-    static const int SPACE_PRINT_SMALL = 25;
+    enum spacing{
+        SPACE_POSITION = 2,
+        SPACE_NUMBER = 2,
+        SPACE_COUNTRY = 20,
+        SPACE_TEAM = 40,
+        SPACE_POINTS = 4,
+        SPACE_NAME = 25,
+        SPACE_PRINT_SMALL = 25,
+    };
+
 private:
     std::string m_FirstName, m_LastName;
     std::string m_Number;

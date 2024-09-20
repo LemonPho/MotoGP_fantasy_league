@@ -1,7 +1,7 @@
 #include "Menu.h"
 
 Menu::Menu(){
-    m_Logger = nullptr;
+    m_Logger = std::make_shared<Logger>();
 }
 
 Menu::Menu(std::shared_ptr<Logger> logger){
@@ -16,8 +16,8 @@ void Menu::InitializeMenu(const std::string &selectedSeason) {
 
     m_Logger->Log("Loading data from files", Logger::LogLevelInfo, Logger::LogFile);
 
-    memberList.ReadFromDisk(util::APP_DIRECTORY_DATA/(selectedSeason + util::MEMBER_DATA));
     riderManagerList.ReadFromDisk(util::APP_DIRECTORY_DATA/(selectedSeason + util::RIDER_DATA));
+    memberList.ReadFromDisk(util::APP_DIRECTORY_DATA/(selectedSeason + util::MEMBER_DATA), riderManagerList);
     m_Logger->Log("Menu initialized", Logger::LogLevelSuccess, Logger::LogFile);
     MainMenu();
 }
@@ -57,6 +57,8 @@ void Menu::MainMenu() {
             }
 
             case MEMBERS_MENU: {
+                MemberMenu memberMenu(m_Logger);
+                memberMenu.InitializeMemberMenu();
                 break;
             }
 

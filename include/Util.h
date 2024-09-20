@@ -3,11 +3,16 @@
 #include <iostream>
 #include <filesystem>
 
+//certain libraries needed for different operating systems
 #ifdef _WIN32
 #include <conio.h>
+#include <shlobj.h>
+#include <windows.h>
+#define CLEAR "cls"
 #else
 #include <termios.h>
 #include <unistd.h>
+#define CLEAR "clear"
 #endif
 
 namespace util{
@@ -18,6 +23,7 @@ namespace util{
     extern std::filesystem::path APP_DIRECTORY;
     extern std::filesystem::path APP_DIRECTORY_DATA;
     extern std::filesystem::path APP_DIRECTORY_LOG;
+    extern std::filesystem::path DOWNLOADS_DIRECTORY;
 
     std::string FillSpaces(std::string line, int spaces);
     void gotoxy(int x, int y);

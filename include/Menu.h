@@ -1,22 +1,17 @@
 #ifndef UNTITLED_MENU_H
 #define UNTITLED_MENU_H
 
-#ifdef _WIN32
-#define CLEAR "cls"
-#else
-#define CLEAR "clear"
-#endif
-
 #include <iostream>
 
 #include "Logger.h"
 #include "RiderManagerList.h"
 #include "MemberList.h"
 #include "Util.h"
+#include "MemberMenu.h"
 
 class Menu {
 public:
-    enum{
+    enum options{
         INVALID_OPTION = 0,
         SEASONS_MENU,
         MEMBERS_MENU,

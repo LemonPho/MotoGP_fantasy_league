@@ -8,6 +8,7 @@ namespace util {
     std::filesystem::path APP_DIRECTORY;
     std::filesystem::path APP_DIRECTORY_DATA;
     std::filesystem::path APP_DIRECTORY_LOG;
+    std::filesystem::path DOWNLOADS_DIRECTORY;
 
 //fills needed spaces to print everything aligned
     std::string FillSpaces(std::string line, int spaces){

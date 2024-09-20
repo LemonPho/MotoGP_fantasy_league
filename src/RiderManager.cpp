@@ -2,7 +2,7 @@
 
 RiderManager::RiderManager() {
     m_Rider = std::make_shared<Rider>();
-    m_Logger = nullptr;
+    m_Logger = std::make_shared<Logger>();
     m_Points = 0;
     m_Position = 0;
 }
@@ -47,7 +47,11 @@ bool RiderManager::SetPosition(int position) {
     return true;
 }
 
-Rider &RiderManager::GetRider() {
+std::shared_ptr<Rider> RiderManager::GetRiderPtr() {
+    return m_Rider;
+}
+
+Rider& RiderManager::GetRider(){
     return *m_Rider;
 }
 
@@ -151,25 +155,25 @@ RiderManager &RiderManager::operator=(const RiderManager &riderManager) {
 }
 
 bool RiderManager::operator==(const RiderManager &riderManager) {
-    return this->m_Rider == riderManager.m_Rider;
+    return this->m_Rider->GetNumber() == riderManager.m_Rider->GetNumber();
 }
 
 bool RiderManager::operator>=(const RiderManager &riderManager) {
-    return this->m_Rider >= riderManager.m_Rider;
+    return this->m_Rider->GetNumber() >= riderManager.m_Rider->GetNumber();
 }
 
 bool RiderManager::operator!=(const RiderManager &riderManager) {
-    return this->m_Rider != riderManager.m_Rider;
+    return this->m_Rider->GetNumber() != riderManager.m_Rider->GetNumber();
 }
 
 bool RiderManager::operator<=(const RiderManager &riderManager) {
-    return this->m_Rider <= riderManager.m_Rider;
+    return this->m_Rider->GetNumber() <= riderManager.m_Rider->GetNumber();
 }
 
 bool RiderManager::operator<(const RiderManager &riderManager) {
-    return this->m_Rider < riderManager.m_Rider;
+    return this->m_Rider->GetNumber() < riderManager.m_Rider->GetNumber();
 }
 
 bool RiderManager::operator>(const RiderManager &riderManager) {
-    return this->m_Rider > riderManager.m_Rider;
+    return this->m_Rider->GetNumber() > riderManager.m_Rider->GetNumber();
 }
