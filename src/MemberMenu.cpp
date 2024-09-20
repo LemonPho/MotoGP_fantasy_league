@@ -9,6 +9,9 @@ MemberMenu::MemberMenu(std::shared_ptr<Logger> logger) {
 }
 
 void MemberMenu::InitializeMemberMenu() {
+    m_Logger->Log("Initializing member menu", Logger::LogLevelInfo, Logger::LogFile);
+    m_MemberList = MemberList(m_Logger);
+    m_RiderManagerList = RiderManagerList(m_Logger);
     std::ifstream file(util::APP_DIRECTORY_DATA/util::PROGRAM_DATA);
     std::string tempString;
 
@@ -22,6 +25,7 @@ void MemberMenu::InitializeMemberMenu() {
     m_RiderManagerList.ReadFromDisk(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::RIDER_DATA));
     m_MemberList.ReadFromDisk(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::MEMBER_DATA), m_RiderManagerList);
 
+    m_Logger->Log("Initialized member menu, starting menu", Logger::LogLevelInfo, Logger::LogFile);
     Menu();
 }
 
@@ -30,6 +34,9 @@ void MemberMenu::Menu() {
     bool end = false;
     bool saveChanges;
     std::string option;
+
+    m_MemberList.UpdateMembersPoints();
+    m_MemberList.SortMembers();
 
     do {
         system(CLEAR);
@@ -51,12 +58,14 @@ void MemberMenu::Menu() {
                 break;
             }
             case ADD_MEMBER: {
-                m_Logger->Log("Opening add member", Logger::LogLevelInfo, Logger::LogFile);
                 if(!saveChanges){
                     saveChanges = AddMember();
                 } else {
                     AddMember();
                 }
+
+                m_MemberList.UpdateMembersPoints();
+                m_MemberList.SortMembers();
                 break;
             }
 
@@ -67,6 +76,9 @@ void MemberMenu::Menu() {
                 } else {
                     DeleteMember();
                 }
+
+                m_MemberList.UpdateMembersPoints();
+                m_MemberList.SortMembers();
                 break;
             }
 
@@ -77,6 +89,9 @@ void MemberMenu::Menu() {
                 } else {
                     ModifyMember();
                 }
+
+                m_MemberList.UpdateMembersPoints();
+                m_MemberList.SortMembers();
                 break;
             }
 
@@ -96,14 +111,15 @@ void MemberMenu::Menu() {
                 if(opt == 'Y' || opt == 'y'){
                     m_Logger->Log("Deleting all member", Logger::LogLevelInfo, Logger::LogFile);
                     m_MemberList.DeleteAllMembers();
-
                 }
-                util::EnterToContinue();
                 saveChanges = true;
                 break;
             }
 
             case CREATE_STANDINGS_FILE: {
+                m_MemberList.UpdateMembersPoints();
+                m_MemberList.SortMembers();
+                m_Logger->Log("Creating standings file", Logger::LogLevelInfo, Logger::LogFile);
                 std::ofstream fileTXT(util::DOWNLOADS_DIRECTORY/"MotoGP fantasy standings.txt", std::ios::out);
                 std::ofstream fileHTML(util::DOWNLOADS_DIRECTORY/"MotoGP fantasy standings.html", std::ios::out);
 
@@ -123,6 +139,15 @@ void MemberMenu::Menu() {
             }
 
             case EXIT: {
+                m_Logger->Log("Exiting member menu", Logger::LogLevelInfo, Logger::LogFile);
+                if(saveChanges){
+                    char opt;
+                    std::cout << "Would you like to save the changes made? (Y/N): ";
+                    std::cin >> opt;
+                    if(opt == 'y' || opt == 'Y'){
+                        m_MemberList.WriteToDisk(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::MEMBER_DATA));
+                    }
+                }
                 end = true;
                 break;
             }
@@ -131,8 +156,188 @@ void MemberMenu::Menu() {
 }
 
 bool MemberMenu::AddMember() {
-    int riderCount = m_RiderManagerList.GetRiderManagerList().size();
+    m_Logger->Log("Opening add member", Logger::LogLevelInfo, Logger::LogFile);
+    //rider count
+    size_t riderCount = m_RiderManagerList.GetRiderManagerList().size();
+    //temporary data types
+    Member tempMember;
+    std::string userName, tempRiderNumber;
+    Rider tempIndependent, tempRider;
+    RiderManager tempRiderManager;
+    //array of riders in string format
+    std::vector<std::string> riderStringArray = m_RiderManagerList.ToStringVector();
 
+    //array to save the selected riders by the user
+    int selections[Member::RIDER_COUNT] = {-1, -1, -1, -1, -1, -1};
+    //amount of riders selected
+    int amountSelected=0;
+    //option to keep track of what rider is being highlighted
+    //lineOption is used to keep track of what line is being selected, since there is spacing in the top for info on how to use
+    int option = 1, lineOption;
+    //key inputted
+    int key;
+    bool exit = false;
+
+    //spacing for ui elements
+    //use longestStringLength to know how far to put the right arrow
+    size_t longestStringLength = 0;
+    for(const auto& riderString : riderStringArray){
+        if(riderString.length() > longestStringLength){
+            longestStringLength = riderString.length();
+        }
+    }
+    //positioning for left and right arrow
+    size_t leftArrow = LEFT_ARROW_SPACING, rightArrow = RIGHT_ARROW_SPACING + longestStringLength;
+    //line where messages go
+    size_t messageLine = MESSAGE_LINE_SPACING + riderCount;
+    //column where messages start
+    size_t messageStart = MESSAGE_START_SPACING;
+    //line where accept is located
+    size_t acceptLine = ACCEPT_LINE_SPACING + riderCount;
+
+    system(CLEAR);
+
+    std::cout << "Before continuing, make sure the application is full screen" << std::endl;
+    std::cout << "If when selecting riders, its all over the place, you can quit pressing q and make the text smaller pressing ctrl and -" << std::endl;
+    util::ClearBuffer();
+    util::EnterToContinue();
+
+    system(CLEAR);
+
+    m_Logger->Log("Receiving username", Logger::LogLevelInfo, Logger::LogFile);
+    std::cout << "Creating Member" << std::endl;
+    std::cout << "Input a user name: ";
+    std::getline(std::cin, userName);
+    while(!tempMember.SetUserName(userName)){
+        m_Logger->Log("User tried username: " + userName = ", too long", Logger::LogLevelError, Logger::LogFile);
+        std::cout << "Input a username less than " + std::to_string(Member::MAX_USERNAME) + " characters" << std::endl;
+        std::cout << "-> ";
+        std::getline(std::cin, userName);
+    }
+
+    m_Logger->Log("Starting rider selector", Logger::LogLevelInfo, Logger::LogFile);
+    system(CLEAR);
+    std::cout << "Creating Member" << std::endl;
+    std::cout << "Add the member's picks" << std::endl;
+    std::cout << "Enter: add to list" << std::endl;
+    std::cout << "Backspace: remove from list" << std::endl;
+    std::cout << "q: return to member menu" << std::endl;
+
+    util::PrintMenu(riderStringArray);
+    std::cout << std::endl << "\t\t\x1b[32mAccept\033[0m" << std::endl;
+
+    while(!exit){
+        lineOption = option + LINE_OPTION_SPACING;
+
+        util::UpdateArrowPosition(lineOption, leftArrow, rightArrow);
+        key = util::CustomGetch();
+
+        switch(key){
+            case UP_KEY: {
+                if(option == riderCount+1){
+                    option = 1;
+                } else {
+                    option++;
+                }
+                break;
+            }
+
+            case DOWN_KEY:{
+                if(option == 1){
+                    option = riderCount+1;
+                } else {
+                    option--;
+                }
+                break;
+            }
+
+            case ENTER_KEY: {
+                util::gotoxy(messageStart, messageLine);
+                std::cout << "                                                     ";
+
+                if(option == acceptLine){
+                    if(amountSelected >= Member::RIDER_COUNT){
+                        m_Logger->Log("Riders selected and saved", Logger::LogLevelInfo, Logger::LogFile);
+                        exit = true;
+                    } else {
+                        util::gotoxy(messageStart, messageLine);
+                        std::cout << "You must only select 6 riders" << std::endl;
+                    }
+                    break;
+                }
+
+                if(amountSelected == 4){
+                    util::gotoxy(messageStart, messageLine);
+                    std::cout << "The next rider will be the independent rider";
+                }
+
+                if(amountSelected >= Member::RIDER_COUNT){
+                    util::gotoxy(messageStart, messageLine);
+                    std::cout << "You have selected the max amount of riders";
+                    break;
+                }
+                if(option != acceptLine && util::CheckIfSelected(selections, Member::RIDER_COUNT, option-1) == -1){
+                    int i = 0;
+                    for(i; i < Member::RIDER_COUNT; i++){
+                        if(selections[i] == -1){
+                            break;
+                        }
+                    }
+                    if(i >= Member::RIDER_COUNT){
+                        i = 5;
+                    }
+                    selections[i] = option-1;
+                    util::gotoxy(rightArrow + 5, option + 6);
+                    if(i == 5){
+                        std::cout << "i";
+                    } else {
+                        std::cout << i+1;
+                    }
+                    m_Logger->Log("Selected rider", Logger::LogLevelInfo, Logger::LogFile);
+                    amountSelected++;
+                    break;
+                }
+
+                break;
+            }
+
+            case BACKSPACE_KEY: {
+                int selected;
+
+                util::gotoxy(messageStart, messageLine);
+                std::cout << "                                                     ";
+
+                selected = util::CheckIfSelected(selections, Member::RIDER_COUNT, option-1);
+                if(selected != -1){
+                    m_Logger->Log("Removed rider", Logger::LogLevelInfo, Logger::LogFile);
+                    selections[selected] = -1;
+                    util::gotoxy(rightArrow+5, option+6);
+                    std::cout << " ";
+                    amountSelected--;
+                }
+                break;
+            }
+
+            case Q_KEY: {
+                return false;
+            }
+        }
+
+        util::ClearText(lineOption-1, lineOption+1, leftArrow, rightArrow);
+    }
+
+    std::cout << std::endl;
+
+    m_Logger->Log("Retreiving rider data from selections", Logger::LogLevelInfo, Logger::LogFile);
+    for(size_t i = 0; i < Member::RIDER_COUNT; i++){
+        tempRiderManager = m_RiderManagerList.GetRiderManagerIndex(selections[i]);
+        tempRiderManager.SetPosition(i+1);
+        tempMember.InsertRiderManager(tempRiderManager);
+    }
+
+    m_MemberList.AddMember(tempMember);
+    m_Logger->Log("New member created with username: " + tempMember.GetMemberUserName(), Logger::LogLevelSuccess, Logger::LogFile);
+    m_Logger->Log(tempMember.GetMemberUserName() + " created!", Logger::LogLevelSuccess, Logger::LogConsole);
     return true;
 }
 

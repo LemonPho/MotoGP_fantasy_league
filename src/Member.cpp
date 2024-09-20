@@ -41,7 +41,7 @@ bool Member::SetPoints(int points) {
     return true;
 }
 
-std::string Member::GetUserName() {
+std::string Member::GetMemberUserName() {
     return m_UserName;
 }
 

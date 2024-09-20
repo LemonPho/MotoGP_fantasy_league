@@ -10,18 +10,6 @@
 #include "Util.h"
 
 class MemberMenu {
-public:
-    enum options{
-        INVALID_OPTION = 0,
-        ADD_MEMBER = 1,
-        DELETE_MEMBER,
-        MODIFY_MEMBER,
-        SHOW_MEMBERS,
-        DELETE_ALL_MEMBERS,
-        CREATE_STANDINGS_FILE,
-        SAVE_CHANGES,
-        EXIT,
-    };
 private:
     RiderManagerList m_RiderManagerList;
     MemberList m_MemberList;
@@ -40,6 +28,45 @@ public:
     bool ModifyMember();
 
     int OptionSelector(const std::string &option);
+};
+
+#ifdef _WIN32
+enum keys{
+    UP_KEY = 80,
+    DOWN_KEY = 72,
+    ENTER_KEY = 13,
+    BACKSPACE_KEY = 8,
+    Q_KEY = 113,
+};
+#else
+enum keys{
+    UP_KEY = 66,
+    DOWN_KEY = 65,
+    ENTER_KEY = 10,
+    BACKSPACE_KEY = 127,
+    Q_KEY = 113,
+};
+#endif
+
+enum options{
+    INVALID_OPTION = 0,
+    ADD_MEMBER = 1,
+    DELETE_MEMBER,
+    MODIFY_MEMBER,
+    SHOW_MEMBERS,
+    DELETE_ALL_MEMBERS,
+    CREATE_STANDINGS_FILE,
+    SAVE_CHANGES,
+    EXIT,
+};
+
+enum addMember{
+    LEFT_ARROW_SPACING = 10,
+    RIGHT_ARROW_SPACING = 19,
+    LINE_OPTION_SPACING = 6,
+    MESSAGE_LINE_SPACING = 8,
+    MESSAGE_START_SPACING = 10,
+    ACCEPT_LINE_SPACING = 1,
 };
 
 

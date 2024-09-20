@@ -32,6 +32,20 @@ RiderManager RiderManagerList::FindRiderManager(RiderManager riderManager) {
     return tempRiderManager;
 }
 
+RiderManager RiderManagerList::GetRiderManagerIndex(size_t index) {
+    return m_RiderManagerList[index];
+}
+
+std::vector<std::string> RiderManagerList::ToStringVector() {
+    std::vector<std::string> result;
+
+    for(auto riderManager : m_RiderManagerList){
+        result.push_back("\t" + riderManager.ToString());
+    }
+
+    return result;
+}
+
 void RiderManagerList::WriteToDisk(const std::filesystem::path &fileName) {
     std::ofstream file(fileName);
     std::string tempString;
@@ -51,6 +65,7 @@ void RiderManagerList::WriteToDisk(const std::filesystem::path &fileName) {
 }
 
 void RiderManagerList::ReadFromDisk(const std::filesystem::path &fileName) {
+    m_Logger->Log("Reading rider list from disk", Logger::LogLevelInfo, Logger::LogFile);
     std::ifstream file(fileName);
     std::string tempString;
 

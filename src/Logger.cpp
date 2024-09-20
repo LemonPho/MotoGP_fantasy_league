@@ -111,6 +111,7 @@ Logger::LogResult Logger::LogToConsole(const std::string &message, LogLevel logL
     switch(logLevel){
         case LogLevelSuccess: {
             m_LogString += "\033[32m[SUCCESS]: \033[0m" + message + "\n";
+            break;
         }
 
         case LogLevelInfo: {

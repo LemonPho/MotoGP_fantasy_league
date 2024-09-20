@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <filesystem>
+#include <vector>
 
 //certain libraries needed for different operating systems
 #ifdef _WIN32
@@ -26,10 +27,10 @@ namespace util{
     extern std::filesystem::path DOWNLOADS_DIRECTORY;
 
     std::string FillSpaces(std::string line, int spaces);
-    void gotoxy(int x, int y);
-    void PrintMenu(std::string menuOptions[], int optionCount);
-    void UpdateMenu(int option, int left, int right);
-    void ClearSelection(int start, int end, int left, int right);
+    void gotoxy(size_t x, size_t y);
+    void PrintMenu(std::vector<std::string> menuOptions);
+    void UpdateArrowPosition(size_t line, size_t left, size_t right);
+    void ClearText(size_t start, size_t end, size_t left, size_t right);
     void ClearBuffer();
     void EnterToContinue();
     int CheckIfSelected(const int selections[], int selectionsLength, int query);

@@ -21,26 +21,26 @@ namespace util {
         return line;
     }
 
-    void PrintMenu(std::string menuOptions[], int optionCount){
-        for(int i = 0; i <= optionCount; i++){
+    void PrintMenu(std::vector<std::string> menuOptions){
+        for(const auto& option : menuOptions){
             std::cout << std::endl;
-            std::cout << "\t" << menuOptions[i];
+            std::cout << "\t" << option;
         }
     }
 
-    void gotoxy(int x, int y){
+    void gotoxy(size_t x, size_t y){
         std::cout << "\033[" << y << ";" << x << "H";
     }
 
-    void UpdateMenu(int option, int left, int right){
-        gotoxy(left, option);
+    void UpdateArrowPosition(size_t line, size_t left, size_t right){
+        gotoxy(left, line);
         std::cout << "->";
-        gotoxy(right, option);
+        gotoxy(right, line);
         std::cout << "<-";
     }
 
-    void ClearSelection(int start, int end, int left, int right){
-        for(int i = start; i < end+1; i++){
+    void ClearText(size_t start, size_t end, size_t left, size_t right){
+        for(size_t i = start; i < end+1; i++){
             gotoxy(left, i);
             std::cout << "  ";
             gotoxy(right, i);

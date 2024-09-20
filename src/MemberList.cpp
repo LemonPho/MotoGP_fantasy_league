@@ -38,7 +38,7 @@ std::string MemberList::ToStringSmallHTML() {
         result += "<b>";
         result += std::to_string(position);
         result += ". ";
-        result += member.GetUserName();
+        result += member.GetMemberUserName();
         result += " - ";
         result += std::to_string(member.GetPoints());
         result += "</b>";
@@ -59,7 +59,23 @@ std::string MemberList::ToStringSmallHTML() {
 }
 
 void MemberList::SortMembers() {
-    std::sort(m_MemberList.begin(), m_MemberList.end());
+    m_Logger->Log("Sorting members", Logger::LogLevelInfo, Logger::LogFile);
+    std::sort(m_MemberList.rbegin(), m_MemberList.rend());
+    m_Logger->Log("Sorted members", Logger::LogLevelInfo, Logger::LogFile);
+}
+
+void MemberList::UpdateMembersPoints() {
+    m_Logger->Log("Updating members points", Logger::LogLevelInfo, Logger::LogFile);
+    int points=0;
+    for(auto& member : m_MemberList){
+        points = 0;
+        for(auto rider : member.GetRiderList()){
+            points += rider.GetPoints();
+        }
+
+        member.SetPoints(points);
+    }
+    m_Logger->Log("Updated members points", Logger::LogLevelInfo, Logger::LogFile);
 }
 
 void MemberList::DeleteAllMembers() {
@@ -71,6 +87,7 @@ void MemberList::DeleteAllMembers() {
 }
 
 void MemberList::WriteToDisk(const std::filesystem::path &fileName) {
+    m_Logger->Log("Writing member list changes to disk", Logger::LogLevelInfo, Logger::LogFile);
     std::ofstream file(fileName, std::ios::out);
     std::string tempString;
 
@@ -80,7 +97,7 @@ void MemberList::WriteToDisk(const std::filesystem::path &fileName) {
     }
 
     for(auto i : m_MemberList){
-        tempString = i.GetUserName();
+        tempString = i.GetMemberUserName();
         tempString += "|";
         for(auto j : i.GetRiderList()){
             tempString += j.GetRider().GetNumber();
@@ -95,13 +112,13 @@ void MemberList::WriteToDisk(const std::filesystem::path &fileName) {
 }
 
 void MemberList::ReadFromDisk(const std::filesystem::path &fileName, RiderManagerList riderManagerList) {
+    m_Logger->Log("Reading member list from disk", Logger::LogLevelInfo, Logger::LogFile);
     std::ifstream file(fileName);
     std::string tempString;
 
     std::string userName, independentNumber, number;
     std::shared_ptr<Rider> tempRider = std::make_shared<Rider>(m_Logger);
     int pointsMember = 0;
-    Member tempMember(m_Logger);
 
     if(!file.is_open()){
         m_Logger->Log("Couldn't open file to read member data at: " + fileName.string(), Logger::LogLevelError, Logger::LogConsoleFile);
@@ -115,6 +132,7 @@ void MemberList::ReadFromDisk(const std::filesystem::path &fileName, RiderManage
     }
 
     while(tempString != " " && !tempString.empty()){
+        Member tempMember(m_Logger);
         int i;
         userName = tempString;
         tempMember.SetUserName(userName);
@@ -138,4 +156,6 @@ void MemberList::ReadFromDisk(const std::filesystem::path &fileName, RiderManage
         getline(file, tempString, '|');
         tempMember = Member(m_Logger);
     }
+
+    m_Logger->Log("Successfully read member list from disk", Logger::LogLevelSuccess, Logger::LogFile);
 }

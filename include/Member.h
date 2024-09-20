@@ -11,8 +11,8 @@
 class Member {
 public:
     static const int RIDER_COUNT = 6;
-    const int SPACE_USERNAME = 30;
-    const int MAX_USERNAME = 20;
+    static const int SPACE_USERNAME = 30;
+    static const int MAX_USERNAME = 20;
 private:
     std::string m_UserName;
     std::vector<RiderManager> m_RiderList;
@@ -26,7 +26,7 @@ public:
     void SetRiderList(std::vector<RiderManager> riderList);
     bool SetPoints(int points);
 
-    std::string GetUserName();
+    std::string GetMemberUserName();
     std::vector<RiderManager> GetRiderList();
     int GetPoints();
 

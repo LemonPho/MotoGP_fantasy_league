@@ -23,7 +23,9 @@ public:
     void RemoveRiderManager(RiderManager riderManager);
 
     RiderManager FindRiderManager(RiderManager riderManager);
-    //std::shared_ptr<Rider> FindRider(RiderManager riderManager);
+    RiderManager GetRiderManagerIndex(size_t index);
+
+    std::vector<std::string> ToStringVector();
 
     void WriteToDisk(const std::filesystem::path &fileName);
     void ReadFromDisk(const std::filesystem::path &fileName);

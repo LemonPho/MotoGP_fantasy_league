@@ -15,7 +15,7 @@ public:
         SPACE_TEAM = 40,
         SPACE_POINTS = 4,
         SPACE_NAME = 25,
-        SPACE_PRINT_SMALL = 25,
+        SPACE_PRINT_SMALL = 15,
     };
 
 private:

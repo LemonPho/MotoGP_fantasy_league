@@ -25,6 +25,7 @@ public:
     std::string ToStringSmallHTML();
 
     void SortMembers();
+    void UpdateMembersPoints();
 
     void WriteToDisk(const std::filesystem::path &fileName);
     void ReadFromDisk(const std::filesystem::path &fileName, RiderManagerList riderManagerList);
