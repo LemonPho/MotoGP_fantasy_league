@@ -19,9 +19,12 @@ public:
 
     void AddMember(Member member);
     void RemoveMember(Member member);
-    void DeleteAllMembers();
+    bool DeleteAllMembers();
+
+    std::vector<Member> GetMemberList();
 
     std::string ToString();
+    std::vector<std::string> ToStringArray();
     std::string ToStringSmallHTML();
 
     void SortMembers();

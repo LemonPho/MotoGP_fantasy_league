@@ -16,7 +16,16 @@ void MemberList::RemoveMember(Member member) {
     m_MemberList.erase(std::remove(m_MemberList.begin(), m_MemberList.end(), member), m_MemberList.end());
 }
 
+std::vector<Member> MemberList::GetMemberList(){
+    return m_MemberList;
+}
+
 std::string MemberList::ToString() {
+    if(m_MemberList.empty()){
+        m_Logger->Log("Member list empty", Logger::LogLevelWarning, Logger::LogConsoleFile);
+        return "";
+    }
+
     std::string result;
 
     for(auto member : m_MemberList){
@@ -26,7 +35,22 @@ std::string MemberList::ToString() {
     return result;
 }
 
+std::vector<std::string> MemberList::ToStringArray() {
+    std::vector<std::string> result;
+
+    for(auto member : m_MemberList){
+        result.push_back(member.GetMemberUserName());
+    }
+
+    return result;
+}
+
 std::string MemberList::ToStringSmallHTML() {
+    if(m_MemberList.empty()){
+        m_Logger->Log("Member list empty", Logger::LogLevelWarning, Logger::LogConsoleFile);
+        return "";
+    }
+
     std::string result;
 
     result += "<table>";
@@ -78,12 +102,18 @@ void MemberList::UpdateMembersPoints() {
     m_Logger->Log("Updated members points", Logger::LogLevelInfo, Logger::LogFile);
 }
 
-void MemberList::DeleteAllMembers() {
+bool MemberList::DeleteAllMembers() {
+    if(m_MemberList.empty()){
+        m_Logger->Log("Member list empty", Logger::LogLevelWarning, Logger::LogConsoleFile);
+        return false;
+    }
+
     m_MemberList.clear();
     std::vector<Member> emptyMemberList;
     m_MemberList.swap(emptyMemberList);
 
     m_Logger->Log("Members deleted", Logger::LogLevelSuccess, Logger::LogConsoleFile);
+    return true;
 }
 
 void MemberList::WriteToDisk(const std::filesystem::path &fileName) {

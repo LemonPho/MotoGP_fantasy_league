@@ -81,6 +81,15 @@ void Core::InitializeCore() {
         if(tempString.empty() || tempString == " "){
             m_Logger->Log("Program data file empty, starting first start", Logger::LogLevelInfo, Logger::LogFile);
             FirstStart();
+
+            //open the file after having created the season
+            programFile.open(util::APP_DIRECTORY_DATA/util::PROGRAM_DATA);
+            if(!programFile.is_open()){
+                m_Logger->Log("Couldn't open the program data file", Logger::LogLevelError, Logger::LogConsoleFile);
+            } else {
+                std::getline(programFile, tempString, '\n');
+                m_SelectedSeason = tempString;
+            }
         } else {
             m_SelectedSeason = tempString;
             m_Logger->Log("Checking data files with season: " + tempString, Logger::LogLevelInfo, Logger::LogFile);
@@ -99,6 +108,8 @@ void Core::InitializeCore() {
             m_Logger->Log("Files successfully found", Logger::LogLevelSuccess, Logger::LogFile);
         }
     }
+
+
 
     m_Logger->Log("Core initialized", Logger::LogLevelSuccess, Logger::LogFile);
 

@@ -17,14 +17,13 @@ private:
     std::string m_SelectedSeason;
 public:
     MemberMenu();
-    MemberMenu(std::shared_ptr<Logger> logger);
+    explicit MemberMenu(std::shared_ptr<Logger> logger);
 
     void InitializeMemberMenu();
 
     void Menu();
     bool AddMember();
     bool DeleteMember();
-    bool ShowMembers();
     bool ModifyMember();
 
     int OptionSelector(const std::string &option);
@@ -60,14 +59,23 @@ enum options{
     EXIT,
 };
 
-enum addMember{
-    LEFT_ARROW_SPACING = 10,
-    RIGHT_ARROW_SPACING = 19,
-    LINE_OPTION_SPACING = 6,
-    MESSAGE_LINE_SPACING = 8,
-    MESSAGE_START_SPACING = 10,
-    ACCEPT_LINE_SPACING = 1,
-};
+namespace ADD_MEMBER_SPACING{
+    const int LEFT_ARROW_SPACING = 10;
+    const int RIGHT_ARROW_SPACING = 19;
+    const int LINE_OPTION_SPACING = 7;
+    const int MESSAGE_LINE_SPACING = 8;
+    const int MESSAGE_START_SPACING = 10;
+    const int ACCEPT_LINE_SPACING = 1;
+}
+
+namespace DELETE_MEMBER_SPACING{
+    const int LEFT_ARROW_SPACING = 10;
+    const int RIGHT_ARROW_SPACING = 19;
+    const int LINE_OPTION_SPACING = 7;
+    const int MESSAGE_LINE_SPACING = 8;
+    const int MESSAGE_START_SPACING = 10;
+    const int ACCEPT_LINE_SPACING = 1;
+}
 
 
 #endif //MOTOGP_FANTASY_LEAGUE_MODERN_MEMBERMENU_H

@@ -29,7 +29,7 @@ void MemberMenu::InitializeMemberMenu() {
     Menu();
 }
 
-//Menu() shouldn't be called manually, call InitializeMemberMenu() instead
+//Menu() shouldn't be called, call InitializeMemberMenu() instead
 void MemberMenu::Menu() {
     bool end = false;
     bool saveChanges;
@@ -54,7 +54,7 @@ void MemberMenu::Menu() {
         std::cin >> option;
         switch(OptionSelector(option)){
             case INVALID_OPTION: {
-                m_Logger->Log("Invalid option (" + option + ")", Logger::LogLevelError, Logger::LogConsoleFile);
+                m_Logger->Log("Invalid option (" + option + ")", Logger::LogLevelError, Logger::LogConsole);
                 break;
             }
             case ADD_MEMBER: {
@@ -70,7 +70,6 @@ void MemberMenu::Menu() {
             }
 
             case DELETE_MEMBER: {
-                m_Logger->Log("Opening delete member", Logger::LogLevelInfo, Logger::LogFile);
                 if(!saveChanges){
                     saveChanges = DeleteMember();
                 } else {
@@ -83,7 +82,6 @@ void MemberMenu::Menu() {
             }
 
             case MODIFY_MEMBER: {
-                m_Logger->Log("Opening modify member", Logger::LogLevelInfo, Logger::LogFile);
                 if(!saveChanges){
                     saveChanges = ModifyMember();
                 } else {
@@ -97,10 +95,15 @@ void MemberMenu::Menu() {
 
             case SHOW_MEMBERS: {
                 m_Logger->Log("Displaying member list", Logger::LogLevelInfo, Logger::LogFile);
-                system(CLEAR);
-                std::cout << m_MemberList.ToString() << std::endl;
-                std::cin.ignore();
-                util::EnterToContinue();
+
+                std::string memberListString = m_MemberList.ToString();
+                if(!memberListString.empty()){
+                    system(CLEAR);
+                    std::cout << m_MemberList.ToString() << std::endl;
+                    std::cin.ignore();
+                    util::EnterToContinue();
+                }
+
                 break;
             }
 
@@ -110,9 +113,10 @@ void MemberMenu::Menu() {
                 std::cin >> opt;
                 if(opt == 'Y' || opt == 'y'){
                     m_Logger->Log("Deleting all member", Logger::LogLevelInfo, Logger::LogFile);
-                    m_MemberList.DeleteAllMembers();
+                    if(m_MemberList.DeleteAllMembers()){
+                        saveChanges = true;
+                    }
                 }
-                saveChanges = true;
                 break;
             }
 
@@ -120,21 +124,36 @@ void MemberMenu::Menu() {
                 m_MemberList.UpdateMembersPoints();
                 m_MemberList.SortMembers();
                 m_Logger->Log("Creating standings file", Logger::LogLevelInfo, Logger::LogFile);
-                std::ofstream fileTXT(util::DOWNLOADS_DIRECTORY/"MotoGP fantasy standings.txt", std::ios::out);
-                std::ofstream fileHTML(util::DOWNLOADS_DIRECTORY/"MotoGP fantasy standings.html", std::ios::out);
 
-                if(!fileTXT.is_open() || !fileHTML.is_open()){
-                    m_Logger->Log("One of the files couldn't be created in the downloads directory", Logger::LogLevelError, Logger::LogConsoleFile);
-                } else {
-                    m_Logger->Log("Standings file should be located in the downloads folder", Logger::LogLevelInfo, Logger::LogConsole);
-                    m_Logger->Log("Standings files created", Logger::LogLevelSuccess, Logger::LogFile);
+                std::string tempString = m_MemberList.ToStringSmallHTML();
+
+                if(!tempString.empty()) {
+                    std::ofstream fileTXT(util::DOWNLOADS_DIRECTORY / "MotoGP fantasy standings.txt", std::ios::out);
+                    std::ofstream fileHTML(util::DOWNLOADS_DIRECTORY / "MotoGP fantasy standings.html", std::ios::out);
+
+                    if (!fileTXT.is_open() || !fileHTML.is_open()) {
+                        m_Logger->Log("One of the files couldn't be created in the downloads directory",
+                                      Logger::LogLevelError, Logger::LogConsoleFile);
+                    } else {
+                        fileTXT << tempString << std::endl;
+                        fileHTML << tempString << std::endl;
+                        fileHTML.close();
+                        fileTXT.close();
+                        m_Logger->Log("Standings file should be located in the downloads folder", Logger::LogLevelInfo,Logger::LogConsole);
+                        m_Logger->Log("Standings files created", Logger::LogLevelSuccess, Logger::LogFile);
+                    }
                 }
-
+                break;
             }
 
             case SAVE_CHANGES: {
-                m_MemberList.WriteToDisk(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::MEMBER_DATA));
-                saveChanges = false;
+                m_Logger->Log("Saving changes", Logger::LogLevelInfo, Logger::LogFile);
+                if(!saveChanges){
+                    m_Logger->Log("No changes have been registered", Logger::LogLevelInfo, Logger::LogConsoleFile);
+                } else {
+                    m_MemberList.WriteToDisk(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::MEMBER_DATA));
+                    saveChanges = false;
+                }
                 break;
             }
 
@@ -157,6 +176,12 @@ void MemberMenu::Menu() {
 
 bool MemberMenu::AddMember() {
     m_Logger->Log("Opening add member", Logger::LogLevelInfo, Logger::LogFile);
+    if(m_RiderManagerList.GetRiderManagerList().empty() || m_RiderManagerList.GetRiderManagerList().size() < 6){
+        m_Logger->Log("You have no riders added, make sure to have 6 riders before creating a member", Logger::LogLevelWarning, Logger::LogConsole);
+        m_Logger->Log("No riders in rider list", Logger::LogLevelWarning, Logger::LogFile);
+        return false;
+    }
+
     //rider count
     size_t riderCount = m_RiderManagerList.GetRiderManagerList().size();
     //temporary data types
@@ -187,13 +212,13 @@ bool MemberMenu::AddMember() {
         }
     }
     //positioning for left and right arrow
-    size_t leftArrow = LEFT_ARROW_SPACING, rightArrow = RIGHT_ARROW_SPACING + longestStringLength;
+    size_t leftArrow = ADD_MEMBER_SPACING::LEFT_ARROW_SPACING, rightArrow = ADD_MEMBER_SPACING::RIGHT_ARROW_SPACING + longestStringLength;
     //line where messages go
-    size_t messageLine = MESSAGE_LINE_SPACING + riderCount;
+    size_t messageLine = ADD_MEMBER_SPACING::MESSAGE_LINE_SPACING + riderCount;
     //column where messages start
-    size_t messageStart = MESSAGE_START_SPACING;
+    size_t messageStart = ADD_MEMBER_SPACING::MESSAGE_START_SPACING;
     //line where accept is located
-    size_t acceptLine = ACCEPT_LINE_SPACING + riderCount;
+    size_t acceptLine = ADD_MEMBER_SPACING::ACCEPT_LINE_SPACING + riderCount;
 
     system(CLEAR);
 
@@ -219,15 +244,16 @@ bool MemberMenu::AddMember() {
     system(CLEAR);
     std::cout << "Creating Member" << std::endl;
     std::cout << "Add the member's picks" << std::endl;
+    std::cout << "Arrow keys: up and down" << std::endl;
     std::cout << "Enter: add to list" << std::endl;
     std::cout << "Backspace: remove from list" << std::endl;
-    std::cout << "q: return to member menu" << std::endl;
+    std::cout << "Q: return to member menu" << std::endl;
 
     util::PrintMenu(riderStringArray);
     std::cout << std::endl << "\t\t\x1b[32mAccept\033[0m" << std::endl;
 
     while(!exit){
-        lineOption = option + LINE_OPTION_SPACING;
+        lineOption = option + ADD_MEMBER_SPACING::LINE_OPTION_SPACING;
 
         util::UpdateArrowPosition(lineOption, leftArrow, rightArrow);
         key = util::CustomGetch();
@@ -342,14 +368,79 @@ bool MemberMenu::AddMember() {
 }
 
 bool MemberMenu::DeleteMember() {
-    return false;
-}
+    m_Logger->Log("Opening delete member", Logger::LogLevelInfo, Logger::LogFile);
+    if(m_MemberList.GetMemberList().empty()){
+        m_Logger->Log("You have no members added", Logger::LogLevelWarning, Logger::LogConsole);
+        m_Logger->Log("Members list empty, returning to member menu", Logger::LogLevelWarning, Logger::LogFile);
+        return false;
+    }
 
-bool MemberMenu::ShowMembers() {
+    std::vector<std::string> memberListString = m_MemberList.ToStringArray();
+    size_t memberCount = m_MemberList.GetMemberList().size();
+    size_t option=1, lineOption;
+    size_t longestStringLength = 0;
+    for(auto memberString : memberListString){
+        if(memberString.length() > longestStringLength){
+            longestStringLength = memberString.length();
+        }
+    }
+
+    size_t leftArrow = DELETE_MEMBER_SPACING::LEFT_ARROW_SPACING, rightArrow = DELETE_MEMBER_SPACING::RIGHT_ARROW_SPACING + longestStringLength;
+    bool exit = false;
+    int key;
+
+    system(CLEAR);
+
+    std::cout << "Delete member" << std::endl;
+    std::cout << "Select the members you would like to delete" << std::endl;
+    std::cout << "Arrow keys for going up and down" << std::endl;
+    std::cout << "Enter: Select member" << std::endl;
+    std::cout << "Backspace: Remove selected member" << std::endl;
+    std::cout << "Q: cancel" << std::endl;
+
+    util::PrintMenu(memberListString);
+    std::cout << std::endl << "\t\t\x1b[32mAccept\033[0m" << std::endl;
+
+    while(!exit){
+        lineOption = option + DELETE_MEMBER_SPACING::LINE_OPTION_SPACING;
+
+        util::UpdateArrowPosition(lineOption, leftArrow, rightArrow);
+        key = util::CustomGetch();
+
+        switch(key){
+            case UP_KEY: {
+                if(option == memberCount+1){
+                    option = 1;
+                } else {
+                    option++;
+                }
+                break;
+            }
+
+            case DOWN_KEY:{
+                if(option == 1){
+                    option = memberCount+1;
+                } else {
+                    option--;
+                }
+                break;
+            }
+
+            case ENTER_KEY: {
+
+            }
+        }
+    }
+
     return false;
 }
 
 bool MemberMenu::ModifyMember() {
+    m_Logger->Log("Opening modify member", Logger::LogLevelInfo, Logger::LogFile);
+    if(m_MemberList.GetMemberList().empty()){
+        m_Logger->Log("You have no members added", Logger::LogLevelWarning, Logger::LogConsole);
+        m_Logger->Log("Member list empty, returning to member menu", Logger::LogLevelWarning, Logger::LogFile);
+    }
     return false;
 }
 
