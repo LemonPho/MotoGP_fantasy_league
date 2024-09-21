@@ -25,6 +25,8 @@ add_executable(MotoGP_Fantasy_League src/main.cpp
         include/MemberList.h
         src/MemberList.cpp
         include/MemberMenu.h
-        src/MemberMenu.cpp)
+        src/MemberMenu.cpp
+        include/DynamicUi.h
+        src/DynamicUi.cpp)
 
 target_include_directories(MotoGP_Fantasy_League PRIVATE ${CMAKE_SOURCE_DIR}/include)

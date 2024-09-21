@@ -40,7 +40,7 @@ std::vector<std::string> RiderManagerList::ToStringVector() {
     std::vector<std::string> result;
 
     for(auto riderManager : m_RiderManagerList){
-        result.push_back("\t" + riderManager.ToString());
+        result.push_back(riderManager.ToString());
     }
 
     return result;

@@ -292,11 +292,6 @@ bool MemberMenu::AddMember() {
                     break;
                 }
 
-                if(amountSelected == 4){
-                    util::gotoxy(messageStart, messageLine);
-                    std::cout << "The next rider will be the independent rider";
-                }
-
                 if(amountSelected >= Member::RIDER_COUNT){
                     util::gotoxy(messageStart, messageLine);
                     std::cout << "You have selected the max amount of riders";
@@ -313,7 +308,7 @@ bool MemberMenu::AddMember() {
                         i = 5;
                     }
                     selections[i] = option-1;
-                    util::gotoxy(rightArrow + 5, option + 6);
+                    util::gotoxy(rightArrow + 5, lineOption);
                     if(i == 5){
                         std::cout << "i";
                     } else {
@@ -337,7 +332,7 @@ bool MemberMenu::AddMember() {
                 if(selected != -1){
                     m_Logger->Log("Removed rider", Logger::LogLevelInfo, Logger::LogFile);
                     selections[selected] = -1;
-                    util::gotoxy(rightArrow+5, option+6);
+                    util::gotoxy(rightArrow+5, lineOption);
                     std::cout << " ";
                     amountSelected--;
                 }
@@ -345,8 +340,14 @@ bool MemberMenu::AddMember() {
             }
 
             case Q_KEY: {
+                m_Logger->Log("Cancelling creation of member", Logger::LogLevelInfo, Logger::LogFile);
                 return false;
             }
+        }
+
+        if(amountSelected == 5 && selections[5] == -1){
+            util::gotoxy(messageStart, messageLine);
+            std::cout << "The next rider will be the independent rider";
         }
 
         util::ClearText(lineOption-1, lineOption+1, leftArrow, rightArrow);
@@ -377,14 +378,21 @@ bool MemberMenu::DeleteMember() {
 
     std::vector<std::string> memberListString = m_MemberList.ToStringArray();
     size_t memberCount = m_MemberList.GetMemberList().size();
+    //option = member highlighted, lineOption = line where member is highlighted, takes into account instructions
     size_t option=1, lineOption;
+    //longest member username
     size_t longestStringLength = 0;
+    //line where Accept text is located
+    size_t acceptLine = DELETE_MEMBER_SPACING::ACCEPT_LINE_SPACING + memberCount;
+    //hash map of selected members
+    std::vector<int> selections(memberCount, 0);
     for(auto memberString : memberListString){
         if(memberString.length() > longestStringLength){
             longestStringLength = memberString.length();
         }
     }
 
+    //arrow horizontal positioning
     size_t leftArrow = DELETE_MEMBER_SPACING::LEFT_ARROW_SPACING, rightArrow = DELETE_MEMBER_SPACING::RIGHT_ARROW_SPACING + longestStringLength;
     bool exit = false;
     int key;
@@ -409,8 +417,8 @@ bool MemberMenu::DeleteMember() {
 
         switch(key){
             case UP_KEY: {
-                if(option == memberCount+1){
-                    option = 1;
+                if(option == memberCount){
+                    option = 0;
                 } else {
                     option++;
                 }
@@ -418,8 +426,8 @@ bool MemberMenu::DeleteMember() {
             }
 
             case DOWN_KEY:{
-                if(option == 1){
-                    option = memberCount+1;
+                if(option == 0){
+                    option = memberCount;
                 } else {
                     option--;
                 }
@@ -427,12 +435,52 @@ bool MemberMenu::DeleteMember() {
             }
 
             case ENTER_KEY: {
+                if(option == acceptLine-1){
+                    exit = true;
+                } else {
+                    if(selections[option]){
+                        selections[option] = 0;
+                        m_Logger->Log("Member :" + m_MemberList.GetMemberList()[option].GetMemberUserName() + " was removed from being deleted", Logger::LogLevelInfo, Logger::LogFile);
+                        util::gotoxy(rightArrow + 5, lineOption);
+                        std::cout << " ";
+                    } else {
+                        selections[option] = 1;
+                        m_Logger->Log("Member :" + m_MemberList.GetMemberList()[option].GetMemberUserName() + " was selected to be deleted", Logger::LogLevelInfo, Logger::LogFile);
+                        util::gotoxy(rightArrow + 5, lineOption);
+                        std::cout << "x";
+                    }
+                }
 
+                break;
             }
+
+            case BACKSPACE_KEY: {
+                selections[option] = 0;
+                util::gotoxy(rightArrow+5, lineOption);
+                std::cout << " ";
+                break;
+            }
+
+            case Q_KEY: {
+                m_Logger->Log("User exited delete member menu", Logger::LogLevelInfo, Logger::LogFile);
+                return false;
+            }
+        }
+
+        //clear previous arrows
+        util::ClearText(lineOption-1, lineOption+1, leftArrow, rightArrow);
+    }
+
+    for(size_t i = 0; i < selections.size(); i++){
+        if(selections[i]){
+            Member tempMember(m_Logger);
+            //instance only needs username, since it is used for comparison
+            tempMember.SetUserName(m_MemberList.GetMemberList()[i].GetMemberUserName());
+            m_MemberList.RemoveMember(tempMember);
         }
     }
 
-    return false;
+    return true;
 }
 
 bool MemberMenu::ModifyMember() {
@@ -440,8 +488,12 @@ bool MemberMenu::ModifyMember() {
     if(m_MemberList.GetMemberList().empty()){
         m_Logger->Log("You have no members added", Logger::LogLevelWarning, Logger::LogConsole);
         m_Logger->Log("Member list empty, returning to member menu", Logger::LogLevelWarning, Logger::LogFile);
+        return false;
     }
-    return false;
+
+
+
+    return true;
 }
 
 int MemberMenu::OptionSelector(const std::string &option) {

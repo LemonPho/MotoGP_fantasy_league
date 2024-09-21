@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <memory>
+#include <algorithm>
 
 #include "MemberList.h"
 #include "RiderManagerList.h"
@@ -63,7 +64,7 @@ namespace ADD_MEMBER_SPACING{
     const int LEFT_ARROW_SPACING = 10;
     const int RIGHT_ARROW_SPACING = 19;
     const int LINE_OPTION_SPACING = 7;
-    const int MESSAGE_LINE_SPACING = 8;
+    const int MESSAGE_LINE_SPACING = 9;
     const int MESSAGE_START_SPACING = 10;
     const int ACCEPT_LINE_SPACING = 1;
 }
@@ -72,8 +73,6 @@ namespace DELETE_MEMBER_SPACING{
     const int LEFT_ARROW_SPACING = 10;
     const int RIGHT_ARROW_SPACING = 19;
     const int LINE_OPTION_SPACING = 7;
-    const int MESSAGE_LINE_SPACING = 8;
-    const int MESSAGE_START_SPACING = 10;
     const int ACCEPT_LINE_SPACING = 1;
 }
 

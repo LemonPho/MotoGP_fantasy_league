@@ -14,6 +14,7 @@ void MemberList::AddMember(Member member) {
 
 void MemberList::RemoveMember(Member member) {
     m_MemberList.erase(std::remove(m_MemberList.begin(), m_MemberList.end(), member), m_MemberList.end());
+    m_Logger->Log("Member " + member.GetMemberUserName() + " was deleted", Logger::LogLevelSuccess, Logger::LogConsoleFile);
 }
 
 std::vector<Member> MemberList::GetMemberList(){

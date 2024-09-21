@@ -24,7 +24,7 @@ namespace util {
     void PrintMenu(std::vector<std::string> menuOptions){
         for(const auto& option : menuOptions){
             std::cout << std::endl;
-            std::cout << "\t" << option;
+            std::cout << "\t\t" << option;
         }
     }
 
