@@ -1,14 +1,6 @@
 #include "util.h"
 
 namespace util {
-    const std::string PROGRAM_DATA = "program-data.txt";
-    const std::string MEMBER_DATA = "-member-data.txt";
-    const std::string RIDER_DATA = "-rider-data.txt";
-    const std::string RACE_DATA = "-race-data.txt";
-    std::filesystem::path APP_DIRECTORY;
-    std::filesystem::path APP_DIRECTORY_DATA;
-    std::filesystem::path APP_DIRECTORY_LOG;
-    std::filesystem::path DOWNLOADS_DIRECTORY;
 
 //fills needed spaces to print everything aligned
     std::string FillSpaces(std::string line, int spaces){

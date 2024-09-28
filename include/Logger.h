@@ -7,7 +7,7 @@
 #include <ctime>
 #include <filesystem>
 #include <cstdlib>
-
+#include <string>
 
 
 
@@ -44,7 +44,6 @@ public:
 
     void InitializeFile(const std::filesystem::path& appDirectory);
 
-    //log to console automatically logs to file
     void Log(const std::string &message, LogLevel logLevel, LogTo logDestination);
     LogResult LogToConsole(const std::string &message, LogLevel logLevel);
     LogResult LogToFile(const std::string &message, LogLevel logLevel);

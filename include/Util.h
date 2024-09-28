@@ -17,14 +17,14 @@
 #endif
 
 namespace util{
-    extern const std::string PROGRAM_DATA;
-    extern const std::string MEMBER_DATA;
-    extern const std::string RIDER_DATA;
-    extern const std::string RACE_DATA;
-    extern std::filesystem::path APP_DIRECTORY;
-    extern std::filesystem::path APP_DIRECTORY_DATA;
-    extern std::filesystem::path APP_DIRECTORY_LOG;
-    extern std::filesystem::path DOWNLOADS_DIRECTORY;
+    inline const std::string PROGRAM_DATA = "program-data.txt";
+    inline const std::string MEMBER_DATA = "-member-data.txt";
+    inline const std::string RIDER_DATA = "-rider-data.txt";
+    inline const std::string RACE_DATA = "-race-data.txt";
+    inline std::filesystem::path APP_DIRECTORY;
+    inline std::filesystem::path APP_DIRECTORY_DATA;
+    inline std::filesystem::path APP_DIRECTORY_LOG;
+    inline std::filesystem::path DOWNLOADS_DIRECTORY;
 
     std::string FillSpaces(std::string line, int spaces);
     void gotoxy(size_t x, size_t y);

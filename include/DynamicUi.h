@@ -3,15 +3,28 @@
 
 #include <iostream>
 #include <vector>
+#include <memory>
+
+#include "Logger.h"
 
 class DynamicUi {
 private:
+    std::shared_ptr<Logger> m_Logger;
+
     std::vector<std::string> m_Instructions;
     std::vector<std::string> m_MenuOptions;
-    int m_SelectedOption;
-    int m_CurrentLine;
-    std::string longestOption;
-    
+    size_t m_SelectedOption;
+    size_t m_CurrentLine;
+    size_t longestOption;
+
+    //implement mod operator for menu out of bounds
+
+public:
+    DynamicUi();
+    explicit DynamicUi(std::shared_ptr<Logger> logger);
+    DynamicUi(std::shared_ptr<Logger> logger, std::vector<std::string>& instructions, std::vector<std::string>& menuOptions);
+
+
 };
 
 

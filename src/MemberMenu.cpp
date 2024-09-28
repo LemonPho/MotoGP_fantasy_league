@@ -32,7 +32,7 @@ void MemberMenu::InitializeMemberMenu() {
 //Menu() shouldn't be called, call InitializeMemberMenu() instead
 void MemberMenu::Menu() {
     bool end = false;
-    bool saveChanges;
+    bool saveChanges = false;
     std::string option;
 
     m_MemberList.UpdateMembersPoints();
