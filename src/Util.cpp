@@ -13,13 +13,6 @@ namespace util {
         return line;
     }
 
-    void PrintMenu(std::vector<std::string> menuOptions){
-        for(const auto& option : menuOptions){
-            std::cout << std::endl;
-            std::cout << "\t\t" << option;
-        }
-    }
-
     void gotoxy(size_t x, size_t y){
         std::cout << "\033[" << y << ";" << x << "H";
     }
