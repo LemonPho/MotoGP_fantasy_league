@@ -5,9 +5,9 @@
 #include <vector>
 #include <algorithm>
 
-#include "Member.h"
-#include "Logger.h"
-#include "RiderManagerList.h"
+#include "models/Member.h"
+#include "core/Logger.h"
+#include "views/RiderManagerList.h"
 
 class MemberList {
 private:

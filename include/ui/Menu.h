@@ -3,11 +3,11 @@
 
 #include <iostream>
 
-#include "Logger.h"
-#include "RiderManagerList.h"
-#include "MemberList.h"
-#include "Util.h"
-#include "MemberMenu.h"
+#include "core/Logger.h"
+#include "views/RiderManagerList.h"
+#include "views/MemberList.h"
+#include "utils/Util.h"
+#include "ui/MemberMenu.h"
 
 class Menu {
 public:

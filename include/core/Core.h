@@ -3,11 +3,11 @@
 
 #include <iostream>
 
-#include "Menu.h"
-#include "Logger.h"
-#include "RiderManagerList.h"
-#include "MemberList.h"
-#include "Util.h"
+#include "ui/Menu.h"
+#include "core/Logger.h"
+#include "views/RiderManagerList.h"
+#include "views/MemberList.h"
+#include "utils/Util.h"
 
 class Core {
 private:

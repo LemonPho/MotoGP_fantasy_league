@@ -1,4 +1,4 @@
-#include "MemberList.h"
+#include "views/MemberList.h"
 
 MemberList::MemberList() {
     m_Logger = std::make_shared<Logger>();

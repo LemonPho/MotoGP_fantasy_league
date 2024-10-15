@@ -5,8 +5,8 @@
 #include <iostream>
 #include <vector>
 
-#include "RiderManager.h"
-#include "Logger.h"
+#include "models/RiderManager.h"
+#include "core/Logger.h"
 
 class Member {
 public:

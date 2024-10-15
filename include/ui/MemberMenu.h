@@ -5,10 +5,10 @@
 #include <memory>
 #include <algorithm>
 
-#include "MemberList.h"
-#include "RiderManagerList.h"
-#include "Logger.h"
-#include "Util.h"
+#include "views/MemberList.h"
+#include "views/RiderManagerList.h"
+#include "core/Logger.h"
+#include "utils/Util.h"
 
 class MemberMenu {
 private:

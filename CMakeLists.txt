@@ -3,30 +3,31 @@ project(MotoGP_Fantasy_League_Modern)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(MotoGP_Fantasy_League src/main.cpp
-        include/Logger.h
-        include/Menu.h
-        src/Logger.cpp
-        src/Menu.cpp
-        include/SeasonMenu.h
-        src/SeasonMenu.cpp
-        include/Core.h
-        src/Core.cpp
-        include/Rider.h
-        src/Rider.cpp
-        include/RiderManager.h
-        src/RiderManager.cpp
-        include/Util.h
-        src/Util.cpp
-        include/Member.h
-        src/Member.cpp
-        include/RiderManagerList.h
-        src/RiderManagerList.cpp
-        include/MemberList.h
-        src/MemberList.cpp
-        include/MemberMenu.h
-        src/MemberMenu.cpp
-        include/DynamicUi.h
-        src/DynamicUi.cpp)
+add_executable(MotoGP_Fantasy_League 
+	src/main.cpp
+
+	include/core/Core.h
+	include/core/Logger.h
+	include/models/Member.h
+	include/models/Rider.h
+	include/models/RiderManager.h
+	include/ui/DynamicUi/DynamicUi.h
+	include/ui/MemberMenu.h
+	include/ui/SeasonMenu.h
+	include/utils/Util.h
+	include/views/MemberList.h
+	include/views/RiderManagerList.h
+
+	src/core/Core.cpp
+	src/core/Logger.cpp
+	src/models/Member.cpp
+	src/models/Rider.cpp
+	src/models/RiderManager.cpp
+	src/ui/DynamicUi/DynamicUi.cpp
+	src/ui/MemberMenu.cpp
+	src/ui/SeasonMenu.cpp
+	src/utils/Util.cpp
+	src/views/MemberList.cpp
+	src/views/RiderManagerList.cpp)
 
 target_include_directories(MotoGP_Fantasy_League PRIVATE ${CMAKE_SOURCE_DIR}/include)

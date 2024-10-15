@@ -12,6 +12,7 @@
 #define CLEAR "cls"
 #else
 #include <termios.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 #define CLEAR "clear"
 #endif
@@ -35,5 +36,6 @@ namespace util{
     void EnterToContinue();
     int CheckIfSelected(const int selections[], int selectionsLength, int query);
     int CustomGetch();
+    void GetWindowDimensions(int& columns, int& rows);
     void UpdateProgram();
 }

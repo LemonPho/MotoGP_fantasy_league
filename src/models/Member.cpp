@@ -1,4 +1,4 @@
-#include "Member.h"
+#include "models/Member.h"
 
 Member::Member() {
     m_UserName = "";

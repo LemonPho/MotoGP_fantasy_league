@@ -1,4 +1,4 @@
-#include "Core.h"
+#include "core/Core.h"
 
 Core::Core() {
 #ifdef _WIN32

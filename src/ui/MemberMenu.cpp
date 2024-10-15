@@ -1,4 +1,4 @@
-#include "MemberMenu.h"
+#include "ui/MemberMenu.h"
 
 MemberMenu::MemberMenu() {
     m_Logger = std::make_shared<Logger>();

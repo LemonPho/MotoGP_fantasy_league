@@ -1,4 +1,4 @@
-#include "util.h"
+#include "utils/util.h"
 
 namespace util {
 
@@ -25,6 +25,13 @@ namespace util {
     }
 
     void ClearText(size_t start, size_t end, size_t left, size_t right){
+        if (start == end) {
+            gotoxy(left, start);
+            std::cout << "  ";
+            gotoxy(right, start);
+            std::cout << "  ";
+        }
+
         for(size_t i = start; i < end+1; i++){
             gotoxy(left, i);
             std::cout << "  ";
@@ -54,11 +61,25 @@ namespace util {
     }
 
 #ifdef _WIN32
-    int CustomGetch() {
-        return _getch();
+int CustomGetch() {
+    return _getch();
+}
+void GetWindowDimensions(int& columns, int& rows) {
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi)) {
+        // The number of columns (width)
+        columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+        // The number of rows (height)
+        rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
     }
+    else {
+        // If the function fails, return some default value
+        columns = 80;
+        rows = 25;
+    }
+}
 #else
-    int CustomGetch(){
+int CustomGetch(){
     struct termios oldSettings, newSettings;
 	int key;
 
@@ -97,6 +118,22 @@ void UpdateProgram(){
         system("chmod +x update_macos.sh");
         system("./update_macos.sh");
         EnterToContinue();
+    }
+}
+
+void GetWindowDimensions(int& columns, int& rows) {
+    struct winsize w;
+
+    // Use ioctl to get terminal size
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) {
+        // Set the number of columns and rows
+        columns = w.ws_col;
+        rows = w.ws_row;
+    }
+    else {
+        // If the function fails, return some default value
+        columns = 80;
+        rows = 25;
     }
 }
 #endif

@@ -6,9 +6,9 @@
 #include <vector>
 #include <fstream>
 
-#include "Rider.h"
-#include "Util.h"
-#include "Logger.h"
+#include "models/Rider.h"
+#include "utils/Util.h"
+#include "core/Logger.h"
 
 class RiderManager {
 private:

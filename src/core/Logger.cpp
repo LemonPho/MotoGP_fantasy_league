@@ -2,7 +2,7 @@
 // Created by mishu on 11/09/2024.
 //
 
-#include "Logger.h"
+#include "core/Logger.h"
 
 Logger::Logger() {
     m_LogLevel = LogLevelSuccess;

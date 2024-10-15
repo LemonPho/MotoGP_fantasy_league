@@ -9,8 +9,6 @@
 #include <cstdlib>
 #include <string>
 
-
-
 class Logger {
 public:
     enum LogLevel{
