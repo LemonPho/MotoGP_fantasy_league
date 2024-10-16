@@ -1,4 +1,4 @@
-#include "Core.h"
+#include "core/Core.h"
 
 int main() {
     Core core;

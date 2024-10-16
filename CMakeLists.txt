@@ -12,6 +12,7 @@ add_executable(MotoGP_Fantasy_League
 	include/models/Rider.h
 	include/models/RiderManager.h
 	include/ui/DynamicUi/DynamicUi.h
+	include/ui/Menu.h
 	include/ui/MemberMenu.h
 	include/ui/SeasonMenu.h
 	include/utils/Util.h
@@ -24,6 +25,7 @@ add_executable(MotoGP_Fantasy_League
 	src/models/Rider.cpp
 	src/models/RiderManager.cpp
 	src/ui/DynamicUi/DynamicUi.cpp
+	src/ui/Menu.cpp
 	src/ui/MemberMenu.cpp
 	src/ui/SeasonMenu.cpp
 	src/utils/Util.cpp

@@ -9,6 +9,7 @@
 #include "views/RiderManagerList.h"
 #include "core/Logger.h"
 #include "utils/Util.h"
+#include "ui/DynamicUi/DynamicUi.h"
 
 class MemberMenu {
 private:
@@ -29,24 +30,6 @@ public:
 
     int OptionSelector(const std::string &option);
 };
-
-#ifdef _WIN32
-enum keys{
-    UP_KEY = 80,
-    DOWN_KEY = 72,
-    ENTER_KEY = 13,
-    BACKSPACE_KEY = 8,
-    Q_KEY = 113,
-};
-#else
-enum keys{
-    UP_KEY = 66,
-    DOWN_KEY = 65,
-    ENTER_KEY = 10,
-    BACKSPACE_KEY = 127,
-    Q_KEY = 113,
-};
-#endif
 
 enum options{
     INVALID_OPTION = 0,

@@ -10,25 +10,35 @@
 #include "core/Logger.h"
 #include "utils/Util.h"
 
+struct Window {
+    int columns=0;
+    int rows=0;
+};
+
 class DynamicUi {
 private:
     std::shared_ptr<Logger> m_Logger;
 
     std::vector<std::string> &m_Instructions;
     std::vector<std::string> &m_MenuOptions;
-
     std::vector<bool> m_Selections;
 
-    size_t m_LeftArrow, m_RightArrow;
-
-    size_t m_HighLightedOption = 0;
+    Window m_Window;
     size_t m_InstructionsLength = 0;
+    size_t m_LongestMenuOption = 0;
     size_t m_OptionCount = 0;
+
+    size_t m_HighlightedOption = 0;
+    size_t m_OptionIndex = 0;
     bool m_Terminate = false;
 
     //implement mod operator for menu out of bounds
 
     void gotoxy(size_t x, size_t y);
+    void GetWindowDimensions(int& columns, int& rows);
+    void ToggleConsoleCursor(bool enable);
+    void UpdateArrowPosition(size_t line, size_t left, size_t right);
+    void ClearText(size_t start, size_t end, size_t left, size_t right);
     //int CheckIfSelected(size_t query);
 
 public:
@@ -36,13 +46,20 @@ public:
 
     std::vector<bool>& GetSelections();
 
-    void StartUi();
+    void InitializeUi();
     void Display();
     void Navigate(const char key);
     virtual void OnSelect();
     virtual void OnDeselect();
    
     virtual ~DynamicUi() = default;
+};
+
+enum UiSpacing {
+    INSTRUCTIONS_DOWN = 2,
+    ARROWS = 3,
+    SELECT = 7,
+    ACCEPT = 1,
 };
 
 #ifdef _WIN32

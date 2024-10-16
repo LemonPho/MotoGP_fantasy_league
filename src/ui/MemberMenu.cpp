@@ -182,6 +182,8 @@ bool MemberMenu::AddMember() {
         return false;
     }
 
+    
+    /*
     //rider count
     size_t riderCount = m_RiderManagerList.GetRiderManagerList().size();
     //temporary data types
@@ -364,19 +366,31 @@ bool MemberMenu::AddMember() {
 
     m_MemberList.AddMember(tempMember);
     m_Logger->Log("New member created with username: " + tempMember.GetMemberUserName(), Logger::LogLevelSuccess, Logger::LogFile);
-    m_Logger->Log(tempMember.GetMemberUserName() + " created!", Logger::LogLevelSuccess, Logger::LogConsole);
+    m_Logger->Log(tempMember.GetMemberUserName() + " created!", Logger::LogLevelSuccess, Logger::LogConsole);*/
     return true;
 }
 
 bool MemberMenu::DeleteMember() {
     m_Logger->Log("Opening delete member", Logger::LogLevelInfo, Logger::LogFile);
+    
     if(m_MemberList.GetMemberList().empty()){
         m_Logger->Log("You have no members added", Logger::LogLevelWarning, Logger::LogConsole);
         m_Logger->Log("Members list empty, returning to member menu", Logger::LogLevelWarning, Logger::LogFile);
         return false;
     }
 
+    system(CLEAR);
+    
     std::vector<std::string> memberListString = m_MemberList.ToStringArray();
+    std::vector<std::string> instructions = { "Delete member", "Select the members you would like to delete", "Arrow keys for going up and down", "Enter: Select member", "Backspace: Remove selected member", "Q: cancel" };
+    std::vector<bool> selections;
+    selections.resize(memberListString.size());
+
+    DynamicUi deleteMemberUi(m_Logger, instructions, memberListString);
+
+    deleteMemberUi.InitializeUi();
+    selections = deleteMemberUi.GetSelections();
+    /*
     size_t memberCount = m_MemberList.GetMemberList().size();
     //option = member highlighted, lineOption = line where member is highlighted, takes into account instructions
     size_t option=1, lineOption;
@@ -470,6 +484,9 @@ bool MemberMenu::DeleteMember() {
         //clear previous arrows
         util::ClearText(lineOption-1, lineOption+1, leftArrow, rightArrow);
     }
+    */
+
+    
 
     for(size_t i = 0; i < selections.size(); i++){
         if(selections[i]){
