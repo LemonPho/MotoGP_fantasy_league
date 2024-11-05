@@ -73,9 +73,6 @@ size_t DynamicUi::GetInstructionsLength() {
     return m_InstructionsLength;
 }
 
-std::shared_ptr<Logger> DynamicUi::GetLogger() {
-    return m_Logger;
-}
 
 void DynamicUi::InitializeUi() {
     m_Logger->Log("Starting dynamic ui", Logger::LogLevelInfo, Logger::LogFile);
