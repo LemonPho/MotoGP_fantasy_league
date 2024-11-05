@@ -27,9 +27,12 @@ private:
     size_t m_LongestMenuOption = 0;
     size_t m_OptionCount = 0;
 
+    size_t m_LeftArrow, m_RightArrow;
     size_t m_HighlightedOption = 0;
     size_t m_OptionIndex = 0;
+
     bool m_Terminate = false;
+    bool m_ChangesMade = false;
 
 protected:
     Window m_Window;
@@ -45,13 +48,18 @@ public:
     size_t GetHighlightedOption();
     size_t GetOptionCount();
     size_t GetInstructionsLength();
+    size_t GetOptionIndex();
+    size_t GetLeftArrow();
+    size_t GetRightArrow();
+
+    bool GetChangesMade();
 
     void InitializeUi();
     void Display();
     void Navigate(const char key);
     virtual void OnSelect();
     virtual void OnDeselect();
-    virtual void Exit();
+    virtual void Exit(bool changesMade);
    
     virtual ~DynamicUi() = default;
 };

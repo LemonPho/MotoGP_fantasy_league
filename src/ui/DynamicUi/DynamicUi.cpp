@@ -49,7 +49,7 @@ void DynamicUi::UpdateArrowPosition(size_t line, size_t left, size_t right) {
 }
 
 void DynamicUi::ClearText(size_t start, size_t end, size_t left, size_t right) {
-    for (size_t i = start; i < end + 1; i++) {
+    for (size_t i = start; i <= end; i++) {
         gotoxy(left, i);
         std::cout << "  ";
         gotoxy(right, i);
@@ -73,6 +73,21 @@ size_t DynamicUi::GetInstructionsLength() {
     return m_InstructionsLength;
 }
 
+size_t DynamicUi::GetOptionIndex() {
+    return m_OptionIndex;
+}
+
+size_t DynamicUi::GetLeftArrow() {
+    return m_LeftArrow;
+}
+
+size_t DynamicUi::GetRightArrow() {
+    return m_RightArrow;
+}
+
+bool DynamicUi::GetChangesMade() {
+    return m_ChangesMade;
+}
 
 void DynamicUi::InitializeUi() {
     m_Logger->Log("Starting dynamic ui", Logger::LogLevelInfo, Logger::LogFile);
@@ -85,15 +100,16 @@ void DynamicUi::InitializeUi() {
         }
     }
 
-    size_t leftArrow = (m_Window.columns / 2 - m_LongestMenuOption / 2) - UiSpacing::ARROWS, rightArrow = (m_Window.columns / 2 + m_LongestMenuOption / 2) + UiSpacing::ARROWS;
+    m_LeftArrow = (m_Window.columns / 2 - m_LongestMenuOption / 2) - UiSpacing::ARROWS;
+    m_RightArrow = (m_Window.columns / 2 + m_LongestMenuOption / 2) + UiSpacing::ARROWS;
     char key;
 
     Display();
     while (!m_Terminate) {
-        UpdateArrowPosition(m_HighlightedOption, leftArrow, rightArrow);
+        UpdateArrowPosition(m_HighlightedOption, m_LeftArrow, m_RightArrow);
 
         key = util::CustomGetch();
-        ClearText(m_HighlightedOption - 1, m_HighlightedOption + 1, leftArrow, rightArrow);
+        ClearText(m_HighlightedOption - 1, m_HighlightedOption + 1, m_LeftArrow, m_RightArrow);
         Navigate(key);
     }
 
@@ -164,7 +180,7 @@ void DynamicUi::Navigate(const char key) {
 
 void DynamicUi::OnSelect() {
     if (m_HighlightedOption == m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN) {
-        Exit();
+        Exit(true);
     }
     else {
         m_Logger->Log("Option: " + m_MenuOptions[m_OptionIndex] + " selected", Logger::LogLevelInfo, Logger::LogFile);
@@ -187,8 +203,12 @@ void DynamicUi::OnDeselect() {
     m_Selections[m_OptionIndex] = false;
 }
 
-void DynamicUi::Exit() {
-    m_Logger->Log("User exiting menu by accepting", Logger::LogLevelInfo, Logger::LogFile);
+void DynamicUi::Exit(bool changesMade) {
+    m_ChangesMade = changesMade;
+
+    if (m_ChangesMade) {
+        m_Logger->Log("User exiting menu by accepting", Logger::LogLevelInfo, Logger::LogFile);
+    }
     m_Terminate = true;
 }
 

@@ -28,7 +28,7 @@ add_executable(MotoGP_Fantasy_League
 	src/ui/DynamicUi/DynamicUi.cpp
 	src/ui/DynamicUi/RidersSelectorUi.cpp
 	src/ui/Menu.cpp
-	src/ui/MemberMenu.cpp
+	"src/ui/MemberMenu.cpp"
 	src/ui/SeasonMenu.cpp
 	src/utils/Util.cpp
 	src/views/MemberList.cpp

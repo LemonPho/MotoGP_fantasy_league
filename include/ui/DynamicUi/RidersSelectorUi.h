@@ -9,12 +9,17 @@
 class RidersSelectorUi : public DynamicUi {
 private:
 	std::shared_ptr<Logger> m_Logger;
-	int m_Selections[Member::RIDER_COUNT];
+	int m_Selections[Member::RIDER_COUNT] = {-1, -1, -1, -1, -1, -1};
 	size_t m_SelectionCount = 0;
+
+	int CheckIfSelected(size_t query);
+	int GetEmptySpotSelections();
 public:
 	RidersSelectorUi(std::shared_ptr<Logger> logger, std::vector<std::string>& instructions, std::vector<std::string>& menuOptions);
 
 	void PrintMessage(std::string message);
+
+	int* GetSelections();
 
 	void OnSelect() override;
 	void OnDeselect() override;

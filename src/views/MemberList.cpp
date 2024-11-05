@@ -85,7 +85,7 @@ std::string MemberList::ToStringSmallHTML() {
 
 void MemberList::SortMembers() {
     m_Logger->Log("Sorting members", Logger::LogLevelInfo, Logger::LogFile);
-    std::sort(m_MemberList.rbegin(), m_MemberList.rend());
+    //std::sort(m_MemberList.rbegin(), m_MemberList.rend());
     m_Logger->Log("Sorted members", Logger::LogLevelInfo, Logger::LogFile);
 }
 
