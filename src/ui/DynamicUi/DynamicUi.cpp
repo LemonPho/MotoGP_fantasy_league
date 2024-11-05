@@ -61,6 +61,22 @@ std::vector<bool>& DynamicUi::GetSelections() {
     return m_Selections;
 }
 
+size_t DynamicUi::GetHighlightedOption() {
+    return m_HighlightedOption;
+}
+
+size_t DynamicUi::GetOptionCount() {
+    return m_OptionCount;
+}
+
+size_t DynamicUi::GetInstructionsLength() {
+    return m_InstructionsLength;
+}
+
+std::shared_ptr<Logger> DynamicUi::GetLogger() {
+    return m_Logger;
+}
+
 void DynamicUi::InitializeUi() {
     m_Logger->Log("Starting dynamic ui", Logger::LogLevelInfo, Logger::LogFile);
     ToggleConsoleCursor(false);
@@ -151,8 +167,7 @@ void DynamicUi::Navigate(const char key) {
 
 void DynamicUi::OnSelect() {
     if (m_HighlightedOption == m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN) {
-        m_Logger->Log("User exiting menu by accepting", Logger::LogLevelInfo, Logger::LogFile);
-        m_Terminate = true;
+        Exit();
     }
     else {
         m_Logger->Log("Option: " + m_MenuOptions[m_OptionIndex] + " selected", Logger::LogLevelInfo, Logger::LogFile);
@@ -173,5 +188,10 @@ void DynamicUi::OnDeselect() {
     gotoxy(selectionPosition, m_HighlightedOption);
     std::cout << " ";
     m_Selections[m_OptionIndex] = false;
+}
+
+void DynamicUi::Exit() {
+    m_Logger->Log("User exiting menu by accepting", Logger::LogLevelInfo, Logger::LogFile);
+    m_Terminate = true;
 }
 

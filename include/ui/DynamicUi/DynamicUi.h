@@ -22,8 +22,7 @@ private:
     std::vector<std::string> &m_Instructions;
     std::vector<std::string> &m_MenuOptions;
     std::vector<bool> m_Selections;
-
-    Window m_Window;
+    
     size_t m_InstructionsLength = 0;
     size_t m_LongestMenuOption = 0;
     size_t m_OptionCount = 0;
@@ -32,25 +31,27 @@ private:
     size_t m_OptionIndex = 0;
     bool m_Terminate = false;
 
-    //implement mod operator for menu out of bounds
-
+protected:
+    Window m_Window;
     void gotoxy(size_t x, size_t y);
     void GetWindowDimensions(int& columns, int& rows);
     void ToggleConsoleCursor(bool enable);
     void UpdateArrowPosition(size_t line, size_t left, size_t right);
     void ClearText(size_t start, size_t end, size_t left, size_t right);
-    //int CheckIfSelected(size_t query);
-
 public:
     DynamicUi(std::shared_ptr<Logger> logger, std::vector<std::string>& instructions, std::vector<std::string>& menuOptions);
 
     std::vector<bool>& GetSelections();
+    size_t GetHighlightedOption();
+    size_t GetOptionCount();
+    size_t GetInstructionsLength();
 
     void InitializeUi();
     void Display();
     void Navigate(const char key);
     virtual void OnSelect();
     virtual void OnDeselect();
+    virtual void Exit();
    
     virtual ~DynamicUi() = default;
 };
