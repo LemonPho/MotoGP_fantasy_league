@@ -300,7 +300,8 @@ bool MemberMenu::ModifyMember() {
 
     memberSelection = memberSelectorUi.GetSelections();
 
-    Member tempMember = m_MemberList.GetMemberList()[memberSelection];
+    Member tempMember = Member(m_Logger);
+    tempMember = m_MemberList.GetMemberList()[memberSelection];
 
     std::vector<std::string> memberDetailString = tempMember.ToStringEdit();
     std::vector<std::string> memberDetailInstructions = { "Modify Member", "Select the attribute you would like to modify", "Arrow keys for going up and down", "Enter: Select attribute", "Q: Cancel" };
@@ -361,11 +362,11 @@ bool MemberMenu::ModifyMember() {
         if (tempMember.SetRiderManager(m_RiderManagerList.GetRiderManagerList()[newRiderSelection], oldRiderSelection)) {
             m_MemberList.SetMember(tempMember, memberSelection);
             m_Logger->Log("User changed " + m_MemberList.GetMemberList()[memberSelection].GetMemberUserName() + "'s pick from " + oldRider.ToStringSmall(false) + " to " + m_MemberList.GetMemberList()[memberSelection].GetRiderList().GetRiderManagerList()[oldRiderSelection].ToStringSmall(false), Logger::LogLevelSuccess, Logger::LogFile);
+            m_Logger->Log("Changes successfully made", Logger::LogLevelSuccess, Logger::LogConsoleFile);
         }
     }
 
-    m_Logger->Log("Changes successfully made", Logger::LogLevelSuccess, Logger::LogConsoleFile);
-
+    
     return true;
 }
 
