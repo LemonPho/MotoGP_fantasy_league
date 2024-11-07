@@ -12,6 +12,23 @@ std::vector<RiderManager> RiderManagerList::GetRiderManagerList() {
     return m_RiderManagerList;
 }
 
+bool RiderManagerList::SetRiderManager(RiderManager riderManager, size_t index){
+    size_t duplicates = 0;
+    for (auto& tempRiderManager : m_RiderManagerList) {
+        if (tempRiderManager == riderManager) {
+            duplicates++;
+        }
+    }
+
+    if (duplicates >= 1) {
+        m_Logger->Log("Rider already exists in list", Logger::LogLevelError, Logger::LogFile);
+        return false;
+    } else {
+        m_RiderManagerList[index] = riderManager;
+        return true;
+    }
+}
+
 void RiderManagerList::AddRiderManager(RiderManager riderManager) {
     m_RiderManagerList.push_back(riderManager);
 }
@@ -39,8 +56,28 @@ RiderManager RiderManagerList::GetRiderManagerIndex(size_t index) {
 std::vector<std::string> RiderManagerList::ToStringVector() {
     std::vector<std::string> result;
 
-    for(auto riderManager : m_RiderManagerList){
+    for(auto& riderManager : m_RiderManagerList){
         result.push_back(riderManager.ToString());
+    }
+
+    return result;
+}
+
+std::string RiderManagerList::ToStringSmall(bool spacing) {
+    std::string result = "";
+
+    for (auto& riderManager : m_RiderManagerList) {
+        result += riderManager.ToStringSmall(spacing) + " ";
+    }
+
+    return result;
+}
+
+std::string RiderManagerList::ToStringHTML() {
+    std::string result = "";
+
+    for (auto& riderManager : m_RiderManagerList) {
+        result += "<td>" + riderManager.ToStringSmall(false) + "</td>";
     }
 
     return result;

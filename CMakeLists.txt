@@ -12,6 +12,7 @@ add_executable(MotoGP_Fantasy_League
 	include/models/Rider.h
 	include/models/RiderManager.h
 	include/ui/DynamicUi/DynamicUi.h
+	include/ui/DynamicUi/MemberSelectorUi.h
 	include/ui/DynamicUi/RidersSelectorUi.h
 	include/ui/Menu.h
 	include/ui/MemberMenu.h
@@ -26,12 +27,13 @@ add_executable(MotoGP_Fantasy_League
 	src/models/Rider.cpp
 	src/models/RiderManager.cpp
 	src/ui/DynamicUi/DynamicUi.cpp
+	src/ui/DynamicUi/MemberSelectorUi.cpp
 	src/ui/DynamicUi/RidersSelectorUi.cpp
 	src/ui/Menu.cpp
-	"src/ui/MemberMenu.cpp"
+	src/ui/MemberMenu.cpp
 	src/ui/SeasonMenu.cpp
 	src/utils/Util.cpp
 	src/views/MemberList.cpp
-	src/views/RiderManagerList.cpp "src/ui/DynamicUi/RidersSelectorUi.cpp" "include/ui/DynamicUi/RidersSelectorUi.h")
+	src/views/RiderManagerList.cpp)
 
 target_include_directories(MotoGP_Fantasy_League PRIVATE ${CMAKE_SOURCE_DIR}/include)

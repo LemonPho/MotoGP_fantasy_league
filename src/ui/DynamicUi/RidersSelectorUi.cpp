@@ -29,7 +29,7 @@ int* RidersSelectorUi::GetSelections() {
 }
 
 void RidersSelectorUi::PrintMessage(std::string message) {
-    int messageLine = GetOptionCount() + GetInstructionsLength() + UiSpacing::INSTRUCTIONS_DOWN + RidersSelectorUiSpacing::MESSAGE_LINE_SPACING;
+    int messageLine = GetAcceptLine() + RidersSelectorUiSpacing::MESSAGE_LINE_SPACING;
     //Clear message line
     ClearText(messageLine, messageLine, 0, m_Window.columns);
 
@@ -40,7 +40,7 @@ void RidersSelectorUi::PrintMessage(std::string message) {
 
 void RidersSelectorUi::OnSelect() {
     //User selected the accept line
-    if (GetHighlightedOption() == GetOptionCount() + GetInstructionsLength() + UiSpacing::INSTRUCTIONS_DOWN) {
+    if (GetHighlightedOption() == GetAcceptLine()) {
         //Correct amount of riders selected
         if (m_SelectionCount == Member::RIDER_COUNT) {
             Exit(true);

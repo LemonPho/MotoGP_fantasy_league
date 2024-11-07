@@ -19,6 +19,7 @@ public:
 
     std::vector<RiderManager> GetRiderManagerList();
 
+    bool SetRiderManager(RiderManager riderManager, size_t index);
     void AddRiderManager(RiderManager riderManager);
     void RemoveRiderManager(RiderManager riderManager);
 
@@ -26,6 +27,8 @@ public:
     RiderManager GetRiderManagerIndex(size_t index);
 
     std::vector<std::string> ToStringVector();
+    std::string ToStringSmall(bool spacing);
+    std::string ToStringHTML();
 
     void WriteToDisk(const std::filesystem::path &fileName);
     void ReadFromDisk(const std::filesystem::path &fileName);

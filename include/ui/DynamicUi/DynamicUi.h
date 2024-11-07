@@ -44,15 +44,17 @@ protected:
 public:
     DynamicUi(std::shared_ptr<Logger> logger, std::vector<std::string>& instructions, std::vector<std::string>& menuOptions);
 
+    //this function is usually overriden, but it returns different types, so i just hide the function, so far no need for this class to point to a derived version
     std::vector<bool>& GetSelections();
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------
     size_t GetHighlightedOption();
     size_t GetOptionCount();
     size_t GetInstructionsLength();
     size_t GetOptionIndex();
     size_t GetLeftArrow();
     size_t GetRightArrow();
-
     bool GetChangesMade();
+    size_t GetAcceptLine();
 
     void InitializeUi();
     void Display();

@@ -127,19 +127,22 @@ void MemberMenu::Menu() {
 
                 std::string tempString = m_MemberList.ToStringSmallHTML();
 
-                if(!tempString.empty()) {
+                if (tempString.empty()) {
+                    m_Logger->Log("You need to have members saved to create a standings file", Logger::LogLevelError, Logger::LogConsole);
+                    m_Logger->Log("Member list was empty when standings file was requested", Logger::LogLevelError, Logger::LogFile);
+                } else {
                     std::ofstream fileTXT(util::DOWNLOADS_DIRECTORY / "MotoGP fantasy standings.txt", std::ios::out);
                     std::ofstream fileHTML(util::DOWNLOADS_DIRECTORY / "MotoGP fantasy standings.html", std::ios::out);
 
                     if (!fileTXT.is_open() || !fileHTML.is_open()) {
                         m_Logger->Log("One of the files couldn't be created in the downloads directory",
-                                      Logger::LogLevelError, Logger::LogConsoleFile);
+                            Logger::LogLevelError, Logger::LogConsoleFile);
                     } else {
                         fileTXT << tempString << std::endl;
                         fileHTML << tempString << std::endl;
                         fileHTML.close();
                         fileTXT.close();
-                        m_Logger->Log("Standings file should be located in the downloads folder", Logger::LogLevelInfo,Logger::LogConsole);
+                        m_Logger->Log("Standings file should be located in the downloads folder", Logger::LogLevelInfo, Logger::LogConsole);
                         m_Logger->Log("Standings files created", Logger::LogLevelSuccess, Logger::LogFile);
                     }
                 }
@@ -158,19 +161,21 @@ void MemberMenu::Menu() {
             }
 
             case EXIT: {
-                m_Logger->Log("Exiting member menu", Logger::LogLevelInfo, Logger::LogFile);
                 if(saveChanges){
                     char opt;
                     std::cout << "Would you like to save the changes made? (Y/N): ";
                     std::cin >> opt;
                     if(opt == 'y' || opt == 'Y'){
+                        m_Logger->Log("User exiting member menu and saving changes", Logger::LogLevelInfo, Logger::LogFile);
                         m_MemberList.WriteToDisk(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::MEMBER_DATA));
+                    } else {
+                        m_Logger->Log("User exiting member menu without saving changes", Logger::LogLevelInfo, Logger::LogFile);
                     }
                 }
                 end = true;
                 break;
             }
-        }
+        };
     }while(!end);
 }
 
@@ -260,103 +265,6 @@ bool MemberMenu::DeleteMember() {
     }
 
     selections = deleteMemberUi.GetSelections();
-    /*
-    size_t memberCount = m_MemberList.GetMemberList().size();
-    //option = member highlighted, lineOption = line where member is highlighted, takes into account instructions
-    size_t option=1, lineOption;
-    //longest member username
-    size_t longestStringLength = 0;
-    //line where Accept text is located
-    size_t acceptLine = DELETE_MEMBER_SPACING::ACCEPT_LINE_SPACING + memberCount;
-    //hash map of selected members
-    std::vector<int> selections(memberCount, 0);
-    for(auto memberString : memberListString){
-        if(memberString.length() > longestStringLength){
-            longestStringLength = memberString.length();
-        }
-    }
-
-    //arrow horizontal positioning
-    size_t leftArrow = DELETE_MEMBER_SPACING::LEFT_ARROW_SPACING, rightArrow = DELETE_MEMBER_SPACING::RIGHT_ARROW_SPACING + longestStringLength;
-    bool exit = false;
-    int key;
-
-    system(CLEAR);
-
-    std::cout << "Delete member" << std::endl;
-    std::cout << "Select the members you would like to delete" << std::endl;
-    std::cout << "Arrow keys for going up and down" << std::endl;
-    std::cout << "Enter: Select member" << std::endl;
-    std::cout << "Backspace: Remove selected member" << std::endl;
-    std::cout << "Q: cancel" << std::endl;
-
-    util::PrintMenu(memberListString);
-    std::cout << std::endl << "\t\t\x1b[32mAccept\033[0m" << std::endl;
-
-    while(!exit){
-        lineOption = option + DELETE_MEMBER_SPACING::LINE_OPTION_SPACING;
-
-        util::UpdateArrowPosition(lineOption, leftArrow, rightArrow);
-        key = util::CustomGetch();
-
-        switch(key){
-            case UP_KEY: {
-                if(option == memberCount){
-                    option = 0;
-                } else {
-                    option++;
-                }
-                break;
-            }
-
-            case DOWN_KEY:{
-                if(option == 0){
-                    option = memberCount;
-                } else {
-                    option--;
-                }
-                break;
-            }
-
-            case ENTER_KEY: {
-                if(option == acceptLine-1){
-                    exit = true;
-                } else {
-                    if(selections[option]){
-                        selections[option] = 0;
-                        m_Logger->Log("Member :" + m_MemberList.GetMemberList()[option].GetMemberUserName() + " was removed from being deleted", Logger::LogLevelInfo, Logger::LogFile);
-                        util::gotoxy(rightArrow + 5, lineOption);
-                        std::cout << " ";
-                    } else {
-                        selections[option] = 1;
-                        m_Logger->Log("Member :" + m_MemberList.GetMemberList()[option].GetMemberUserName() + " was selected to be deleted", Logger::LogLevelInfo, Logger::LogFile);
-                        util::gotoxy(rightArrow + 5, lineOption);
-                        std::cout << "x";
-                    }
-                }
-
-                break;
-            }
-
-            case BACKSPACE_KEY: {
-                selections[option] = 0;
-                util::gotoxy(rightArrow+5, lineOption);
-                std::cout << " ";
-                break;
-            }
-
-            case Q_KEY: {
-                m_Logger->Log("User exited delete member menu", Logger::LogLevelInfo, Logger::LogFile);
-                return false;
-            }
-        }
-
-        //clear previous arrows
-        util::ClearText(lineOption-1, lineOption+1, leftArrow, rightArrow);
-    }
-    */
-
-    
 
     for(size_t i = 0; i < selections.size(); i++){
         if(selections[i]){
@@ -378,7 +286,85 @@ bool MemberMenu::ModifyMember() {
         return false;
     }
 
+    std::vector<std::string> memberListInstructions = {"Modify Member", "Select the member you would like to modify", "Arrow keys for going up and down", "Enter: Select member", "Q: Cancel"};
+    std::vector<std::string> memberListString = m_MemberList.ToStringArray();
+    size_t memberSelection;
 
+    system(CLEAR);
+    MemberSelectorUi memberSelectorUi(m_Logger, memberListInstructions, memberListString);
+    memberSelectorUi.InitializeUi();
+
+    if (!memberSelectorUi.GetChangesMade()) {
+        return false;
+    }
+
+    memberSelection = memberSelectorUi.GetSelections();
+
+    Member tempMember = m_MemberList.GetMemberList()[memberSelection];
+
+    std::vector<std::string> memberDetailString = tempMember.ToStringEdit();
+    std::vector<std::string> memberDetailInstructions = { "Modify Member", "Select the attribute you would like to modify", "Arrow keys for going up and down", "Enter: Select attribute", "Q: Cancel" };
+    size_t attributeSelection;
+
+    system(CLEAR);
+    MemberSelectorUi memberAttributeSelectorUi(m_Logger, memberDetailInstructions, memberDetailString);
+    memberAttributeSelectorUi.InitializeUi();
+
+    if (!memberSelectorUi.GetChangesMade()) {
+        return false;
+    }
+
+    system(CLEAR);
+    util::ClearBuffer();
+    std::cout << "Modify Member" << std::endl;
+    attributeSelection = memberAttributeSelectorUi.GetSelections();
+    if (attributeSelection == Member::AttributesIndexed::USERNAME_INDEX) {
+        std::string newUsername;
+        std::cout << "Input the new username: " << std::endl;
+        std::cout << "-> ";
+        std::getline(std::cin, newUsername);
+
+        while (!tempMember.SetUserName(newUsername)) {
+            m_Logger->Log("User tried username: " + newUsername + ", too long", Logger::LogLevelError, Logger::LogFile);
+            std::cout << "Input a username less than " + std::to_string(Member::MAX_USERNAME) + " characters" << std::endl;
+            std::cout << "-> ";
+            std::getline(std::cin, newUsername);
+        }
+    } else if (attributeSelection == Member::AttributesIndexed::RIDER_LIST_INDEX) {
+        std::vector<std::string> oldRiderSelectionInstructions = { "Select the rider you would like to swap", "Arrow keys for going up and down", "Enter: Select rider", "Q: Cancel" };
+        std::vector<std::string> oldRiderStringList = tempMember.GetRiderList().ToStringVector();
+        size_t oldRiderSelection;
+        RiderManager oldRider;
+
+        MemberSelectorUi oldRiderSelectorUi(m_Logger, oldRiderSelectionInstructions, oldRiderStringList);
+        oldRiderSelectorUi.InitializeUi();
+
+        if (!oldRiderSelectorUi.GetChangesMade()) {
+            return false;
+        }
+        oldRiderSelection = oldRiderSelectorUi.GetSelections();
+        oldRider = tempMember.GetRiderList().GetRiderManagerList()[oldRiderSelection];
+
+        std::vector<std::string> newRiderSelectionInstructions = { "Select the rider you would like to swap", "Arrow keys for going up and down", "Enter: Select rider", "Q: Cancel" };
+        std::vector<std::string> newRiderStringList = m_RiderManagerList.ToStringVector();
+        size_t newRiderSelection;
+
+        system(CLEAR);
+        MemberSelectorUi newRiderSelectorUi(m_Logger, newRiderSelectionInstructions, newRiderStringList);
+        newRiderSelectorUi.InitializeUi();
+
+        if (!newRiderSelectorUi.GetChangesMade()) {
+            return false;
+        }
+        newRiderSelection = newRiderSelectorUi.GetSelections();
+
+        if (tempMember.SetRiderManager(m_RiderManagerList.GetRiderManagerList()[newRiderSelection], oldRiderSelection)) {
+            m_MemberList.SetMember(tempMember, memberSelection);
+            m_Logger->Log("User changed " + m_MemberList.GetMemberList()[memberSelection].GetMemberUserName() + "'s pick from " + oldRider.ToStringSmall(false) + " to " + m_MemberList.GetMemberList()[memberSelection].GetRiderList().GetRiderManagerList()[oldRiderSelection].ToStringSmall(false), Logger::LogLevelSuccess, Logger::LogFile);
+        }
+    }
+
+    m_Logger->Log("Changes successfully made", Logger::LogLevelSuccess, Logger::LogConsoleFile);
 
     return true;
 }

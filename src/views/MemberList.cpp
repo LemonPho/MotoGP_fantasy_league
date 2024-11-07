@@ -8,6 +8,10 @@ MemberList::MemberList(std::shared_ptr<Logger> logger) {
     m_Logger = logger;
 }
 
+void MemberList::SetMember(Member member, size_t index){
+    m_MemberList[index] = member;
+}
+
 void MemberList::AddMember(Member member) {
     m_MemberList.push_back(member);
 }
@@ -68,12 +72,7 @@ std::string MemberList::ToStringSmallHTML() {
         result += std::to_string(member.GetPoints());
         result += "</b>";
         result += "</td>";
-
-        for(auto riderManager : member.GetRiderList()){
-            result += "<td>";
-            result += riderManager.ToStringSmall(false) + "</td>";
-        }
-
+        result += member.GetRiderList().ToStringHTML();
         result += "</tr>\n";
         position++;
     }
@@ -85,7 +84,7 @@ std::string MemberList::ToStringSmallHTML() {
 
 void MemberList::SortMembers() {
     m_Logger->Log("Sorting members", Logger::LogLevelInfo, Logger::LogFile);
-    //std::sort(m_MemberList.rbegin(), m_MemberList.rend());
+    std::sort(m_MemberList.rbegin(), m_MemberList.rend());
     m_Logger->Log("Sorted members", Logger::LogLevelInfo, Logger::LogFile);
 }
 
@@ -94,7 +93,7 @@ void MemberList::UpdateMembersPoints() {
     int points=0;
     for(auto& member : m_MemberList){
         points = 0;
-        for(auto rider : member.GetRiderList()){
+        for(auto& rider : member.GetRiderList().GetRiderManagerList()){
             points += rider.GetPoints();
         }
 
@@ -130,7 +129,7 @@ void MemberList::WriteToDisk(const std::filesystem::path &fileName) {
     for(auto i : m_MemberList){
         tempString = i.GetMemberUserName();
         tempString += "|";
-        for(auto j : i.GetRiderList()){
+        for(auto j : i.GetRiderList().GetRiderManagerList()){
             tempString += j.GetRider().GetNumber();
             tempString += "|";
         }

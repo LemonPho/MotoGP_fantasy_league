@@ -17,6 +17,7 @@ public:
     MemberList();
     explicit MemberList(std::shared_ptr<Logger> logger);
 
+    void SetMember(Member member, size_t index);
     void AddMember(Member member);
     void RemoveMember(Member member);
     bool DeleteAllMembers();

@@ -6,16 +6,28 @@
 #include <vector>
 
 #include "models/RiderManager.h"
+#include "views/RiderManagerList.h"
 #include "core/Logger.h"
 
 class Member {
 public:
-    static const int RIDER_COUNT = 6;
-    static const int SPACE_USERNAME = 30;
-    static const int MAX_USERNAME = 20;
+    enum AttributesIndexed {
+        USERNAME_INDEX = 0,
+        RIDER_LIST_INDEX,
+        POINTS_INDEX,
+    };
+
+    enum Spacing {
+        USERNAME_SPACING = 30,
+    };
+
+    enum Limits {
+        RIDER_COUNT = 6,
+        MAX_USERNAME = 20
+    };
 private:
     std::string m_UserName;
-    std::vector<RiderManager> m_RiderList;
+    RiderManagerList m_RiderList;
     std::shared_ptr<Logger> m_Logger;
     int m_Points;
 public:
@@ -23,14 +35,16 @@ public:
     explicit Member(std::shared_ptr<Logger> logger);
     bool SetUserName(const std::string &userName);
     void InsertRiderManager(RiderManager &riderManager);
-    void SetRiderList(std::vector<RiderManager> riderList);
+    void SetRiderList(RiderManagerList riderList);
+    bool SetRiderManager(RiderManager riderManager, size_t index);
     bool SetPoints(int points);
 
     std::string GetMemberUserName();
-    std::vector<RiderManager> GetRiderList();
+    RiderManagerList GetRiderList();
     int GetPoints();
 
     std::string ToStringSmall();
+    std::vector<std::string> ToStringEdit();
 
     Member& operator = (const Member& member);
     bool operator == (const Member& member);

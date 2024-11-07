@@ -3,6 +3,7 @@
 DynamicUi::DynamicUi(std::shared_ptr<Logger> logger, std::vector<std::string>& instructions, std::vector<std::string>& menuOptions)
     : m_Logger(std::move(logger)), m_Instructions(instructions), m_MenuOptions(menuOptions)
 {
+    m_Logger->Log("Opening dynamic ui", Logger::LogLevelInfo, Logger::LogFile);
     m_Selections.resize(m_MenuOptions.size(), false);
     m_InstructionsLength = m_Instructions.size();
     m_OptionCount = m_MenuOptions.size();
@@ -89,23 +90,31 @@ bool DynamicUi::GetChangesMade() {
     return m_ChangesMade;
 }
 
+size_t DynamicUi::GetAcceptLine(){
+    return m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN;
+}
+
 void DynamicUi::InitializeUi() {
     m_Logger->Log("Starting dynamic ui", Logger::LogLevelInfo, Logger::LogFile);
     ToggleConsoleCursor(false);
     util::GetWindowDimensions(m_Window.columns, m_Window.rows);
 
+    //finding longest option to place arrows
     for (auto& menuOption : m_MenuOptions) {
         if (menuOption.length() > m_LongestMenuOption) {
             m_LongestMenuOption = menuOption.length();
         }
     }
 
+    //generating initial arrow positioning
     m_LeftArrow = (m_Window.columns / 2 - m_LongestMenuOption / 2) - UiSpacing::ARROWS;
     m_RightArrow = (m_Window.columns / 2 + m_LongestMenuOption / 2) + UiSpacing::ARROWS;
     char key;
 
+    //display instructions and menu
     Display();
     while (!m_Terminate) {
+        //updating menu
         UpdateArrowPosition(m_HighlightedOption, m_LeftArrow, m_RightArrow);
 
         key = util::CustomGetch();
@@ -141,7 +150,7 @@ void DynamicUi::Navigate(const char key) {
     switch (key) {
         case keys::UP_KEY: {
             m_HighlightedOption++;
-            if (m_HighlightedOption > m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN) {
+            if (m_HighlightedOption > GetAcceptLine()) {
                 m_HighlightedOption = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN;
             }
             m_OptionIndex++;
@@ -152,7 +161,7 @@ void DynamicUi::Navigate(const char key) {
         case keys::DOWN_KEY: {
             m_HighlightedOption--;
             if (m_HighlightedOption < m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN) {
-                m_HighlightedOption = m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN;
+                m_HighlightedOption = GetAcceptLine();
             }
             m_OptionIndex--;
             m_OptionIndex %= m_OptionCount + UiSpacing::ACCEPT;
@@ -179,7 +188,7 @@ void DynamicUi::Navigate(const char key) {
 }
 
 void DynamicUi::OnSelect() {
-    if (m_HighlightedOption == m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN) {
+    if (m_HighlightedOption == GetAcceptLine()) {
         Exit(true);
     }
     else {
@@ -208,6 +217,8 @@ void DynamicUi::Exit(bool changesMade) {
 
     if (m_ChangesMade) {
         m_Logger->Log("User exiting menu by accepting", Logger::LogLevelInfo, Logger::LogFile);
+    } else {
+        m_Logger->Log("User exiting menu by cancelling", Logger::LogLevelInfo, Logger::LogFile);
     }
     m_Terminate = true;
 }

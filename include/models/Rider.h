@@ -9,7 +9,7 @@
 
 class Rider {
 public:
-    enum spacing{
+    enum Spacing{
         SPACE_POSITION = 2,
         SPACE_NUMBER = 2,
         SPACE_COUNTRY = 20,

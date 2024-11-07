@@ -10,6 +10,7 @@
 #include "core/Logger.h"
 #include "utils/Util.h"
 #include "ui/DynamicUi/DynamicUi.h"
+#include "ui/DynamicUi/MemberSelectorUi.h"
 #include "ui/DynamicUi/RidersSelectorUi.h"
 
 class MemberMenu {
