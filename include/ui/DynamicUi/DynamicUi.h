@@ -21,6 +21,14 @@ struct SelectionsSpace {
 };
 
 class DynamicUi {
+public:
+    enum UiSpacing {
+        INSTRUCTIONS_DOWN_SPACING = 2,
+        ARROWS_SPACING = 3,
+        SELECT_SPACING = 7,
+        ACCEPT_LINE_SPACING = 1,
+        MESSAGE_LINE_SPACING = 1,
+    };
 // This is the base of what the dynamic ui needs to sort of work, it is lacking a selections array (located in its children classes)
 // and OnSelect() and OnDeselect() are empty (built in child classes)
 private:
@@ -39,6 +47,9 @@ private:
     size_t m_HighlightedOption = 0;
     size_t m_OptionIndex = 0;
 
+    bool m_Pagination = false;
+    int m_CurrentPage = 0;
+    size_t m_PageCount = 1;
 
     bool m_Terminate = false;
     bool m_ChangesMade = false;
@@ -64,6 +75,8 @@ public:
     bool GetChangesMade();
     SelectionsSpace GetSelectionsSpace();
 
+    //TODO: create function that only clears the selections area
+
     void InitializeUi();
     void Display();
     void PrintLog();
@@ -76,18 +89,12 @@ public:
     virtual ~DynamicUi() = default;
 };
 
-enum UiSpacing {
-    INSTRUCTIONS_DOWN_SPACING = 2,
-    ARROWS_SPACING = 3,
-    SELECT_SPACING = 7,
-    ACCEPT_LINE_SPACING = 1,
-    MESSAGE_LINE_SPACING = 1,
-};
-
 #ifdef _WIN32
 enum keys {
     UP_KEY = 80,
     DOWN_KEY = 72,
+    RIGHT_KEY = 77,
+    LEFT_KEY = 75,
     ENTER_KEY = 13,
     BACKSPACE_KEY = 8,
     Q_KEY = 113,

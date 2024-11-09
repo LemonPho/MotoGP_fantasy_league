@@ -7,8 +7,6 @@ DynamicUi::DynamicUi(std::shared_ptr<Logger> logger, std::vector<std::string>& i
     m_InstructionsLength = m_Instructions.size();
     m_OptionCount = m_MenuOptions.size();
     m_HighlightedOption = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING;
-    m_SelectionsSpace.upperLimit = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING;
-    m_SelectionsSpace.lowerLimit = m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING;
 }
 
 void DynamicUi::gotoxy(size_t x, size_t y) {
@@ -60,7 +58,7 @@ void DynamicUi::ClearText(size_t start, size_t end, size_t left, size_t right) {
 }
 
 void DynamicUi::ClearLine(size_t line) {
-    std::string string(" ", m_Window.columns);
+    std::string string(m_Window.columns, ' ');
     gotoxy(0, line);
     std::cout << string;
 }
@@ -110,6 +108,14 @@ void DynamicUi::InitializeUi() {
     m_Terminate = false;
     ToggleConsoleCursor(false);
     util::GetWindowDimensions(m_Window.columns, m_Window.rows);
+    m_SelectionsSpace.upperLimit = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING;
+    m_SelectionsSpace.lowerLimit = m_Window.rows - UiSpacing::ACCEPT_LINE_SPACING - 1;
+    size_t lineCount = m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING;
+
+    if (lineCount >= m_Window.rows) {
+        m_Pagination = true;
+        m_PageCount = (m_MenuOptions.size() + (m_SelectionsSpace.lowerLimit - m_SelectionsSpace.upperLimit) - 1) / (m_SelectionsSpace.lowerLimit - m_SelectionsSpace.upperLimit);
+    }
 
     //finding longest option to place arrows
     for (auto& menuOption : m_MenuOptions) {
@@ -121,11 +127,14 @@ void DynamicUi::InitializeUi() {
     //generating initial arrow positioning
     m_LeftArrow = (m_Window.columns / 2 - m_LongestMenuOption / 2) - UiSpacing::ARROWS_SPACING;
     m_RightArrow = (m_Window.columns / 2 + m_LongestMenuOption / 2) + UiSpacing::ARROWS_SPACING;
-    char key;
+    char key = 0;
 
     //display instructions and menu
     Display();
     while (!m_Terminate) {
+        if (key == keys::LEFT_KEY || key == keys::RIGHT_KEY) {
+            Display();
+        }
         PrintLog();
         //updating menu
         UpdateArrowPosition(m_HighlightedOption, m_LeftArrow, m_RightArrow);
@@ -149,21 +158,37 @@ void DynamicUi::Display(){
         std::cout << instruction << std::endl;
     }
 
-    for (const auto& menuOption : m_MenuOptions) {
-        centeredText = m_Window.columns / 2 - menuOption.length() / 2;
-        gotoxy(centeredText, i);
-        i++;
-        std::cout << menuOption;
+    if (m_Pagination) {
+        size_t start = m_CurrentPage * (m_SelectionsSpace.lowerLimit - m_SelectionsSpace.upperLimit);
+        size_t end = ((m_CurrentPage + 1) * (m_SelectionsSpace.lowerLimit - m_SelectionsSpace.upperLimit) > m_MenuOptions.size()) ? m_MenuOptions.size() : (m_CurrentPage+1) * (m_SelectionsSpace.lowerLimit - m_SelectionsSpace.upperLimit);
+        for (size_t j = start; j < end; j++) {
+            centeredText = m_Window.columns / 2 - m_MenuOptions[j].length() / 2;
+            gotoxy(centeredText, i);
+            i++;
+            std::cout << m_MenuOptions[j];
+        }
+    } else {
+        for (const auto& menuOption : m_MenuOptions) {
+            centeredText = m_Window.columns / 2 - menuOption.length() / 2;
+            gotoxy(centeredText, i);
+            i++;
+            std::cout << menuOption;
+        }
     }
 
     centeredText = m_Window.columns / 2 - accept.length() / 2;
     if (!PrintAccept(centeredText, i)) {
         m_SelectionsSpace.lowerLimit = m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING - 1;
     }
+
+    std::string pageString = "[" + std::to_string(m_CurrentPage + 1) + "/" + std::to_string(m_PageCount) + "]";
+    centeredText = m_Window.columns / 2 - pageString.length() / 2;
+    gotoxy(centeredText, m_Window.rows);
+    std::cout << pageString;
 }
 
 void DynamicUi::PrintLog() {
-    int messageLine = GetSelectionsSpace().lowerLimit + UiSpacing::MESSAGE_LINE_SPACING;
+    int messageLine = GetSelectionsSpace().upperLimit - UiSpacing::MESSAGE_LINE_SPACING;
     //Clear message line
     ClearLine(messageLine);
 
@@ -197,6 +222,20 @@ void DynamicUi::Navigate(const char key) {
             }
             m_OptionIndex--;
             m_OptionIndex %= m_OptionCount + UiSpacing::ACCEPT_LINE_SPACING;
+            break;
+        }
+
+        case keys::RIGHT_KEY: {
+            m_CurrentPage++;
+            m_CurrentPage %= m_PageCount;
+            break;
+        }
+
+        case keys::LEFT_KEY: {
+            m_CurrentPage--;
+            if (m_CurrentPage < 0) {
+                m_CurrentPage = m_PageCount - 1;
+            }
             break;
         }
 
