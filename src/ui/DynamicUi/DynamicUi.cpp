@@ -4,10 +4,11 @@ DynamicUi::DynamicUi(std::shared_ptr<Logger> logger, std::vector<std::string>& i
     : m_Logger(std::move(logger)), m_Instructions(instructions), m_MenuOptions(menuOptions)
 {
     m_Logger->Log("Opening dynamic ui", Logger::LogLevelInfo, Logger::LogFile);
-    m_Selections.resize(m_MenuOptions.size(), false);
     m_InstructionsLength = m_Instructions.size();
     m_OptionCount = m_MenuOptions.size();
-    m_HighlightedOption = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN;
+    m_HighlightedOption = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING;
+    m_SelectionsSpace.upperLimit = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING;
+    m_SelectionsSpace.lowerLimit = m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING;
 }
 
 void DynamicUi::gotoxy(size_t x, size_t y) {
@@ -58,8 +59,18 @@ void DynamicUi::ClearText(size_t start, size_t end, size_t left, size_t right) {
     }
 }
 
-std::vector<bool>& DynamicUi::GetSelections() {
-    return m_Selections;
+void DynamicUi::ClearLine(size_t line) {
+    std::string string(" ", m_Window.columns);
+    gotoxy(0, line);
+    std::cout << string;
+}
+
+std::vector<std::string>& DynamicUi::GetMenuOptions() {
+    return m_MenuOptions;
+}
+
+size_t DynamicUi::GetLongestMenuOption() {
+    return m_LongestMenuOption;
 }
 
 size_t DynamicUi::GetHighlightedOption() {
@@ -90,12 +101,13 @@ bool DynamicUi::GetChangesMade() {
     return m_ChangesMade;
 }
 
-size_t DynamicUi::GetAcceptLine(){
-    return m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN;
+SelectionsSpace DynamicUi::GetSelectionsSpace() {
+    return m_SelectionsSpace;
 }
 
 void DynamicUi::InitializeUi() {
     m_Logger->Log("Starting dynamic ui", Logger::LogLevelInfo, Logger::LogFile);
+    m_Terminate = false;
     ToggleConsoleCursor(false);
     util::GetWindowDimensions(m_Window.columns, m_Window.rows);
 
@@ -107,13 +119,14 @@ void DynamicUi::InitializeUi() {
     }
 
     //generating initial arrow positioning
-    m_LeftArrow = (m_Window.columns / 2 - m_LongestMenuOption / 2) - UiSpacing::ARROWS;
-    m_RightArrow = (m_Window.columns / 2 + m_LongestMenuOption / 2) + UiSpacing::ARROWS;
+    m_LeftArrow = (m_Window.columns / 2 - m_LongestMenuOption / 2) - UiSpacing::ARROWS_SPACING;
+    m_RightArrow = (m_Window.columns / 2 + m_LongestMenuOption / 2) + UiSpacing::ARROWS_SPACING;
     char key;
 
     //display instructions and menu
     Display();
     while (!m_Terminate) {
+        PrintLog();
         //updating menu
         UpdateArrowPosition(m_HighlightedOption, m_LeftArrow, m_RightArrow);
 
@@ -126,9 +139,11 @@ void DynamicUi::InitializeUi() {
 }
 
 void DynamicUi::Display(){
-    int centeredText;
-    int i = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN;
+    size_t centeredText;
+    size_t i = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING;
     std::string accept = "Accept";
+
+    system(CLEAR);
 
     for (const auto& instruction : m_Instructions) {
         std::cout << instruction << std::endl;
@@ -142,29 +157,46 @@ void DynamicUi::Display(){
     }
 
     centeredText = m_Window.columns / 2 - accept.length() / 2;
-    gotoxy(centeredText, i);
-    std::cout << "\x1b[32m" << accept << "\033[0m";
+    if (!PrintAccept(centeredText, i)) {
+        m_SelectionsSpace.lowerLimit = m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING - 1;
+    }
+}
+
+void DynamicUi::PrintLog() {
+    int messageLine = GetSelectionsSpace().lowerLimit + UiSpacing::MESSAGE_LINE_SPACING;
+    //Clear message line
+    ClearLine(messageLine);
+
+    //Print new message
+    gotoxy((m_Window.columns / 2) - (m_Logger->GetLogString().length() / 2), messageLine); 
+    m_Logger->PrintLog();
+}
+
+bool DynamicUi::PrintAccept(size_t x, size_t y){
+    gotoxy(x, y);
+    std::cout << "\x1b[32m" << "Accept" << "\033[0m";
+    return true;
 }
 
 void DynamicUi::Navigate(const char key) {
     switch (key) {
         case keys::UP_KEY: {
             m_HighlightedOption++;
-            if (m_HighlightedOption > GetAcceptLine()) {
-                m_HighlightedOption = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN;
+            if (m_HighlightedOption > m_SelectionsSpace.lowerLimit) {
+                m_HighlightedOption = m_SelectionsSpace.upperLimit;
             }
             m_OptionIndex++;
-            m_OptionIndex %= m_OptionCount + UiSpacing::ACCEPT;
+            m_OptionIndex %= m_OptionCount + UiSpacing::ACCEPT_LINE_SPACING;
             break;
         }
 
         case keys::DOWN_KEY: {
             m_HighlightedOption--;
-            if (m_HighlightedOption < m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN) {
-                m_HighlightedOption = GetAcceptLine();
+            if (m_HighlightedOption < m_SelectionsSpace.upperLimit) {
+                m_HighlightedOption = m_SelectionsSpace.lowerLimit;
             }
             m_OptionIndex--;
-            m_OptionIndex %= m_OptionCount + UiSpacing::ACCEPT;
+            m_OptionIndex %= m_OptionCount + UiSpacing::ACCEPT_LINE_SPACING;
             break;
         }
 
@@ -180,36 +212,20 @@ void DynamicUi::Navigate(const char key) {
 
         case keys::Q_KEY: {
             m_Logger->Log("Exiting Ui by cancelation", Logger::LogLevelInfo, Logger::LogFile);
-            std::fill(m_Selections.begin(), m_Selections.end(), false);
             m_Terminate = true;
+            m_ChangesMade = false;
             break;
         }
     }
 }
 
+//These two functions are to be completely built by the user
 void DynamicUi::OnSelect() {
-    if (m_HighlightedOption == GetAcceptLine()) {
-        Exit(true);
-    }
-    else {
-        m_Logger->Log("Option: " + m_MenuOptions[m_OptionIndex] + " selected", Logger::LogLevelInfo, Logger::LogFile);
-        int selectionPosition = (m_Window.columns / 2 + m_LongestMenuOption / 2 + UiSpacing::SELECT);
-        gotoxy(selectionPosition, m_HighlightedOption);
-        std::cout << "x";
-        m_Selections[m_OptionIndex] = true;
-    }
+    return;
 }
 
 void DynamicUi::OnDeselect() {
-    if (m_OptionIndex >= m_Selections.size()) {
-        return;
-    }
-
-    m_Logger->Log("Option: " + m_MenuOptions[m_OptionIndex] + " removed from selections", Logger::LogLevelInfo, Logger::LogFile);
-    int selectionPosition = (m_Window.columns / 2 + m_LongestMenuOption / 2 + UiSpacing::SELECT);
-    gotoxy(selectionPosition, m_HighlightedOption);
-    std::cout << " ";
-    m_Selections[m_OptionIndex] = false;
+    return;
 }
 
 void DynamicUi::Exit(bool changesMade) {

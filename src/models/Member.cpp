@@ -23,7 +23,7 @@ bool Member::SetUserName(const std::string &userName) {
 
 void Member::InsertRiderManager(RiderManager &riderManager) {
     m_RiderList.AddRiderManager(riderManager);
-    m_Logger->Log("Rider with number: " + riderManager.GetRider().GetNumber() + " was added to " + m_UserName, Logger::LogLevelSuccess, Logger::LogFile);
+    m_Logger->Log("Rider " + riderManager.ToStringSmall(false) + " was added to " + m_UserName, Logger::LogLevelSuccess, Logger::LogFile);
 }
 
 void Member::SetRiderList(RiderManagerList riderList) {
@@ -32,6 +32,10 @@ void Member::SetRiderList(RiderManagerList riderList) {
 }
 
 bool Member::SetRiderManager(RiderManager riderManager, size_t index){
+    if (index == Limits::RIDER_COUNT - 1) {
+        return m_RiderList.SetRiderManager(riderManager, index, false);
+    }
+
     size_t duplicates = 0;
     for (size_t i = 0; i < Limits::RIDER_COUNT - 2; i++) {
         if (m_RiderList.GetRiderManagerList()[i] == riderManager) {
@@ -40,10 +44,10 @@ bool Member::SetRiderManager(RiderManager riderManager, size_t index){
     }
 
     if (duplicates >= 1) {
-        m_Logger->Log("Rider #" + riderManager.GetRider().GetNumber() + " already exists in " + m_UserName + "'s picks", Logger::LogLevelError, Logger::LogConsoleFile);
+        m_Logger->Log("Rider " + riderManager.ToStringSmall(false) + " already exists in " + m_UserName + "'s picks", Logger::LogLevelError, Logger::LogConsoleFile);
         return false;
     } else {
-        return m_RiderList.SetRiderManager(riderManager, index);
+        return m_RiderList.SetRiderManager(riderManager, index, true);
     }
 }
 

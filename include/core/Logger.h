@@ -46,6 +46,8 @@ public:
     LogResult LogToConsole(const std::string &message, LogLevel logLevel);
     LogResult LogToFile(const std::string &message, LogLevel logLevel);
 
+    std::string GetLogString();
+
     void PrintLog();
     void ResetLogString();
 };

@@ -10,15 +10,18 @@ MemberList::MemberList(std::shared_ptr<Logger> logger) {
 
 void MemberList::SetMember(Member member, size_t index){
     m_MemberList[index] = member;
+    SortMembers();
 }
 
 void MemberList::AddMember(Member member) {
     m_MemberList.push_back(member);
+    SortMembers();
 }
 
 void MemberList::RemoveMember(Member member) {
     m_MemberList.erase(std::remove(m_MemberList.begin(), m_MemberList.end(), member), m_MemberList.end());
     m_Logger->Log("Member " + member.GetMemberUserName() + " was deleted", Logger::LogLevelSuccess, Logger::LogConsoleFile);
+    SortMembers();
 }
 
 std::vector<Member> MemberList::GetMemberList(){
@@ -83,6 +86,7 @@ std::string MemberList::ToStringSmallHTML() {
 }
 
 void MemberList::SortMembers() {
+    UpdateMembersPoints();
     m_Logger->Log("Sorting members", Logger::LogLevelInfo, Logger::LogFile);
     std::sort(m_MemberList.rbegin(), m_MemberList.rend());
     m_Logger->Log("Sorted members", Logger::LogLevelInfo, Logger::LogFile);
@@ -187,5 +191,6 @@ void MemberList::ReadFromDisk(const std::filesystem::path &fileName, RiderManage
         tempMember = Member(m_Logger);
     }
 
+    SortMembers();
     m_Logger->Log("Successfully read member list from disk", Logger::LogLevelSuccess, Logger::LogFile);
 }

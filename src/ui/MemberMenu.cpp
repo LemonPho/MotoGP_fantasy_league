@@ -4,27 +4,10 @@ MemberMenu::MemberMenu() {
     m_Logger = std::make_shared<Logger>();
 }
 
-MemberMenu::MemberMenu(std::shared_ptr<Logger> logger) {
+void MemberMenu::InitializeMemberMenu(std::shared_ptr<Logger> logger, std::shared_ptr<Season> season) {
     m_Logger = logger;
-}
-
-void MemberMenu::InitializeMemberMenu() {
     m_Logger->Log("Initializing member menu", Logger::LogLevelInfo, Logger::LogFile);
-    m_MemberList = MemberList(m_Logger);
-    m_RiderManagerList = RiderManagerList(m_Logger);
-    std::ifstream file(util::APP_DIRECTORY_DATA/util::PROGRAM_DATA);
-    std::string tempString;
-
-    if(!file.is_open()){
-        m_Logger->Log("Could not open program data file", Logger::LogLevelError, Logger::LogConsoleFile);
-    } else {
-        std::getline(file, tempString, '\n');
-        m_SelectedSeason = tempString;
-    }
-
-    m_RiderManagerList.ReadFromDisk(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::RIDER_DATA));
-    m_MemberList.ReadFromDisk(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::MEMBER_DATA), m_RiderManagerList);
-
+    m_Season = season;
     m_Logger->Log("Initialized member menu, starting menu", Logger::LogLevelInfo, Logger::LogFile);
     Menu();
 }
@@ -35,12 +18,12 @@ void MemberMenu::Menu() {
     bool saveChanges = false;
     std::string option;
 
-    m_MemberList.UpdateMembersPoints();
-    m_MemberList.SortMembers();
+    MemberList memberList = m_Season->GetMemberList();
+    RiderManagerList riderManagerList = m_Season->GetRiderManagerList();
 
     do {
         system(CLEAR);
-        std::cout << "Member Menu, " << m_SelectedSeason << std::endl;
+        std::cout << "Member Menu, " << m_Season->GetSeasonName() << std::endl;
         m_Logger->PrintLog();
         std::cout << "1. Add Member" << std::endl;
         std::cout << "2. Delete Member" << std::endl;
@@ -59,47 +42,41 @@ void MemberMenu::Menu() {
             }
             case ADD_MEMBER: {
                 if(!saveChanges){
-                    saveChanges = AddMember();
+                    saveChanges = AddMember(memberList, riderManagerList);
                 } else {
-                    AddMember();
+                    AddMember(memberList, riderManagerList);
                 }
 
-                m_MemberList.UpdateMembersPoints();
-                m_MemberList.SortMembers();
                 break;
             }
 
             case DELETE_MEMBER: {
                 if(!saveChanges){
-                    saveChanges = DeleteMember();
+                    saveChanges = DeleteMember(memberList);
                 } else {
-                    DeleteMember();
+                    DeleteMember(memberList);
                 }
 
-                m_MemberList.UpdateMembersPoints();
-                m_MemberList.SortMembers();
                 break;
             }
 
             case MODIFY_MEMBER: {
                 if(!saveChanges){
-                    saveChanges = ModifyMember();
+                    saveChanges = ModifyMember(memberList, riderManagerList);
                 } else {
-                    ModifyMember();
+                    ModifyMember(memberList, riderManagerList);
                 }
 
-                m_MemberList.UpdateMembersPoints();
-                m_MemberList.SortMembers();
                 break;
             }
 
             case SHOW_MEMBERS: {
                 m_Logger->Log("Displaying member list", Logger::LogLevelInfo, Logger::LogFile);
 
-                std::string memberListString = m_MemberList.ToString();
+                std::string memberListString = memberList.ToString();
                 if(!memberListString.empty()){
                     system(CLEAR);
-                    std::cout << m_MemberList.ToString() << std::endl;
+                    std::cout << memberList.ToString() << std::endl;
                     std::cin.ignore();
                     util::EnterToContinue();
                 }
@@ -113,19 +90,17 @@ void MemberMenu::Menu() {
                 std::cin >> opt;
                 if(opt == 'Y' || opt == 'y'){
                     m_Logger->Log("Deleting all member", Logger::LogLevelInfo, Logger::LogFile);
-                    if(m_MemberList.DeleteAllMembers()){
+                    if(memberList.DeleteAllMembers()){
                         saveChanges = true;
                     }
                 }
                 break;
             }
 
-            case CREATE_STANDINGS_FILE: {
-                m_MemberList.UpdateMembersPoints();
-                m_MemberList.SortMembers();
+            case CREATE_STANDINGS_FILE: {         
                 m_Logger->Log("Creating standings file", Logger::LogLevelInfo, Logger::LogFile);
 
-                std::string tempString = m_MemberList.ToStringSmallHTML();
+                std::string tempString = memberList.ToStringSmallHTML();
 
                 if (tempString.empty()) {
                     m_Logger->Log("You need to have members saved to create a standings file", Logger::LogLevelError, Logger::LogConsole);
@@ -154,7 +129,8 @@ void MemberMenu::Menu() {
                 if(!saveChanges){
                     m_Logger->Log("No changes have been registered", Logger::LogLevelInfo, Logger::LogConsoleFile);
                 } else {
-                    m_MemberList.WriteToDisk(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::MEMBER_DATA));
+                    m_Season->SetMemberList(memberList);
+                    m_Season->SaveChanges();
                     saveChanges = false;
                 }
                 break;
@@ -167,7 +143,8 @@ void MemberMenu::Menu() {
                     std::cin >> opt;
                     if(opt == 'y' || opt == 'Y'){
                         m_Logger->Log("User exiting member menu and saving changes", Logger::LogLevelInfo, Logger::LogFile);
-                        m_MemberList.WriteToDisk(util::APP_DIRECTORY_DATA/(m_SelectedSeason + util::MEMBER_DATA));
+                        m_Season->SetMemberList(memberList);
+                        m_Season->SaveChanges();
                     } else {
                         m_Logger->Log("User exiting member menu without saving changes", Logger::LogLevelInfo, Logger::LogFile);
                     }
@@ -179,9 +156,9 @@ void MemberMenu::Menu() {
     }while(!end);
 }
 
-bool MemberMenu::AddMember() {
+bool MemberMenu::AddMember(MemberList& memberList, RiderManagerList& riderManagerList) {
     m_Logger->Log("Opening add member", Logger::LogLevelInfo, Logger::LogFile);
-    if(m_RiderManagerList.GetRiderManagerList().empty() || m_RiderManagerList.GetRiderManagerList().size() < 6){
+    if(riderManagerList.GetRiderManagerList().empty() || riderManagerList.GetRiderManagerList().size() < 6){
         m_Logger->Log("You have no riders added, make sure to have 6 riders before creating a member", Logger::LogLevelError, Logger::LogConsole);
         m_Logger->Log("No riders in rider list", Logger::LogLevelError, Logger::LogFile);
         return false;
@@ -196,9 +173,9 @@ bool MemberMenu::AddMember() {
 
     //data
     std::string userName;
-    int *selections; 
     RiderManager tempRiderManager(m_Logger);
     Member tempMember(m_Logger);
+    std::vector<int> selections(Member::RIDER_COUNT);
 
     m_Logger->Log("Receiving username", Logger::LogLevelInfo, Logger::LogFile);
     std::cout << "Creating Member" << std::endl;
@@ -214,7 +191,7 @@ bool MemberMenu::AddMember() {
     system(CLEAR);
 
     std::vector<std::string> instructions = { "Creating Member", "Add the member's picks", "Arrow keys for going up and down", "Enter: Select rider", "Backspace: Remove selected rider", "Q: cancel" };
-    std::vector<std::string> options = m_RiderManagerList.ToStringVector();
+    std::vector<std::string> options = riderManagerList.ToStringVector();
 
     RidersSelectorUi ridersSelector(m_Logger, instructions, options);
     ridersSelector.InitializeUi();
@@ -227,22 +204,22 @@ bool MemberMenu::AddMember() {
 
     m_Logger->Log("Retreiving rider data from selections", Logger::LogLevelInfo, Logger::LogFile);
     for(size_t i = 0; i < Member::RIDER_COUNT; i++){
-        tempRiderManager = m_RiderManagerList.GetRiderManagerIndex(selections[i]);
+        tempRiderManager = riderManagerList.GetRiderManagerIndex(selections[i]);
         tempRiderManager.SetPosition(i+1);
         tempMember.InsertRiderManager(tempRiderManager);
     }
 
-    m_MemberList.AddMember(tempMember);
+    memberList.AddMember(tempMember);
     m_Logger->Log("New member created with username: " + tempMember.GetMemberUserName(), Logger::LogLevelSuccess, Logger::LogFile);
     m_Logger->Log(tempMember.GetMemberUserName() + " created!", Logger::LogLevelSuccess, Logger::LogConsole);
 
     return true;
 }
 
-bool MemberMenu::DeleteMember() {
+bool MemberMenu::DeleteMember(MemberList& memberList) {
     m_Logger->Log("Opening delete member", Logger::LogLevelInfo, Logger::LogFile);
     
-    if(m_MemberList.GetMemberList().empty()){
+    if(memberList.GetMemberList().empty()){
         m_Logger->Log("You have no members added", Logger::LogLevelWarning, Logger::LogConsole);
         m_Logger->Log("Members list empty, returning to member menu", Logger::LogLevelWarning, Logger::LogFile);
         return false;
@@ -250,12 +227,12 @@ bool MemberMenu::DeleteMember() {
 
     system(CLEAR);
     
-    std::vector<std::string> memberListString = m_MemberList.ToStringArray();
+    std::vector<std::string> memberListString = memberList.ToStringArray();
     std::vector<std::string> instructions = { "Delete member", "Select the members you would like to delete", "Arrow keys for going up and down", "Enter: Select member", "Backspace: Remove selected member", "Q: cancel" };
     std::vector<bool> selections;
     selections.resize(memberListString.size());
 
-    DynamicUi deleteMemberUi(m_Logger, instructions, memberListString);
+    MultipleSelectionUi deleteMemberUi(m_Logger, instructions, memberListString);
 
     deleteMemberUi.InitializeUi();
 
@@ -270,45 +247,45 @@ bool MemberMenu::DeleteMember() {
         if(selections[i]){
             Member tempMember(m_Logger);
             //instance only needs username, since it is used for comparison
-            tempMember.SetUserName(m_MemberList.GetMemberList()[i].GetMemberUserName());
-            m_MemberList.RemoveMember(tempMember);
+            tempMember.SetUserName(memberList.GetMemberList()[i].GetMemberUserName());
+            memberList.RemoveMember(tempMember);
         }
     }
 
     return true;
 }
 
-bool MemberMenu::ModifyMember() {
+bool MemberMenu::ModifyMember(MemberList& memberList, RiderManagerList& riderManagerList) {
     m_Logger->Log("Opening modify member", Logger::LogLevelInfo, Logger::LogFile);
-    if(m_MemberList.GetMemberList().empty()){
+    if(memberList.GetMemberList().empty()){
         m_Logger->Log("You have no members added", Logger::LogLevelWarning, Logger::LogConsole);
         m_Logger->Log("Member list empty, returning to member menu", Logger::LogLevelWarning, Logger::LogFile);
         return false;
     }
 
     std::vector<std::string> memberListInstructions = {"Modify Member", "Select the member you would like to modify", "Arrow keys for going up and down", "Enter: Select member", "Q: Cancel"};
-    std::vector<std::string> memberListString = m_MemberList.ToStringArray();
+    std::vector<std::string> memberListString = memberList.ToStringArray();
     size_t memberSelection;
 
     system(CLEAR);
-    MemberSelectorUi memberSelectorUi(m_Logger, memberListInstructions, memberListString);
+    SingleSelectionUi memberSelectorUi(m_Logger, memberListInstructions, memberListString);
     memberSelectorUi.InitializeUi();
 
     if (!memberSelectorUi.GetChangesMade()) {
         return false;
     }
 
-    memberSelection = memberSelectorUi.GetSelections();
+    memberSelection = memberSelectorUi.GetSelection();
 
     Member tempMember = Member(m_Logger);
-    tempMember = m_MemberList.GetMemberList()[memberSelection];
+    tempMember = memberList.GetMemberList()[memberSelection];
 
     std::vector<std::string> memberDetailString = tempMember.ToStringEdit();
     std::vector<std::string> memberDetailInstructions = { "Modify Member", "Select the attribute you would like to modify", "Arrow keys for going up and down", "Enter: Select attribute", "Q: Cancel" };
     size_t attributeSelection;
 
     system(CLEAR);
-    MemberSelectorUi memberAttributeSelectorUi(m_Logger, memberDetailInstructions, memberDetailString);
+    SingleSelectionUi memberAttributeSelectorUi(m_Logger, memberDetailInstructions, memberDetailString);
     memberAttributeSelectorUi.InitializeUi();
 
     if (!memberSelectorUi.GetChangesMade()) {
@@ -318,7 +295,7 @@ bool MemberMenu::ModifyMember() {
     system(CLEAR);
     util::ClearBuffer();
     std::cout << "Modify Member" << std::endl;
-    attributeSelection = memberAttributeSelectorUi.GetSelections();
+    attributeSelection = memberAttributeSelectorUi.GetSelection();
     if (attributeSelection == Member::AttributesIndexed::USERNAME_INDEX) {
         std::string newUsername;
         std::cout << "Input the new username: " << std::endl;
@@ -337,31 +314,31 @@ bool MemberMenu::ModifyMember() {
         size_t oldRiderSelection;
         RiderManager oldRider;
 
-        MemberSelectorUi oldRiderSelectorUi(m_Logger, oldRiderSelectionInstructions, oldRiderStringList);
+        SingleSelectionUi oldRiderSelectorUi(m_Logger, oldRiderSelectionInstructions, oldRiderStringList);
         oldRiderSelectorUi.InitializeUi();
 
         if (!oldRiderSelectorUi.GetChangesMade()) {
             return false;
         }
-        oldRiderSelection = oldRiderSelectorUi.GetSelections();
+        oldRiderSelection = oldRiderSelectorUi.GetSelection();
         oldRider = tempMember.GetRiderList().GetRiderManagerList()[oldRiderSelection];
 
         std::vector<std::string> newRiderSelectionInstructions = { "Select the rider you would like to swap", "Arrow keys for going up and down", "Enter: Select rider", "Q: Cancel" };
-        std::vector<std::string> newRiderStringList = m_RiderManagerList.ToStringVector();
+        std::vector<std::string> newRiderStringList = riderManagerList.ToStringVector();
         size_t newRiderSelection;
 
         system(CLEAR);
-        MemberSelectorUi newRiderSelectorUi(m_Logger, newRiderSelectionInstructions, newRiderStringList);
+        SingleSelectionUi newRiderSelectorUi(m_Logger, newRiderSelectionInstructions, newRiderStringList);
         newRiderSelectorUi.InitializeUi();
 
         if (!newRiderSelectorUi.GetChangesMade()) {
             return false;
         }
-        newRiderSelection = newRiderSelectorUi.GetSelections();
+        newRiderSelection = newRiderSelectorUi.GetSelection();
 
-        if (tempMember.SetRiderManager(m_RiderManagerList.GetRiderManagerList()[newRiderSelection], oldRiderSelection)) {
-            m_MemberList.SetMember(tempMember, memberSelection);
-            m_Logger->Log("User changed " + m_MemberList.GetMemberList()[memberSelection].GetMemberUserName() + "'s pick from " + oldRider.ToStringSmall(false) + " to " + m_MemberList.GetMemberList()[memberSelection].GetRiderList().GetRiderManagerList()[oldRiderSelection].ToStringSmall(false), Logger::LogLevelSuccess, Logger::LogFile);
+        if (tempMember.SetRiderManager(riderManagerList.GetRiderManagerList()[newRiderSelection], oldRiderSelection)) {
+            memberList.SetMember(tempMember, memberSelection);
+            m_Logger->Log("User changed " + memberList.GetMemberList()[memberSelection].GetMemberUserName() + "'s pick from " + oldRider.ToStringSmall(false) + " to " + memberList.GetMemberList()[memberSelection].GetRiderList().GetRiderManagerList()[oldRiderSelection].ToStringSmall(false), Logger::LogLevelSuccess, Logger::LogFile);
             m_Logger->Log("Changes successfully made", Logger::LogLevelSuccess, Logger::LogConsoleFile);
         }
     }

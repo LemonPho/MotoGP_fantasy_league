@@ -19,7 +19,7 @@ public:
 
     std::vector<RiderManager> GetRiderManagerList();
 
-    bool SetRiderManager(RiderManager riderManager, size_t index);
+    bool SetRiderManager(RiderManager riderManager, size_t index, bool checkDuplicates);
     void AddRiderManager(RiderManager riderManager);
     void RemoveRiderManager(RiderManager riderManager);
 

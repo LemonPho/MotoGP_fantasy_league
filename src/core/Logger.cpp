@@ -186,6 +186,10 @@ Logger::LogResult Logger::LogToFile(const std::string &message, LogLevel logLeve
     return LogSuccessful;
 }
 
+std::string Logger::GetLogString() {
+    return m_LogString;
+}
+
 //for printing log to the console, logs are deleted after printing, it serves as error messages
 void Logger::PrintLog(){
     if(m_LogString.empty()){

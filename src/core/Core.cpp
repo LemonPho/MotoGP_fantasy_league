@@ -40,8 +40,6 @@ Core::Core() {
     if(downloadsPath){
         CoTaskMemFree(downloadsPath);
     }
-
-    m_Menu = Menu(m_Logger);
 #else
 
 #endif
@@ -113,7 +111,7 @@ void Core::InitializeCore() {
 
     m_Logger->Log("Core initialized", Logger::LogLevelSuccess, Logger::LogFile);
 
-    m_Menu.InitializeMenu(m_SelectedSeason);
+    m_Menu.InitializeMenu(m_Logger, m_SelectedSeason);
 }
 
 void Core::FirstStart() {

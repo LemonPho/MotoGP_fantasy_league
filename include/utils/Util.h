@@ -29,7 +29,6 @@ namespace util{
 
     std::string FillSpaces(std::string line, int spaces);
     void gotoxy(size_t x, size_t y);
-    void PrintMenu(std::vector<std::string> menuOptions);
     void UpdateArrowPosition(size_t line, size_t left, size_t right);
     void ClearText(size_t start, size_t end, size_t left, size_t right);
     void ClearBuffer();

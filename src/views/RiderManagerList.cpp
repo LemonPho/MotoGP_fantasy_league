@@ -12,7 +12,13 @@ std::vector<RiderManager> RiderManagerList::GetRiderManagerList() {
     return m_RiderManagerList;
 }
 
-bool RiderManagerList::SetRiderManager(RiderManager riderManager, size_t index){
+bool RiderManagerList::SetRiderManager(RiderManager riderManager, size_t index, bool checkDuplicates){
+    if (!checkDuplicates) {
+        m_RiderManagerList[index] = riderManager;
+        m_Logger->Log("Rider " + riderManager.ToStringSmall(false) + " was placed at index #" + std::to_string(index), Logger::LogLevelInfo, Logger::LogFile);
+        return true;
+    }
+
     size_t duplicates = 0;
     for (auto& tempRiderManager : m_RiderManagerList) {
         if (tempRiderManager == riderManager) {
@@ -21,10 +27,10 @@ bool RiderManagerList::SetRiderManager(RiderManager riderManager, size_t index){
     }
 
     if (duplicates >= 1) {
-        m_Logger->Log("Rider already exists in list", Logger::LogLevelError, Logger::LogFile);
         return false;
     } else {
         m_RiderManagerList[index] = riderManager;
+        m_Logger->Log("Rider " + riderManager.ToStringSmall(false) + " was placed at index #" + std::to_string(index), Logger::LogLevelInfo, Logger::LogFile);
         return true;
     }
 }

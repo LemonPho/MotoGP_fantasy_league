@@ -2,23 +2,17 @@
 
 Menu::Menu(){
     m_Logger = std::make_shared<Logger>();
+    m_Season = std::make_shared<Season>();
 }
 
-Menu::Menu(std::shared_ptr<Logger> logger){
+void Menu::InitializeMenu(std::shared_ptr<Logger> logger, const std::string &selectedSeason) {
     m_Logger = logger;
-    m_MemberList = MemberList(logger);
-    m_RiderManagerList = RiderManagerList(logger);
-}
-
-void Menu::InitializeMenu(const std::string &selectedSeason) {
+    m_Logger->Log("Initializing main menu", Logger::LogLevelInfo, Logger::LogFile);
     RiderManagerList riderManagerList(m_Logger);
     MemberList memberList(m_Logger);
 
-    m_Logger->Log("Loading data from files", Logger::LogLevelInfo, Logger::LogFile);
-
-    riderManagerList.ReadFromDisk(util::APP_DIRECTORY_DATA/(selectedSeason + util::RIDER_DATA));
-    memberList.ReadFromDisk(util::APP_DIRECTORY_DATA/(selectedSeason + util::MEMBER_DATA), riderManagerList);
-    m_Logger->Log("Menu initialized", Logger::LogLevelSuccess, Logger::LogFile);
+    m_Season->InitializeSeason(logger, selectedSeason);
+    m_Logger->Log("Main menu initialized", Logger::LogLevelSuccess, Logger::LogFile);
     MainMenu();
 }
 
@@ -53,12 +47,14 @@ void Menu::MainMenu() {
                 break;
             }
             case SEASONS_MENU: {
+                SeasonMenu seasonMenu;
+                seasonMenu.InitializeSeasonMenu(m_Logger, m_Season);
                 break;
             }
 
             case MEMBERS_MENU: {
-                MemberMenu memberMenu(m_Logger);
-                memberMenu.InitializeMemberMenu();
+                MemberMenu memberMenu;
+                memberMenu.InitializeMemberMenu(m_Logger, m_Season);
                 break;
             }
 
