@@ -33,6 +33,7 @@ public:
     MemberNode* retrievePos(const Member &data);
     void retrieveMemberPicks(RiderList *riderList);
     void updateMembersPoints();
+    void addExtraMembersPoints(RiderList *riderList);
     void updateMembersRiders(RiderList *riderList);
     void sortMembers(RiderNode* riderHead);
     MemberNode* split(MemberNode* head);

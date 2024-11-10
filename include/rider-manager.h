@@ -7,18 +7,18 @@
 class RiderManager{
 private:
     Rider rider;
-    int points;
+    float points;
     int position;
 public:
     RiderManager();
     ~RiderManager();
 
     Rider& getRider();
-    int getPoints();
+    float getPoints();
     int getPosition();
 
     void setRider(Rider rider);
-    void setPoints(int points);
+    void setPoints(float points);
     void setPosition(int position);
 
     string toString();

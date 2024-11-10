@@ -46,7 +46,7 @@ void Member::setRiderList(RiderList *riderList) {
     this->riderList = riderList;
 }
 
-void Member::setPoints(int &points) {
+void Member::setPoints(float points) {
     this->points = points;
 }
 
@@ -58,7 +58,7 @@ RiderList* Member::getRiderList() {
     return riderList;
 }
 
-int Member::getPoints() {
+float Member::getPoints() {
     return points;
 }
 

@@ -16,7 +16,7 @@ Rider& RiderManager::getRider() {
     return rider;
 }
 
-int RiderManager::getPoints() {
+float RiderManager::getPoints() {
     return points;
 }
 
@@ -28,7 +28,7 @@ void RiderManager::setRider(Rider rider) {
     this->rider = rider;
 }
 
-void RiderManager::setPoints(int points) {
+void RiderManager::setPoints(float points) {
     if(points >= 0){
         this->points = points;
     }

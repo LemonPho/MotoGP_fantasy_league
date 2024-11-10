@@ -62,6 +62,12 @@ int checkIfSelected(const int selections[], int selectionsLength, int query){
 int custom_getch(){
     return _getch();
 }
+
+void update_program() {
+    cout << "Work in progress" << endl;
+    clearBuffer();
+    enterToContinue();
+}
 #else
 int custom_getch(){
     struct termios oldSettings, newSettings;

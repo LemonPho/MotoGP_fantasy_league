@@ -29,9 +29,10 @@ void MemberMenu::menu() {
         cout << "3. Modify Member" << endl;
         cout << "4. List Members" << endl;
         cout << "5. Delete ALL Members" << endl;
-        cout << "6. Create standings file" << endl;
-        cout << "7. Save Changes" << endl;
-        cout << "8. Exit" << endl;
+        cout << "6. Add Extra Points" << endl;
+        cout << "7. Create standings file" << endl;
+        cout << "8. Save Changes" << endl;
+        cout << "9. Exit" << endl;
         cout << "Option: ";
         cin >> option;
         switch(optionSelector(option)){
@@ -78,6 +79,10 @@ void MemberMenu::menu() {
                 }
                 enterToContinue();
                 saveChanges = true;
+                break;
+            }
+            case ADD_EXTRA_POINTS_MEMBER: {
+                memberList->addExtraMembersPoints(riderList);
                 break;
             }
             case CREATE_STANDINGS_FILE: {

@@ -17,7 +17,7 @@ class Member {
 private:
     string userName;
     RiderList *riderList;
-    int points;
+    float points;
 
     ErrorMessage *errorMessage;
 public:
@@ -28,11 +28,11 @@ public:
     bool setUserName(string &userName);
     void insertRider(RiderManager &rider);
     void setRiderList(RiderList* riderList);
-    void setPoints(int &points);
+    void setPoints(float points);
 
     string getUserName();
     RiderList* getRiderList();
-    int getPoints();
+    float getPoints();
 
     string toStringSmall();
 

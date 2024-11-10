@@ -212,7 +212,7 @@ void MemberList::updateMembersPoints() {
 }
 
 void MemberList::updateMembersRiders(RiderList* riderList) {
-    int totalPoints;
+    float totalPoints;
     MemberNode* tempMemberNode(header);
     RiderManager tempRiderManager;
     Rider tempRider;
@@ -243,6 +243,39 @@ void MemberList::updateMembersRiders(RiderList* riderList) {
         tempMemberNode->setData(tempMember);
         tempMemberNode = tempMemberNode->getNext();
     }
+}
+
+void MemberList::addExtraMembersPoints(RiderList *riderList) {
+    float totalPoints = 0;
+    float pointsMultiplier[] = {0.1, 0.07, 0.05, 0.0325, 0.02};
+    int i;
+    MemberNode* tempMemberNode(header);
+    Member tempMember;
+    RiderNode* tempRiderNode1 = new RiderNode();
+    RiderNode* tempRiderNode2 = riderList->getFirstPos();
+    RiderManager tempRiderManager1;
+    RiderManager tempRiderManager2;
+
+    while(tempMemberNode != nullptr){
+        tempMember = tempMemberNode->getData();
+        totalPoints = tempMember.getPoints();
+        tempRiderNode1 = tempMember.getRiderList()->getFirstPos();
+        i=0;
+        while(tempRiderNode1 != nullptr){
+            tempRiderManager2 = tempRiderNode2->getData();
+            tempRiderManager1 = tempRiderNode1->getData();
+            if(tempRiderManager1 == tempRiderManager2){
+                totalPoints += pointsMultiplier[i] * tempRiderManager2.getPoints();
+            }
+            tempRiderNode1 = tempRiderNode1->getNext();
+            tempRiderNode2 = tempRiderNode2->getNext();
+            i++;
+        }
+        tempMember.setPoints(totalPoints);
+        tempMemberNode->setData(tempMember);
+        tempMemberNode = tempMemberNode->getNext();
+    }
+
 }
 
 void MemberList::sortMembers(RiderNode* riderHead) {
