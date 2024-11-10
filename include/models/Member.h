@@ -29,7 +29,7 @@ private:
     std::string m_UserName;
     RiderManagerList m_RiderList;
     std::shared_ptr<Logger> m_Logger;
-    int m_Points;
+    float m_Points;
 public:
     Member();
     explicit Member(std::shared_ptr<Logger> logger);
@@ -41,7 +41,7 @@ public:
 
     std::string GetMemberUserName();
     RiderManagerList GetRiderList();
-    int GetPoints();
+    float GetPoints();
 
     std::string ToStringSmall();
     std::vector<std::string> ToStringEdit();

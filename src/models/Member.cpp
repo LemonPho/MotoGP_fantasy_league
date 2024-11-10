@@ -69,7 +69,7 @@ RiderManagerList Member::GetRiderList() {
     return m_RiderList;
 }
 
-int Member::GetPoints() {
+float Member::GetPoints() {
     return m_Points;
 }
 
