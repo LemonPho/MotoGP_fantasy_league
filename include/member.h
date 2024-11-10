@@ -2,6 +2,8 @@
 #define MOTOGP_FANTASY_LEAGUE_MEMBER_H
 
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 #include "rider.h"
 #include "rider-list.h"

@@ -447,6 +447,7 @@ string MemberList::toStringSmallHTML() {
     int i = 1;
     result += "<table>";
     while(tempMemberNode != nullptr){
+        std::ostringstream stream;
         tempMember = tempMemberNode->getData();
         result += "<tr>";
         result += "<td>";
@@ -455,7 +456,8 @@ string MemberList::toStringSmallHTML() {
         result += ". ";
         result += tempMember.getUserName();
         result += " - ";
-        result += to_string(tempMember.getPoints());
+        stream << std::fixed << std::setprecision(2) << tempMember.getPoints();
+        result += stream.str();
         result += "</b>";
         result += "</td>";
         tempRiderNode = tempMember.getRiderList()->getFirstPos();

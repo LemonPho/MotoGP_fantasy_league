@@ -64,11 +64,13 @@ float Member::getPoints() {
 
 string Member::toStringSmall() {
     string result;
+    std::ostringstream stream;
     RiderNode* temp(riderList->getFirstPos());
 
     result += userName;
     result += " - ";
-    result += to_string(points);
+    stream << std::fixed << std::setprecision(0) << points;
+    result += stream.str();
 
     result = fillSpaces(result, SPACE_USERNAME - result.length());
 
