@@ -40,6 +40,8 @@ void RiderManager::setPosition(int position){
 
 string RiderManager::toString(){
     string result;
+    std::ostringstream stream;
+
     string name = rider.getFirstName() + " " + rider.getLastName();
 
     result += fillSpaces(to_string(position), SPACE_POSITION - to_string(position).length());
@@ -48,7 +50,8 @@ string RiderManager::toString(){
     result += "|";
     result += fillSpaces(name, SPACE_NAME - name.length());
     result += "|";
-    result += fillSpaces(to_string(points), SPACE_POINTS - to_string(points).length());
+    stream << std::fixed << std::setprecision(0) << points;
+    result += fillSpaces(stream.str(), SPACE_POINTS - to_string(points).length());
     result += "|";
     result += fillSpaces(rider.getCountry(), SPACE_COUNTRY - rider.getCountry().length());
     result += "|";
@@ -59,13 +62,15 @@ string RiderManager::toString(){
 
 string RiderManager::toStringIndexed(int index) {
     string result;
+    std::ostringstream stream;
     string name = rider.getFirstName() + " " + rider.getLastName();
 
     result = to_string(index);
     result += " |";
     result += fillSpaces(name, SPACE_NAME - name.length());
     result += "|";
-    result += fillSpaces(to_string(points), SPACE_POINTS - to_string(points).length());
+    stream << std::fixed << std::setprecision(0) << points;
+    result += fillSpaces(stream.str(), SPACE_POINTS - to_string(points).length());
     result += "|";
     result += fillSpaces(rider.getCountry(), SPACE_COUNTRY - rider.getCountry().length());
     result += "|";
@@ -77,6 +82,7 @@ string RiderManager::toStringIndexed(int index) {
 
 string RiderManager::toStringSmall(bool spacing) {
     string result;
+    std::ostringstream stream;
 
     result += rider.getFirstName()[0];
     result += ".";
@@ -84,7 +90,8 @@ string RiderManager::toStringSmall(bool spacing) {
         result += rider.getLastName()[i];
     }
     result += " - ";
-    result += to_string(points);
+    stream << std::fixed << std::setprecision(0) << points;
+    result += stream.str();
 
     if(spacing) {
         result = fillSpaces(result, SPACE_PRINT_SMALL - result.length());
