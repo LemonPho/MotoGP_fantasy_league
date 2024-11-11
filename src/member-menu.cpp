@@ -126,6 +126,7 @@ void MemberMenu::menu() {
             }
             default: {
                 cout << "Select a valid option" << endl;
+                clearBuffer();
                 enterToContinue();
                 break;
             }
