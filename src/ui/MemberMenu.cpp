@@ -14,68 +14,65 @@ void MemberMenu::InitializeMemberMenu(std::shared_ptr<Logger> logger, std::share
 
 //Menu() shouldn't be called, call InitializeMemberMenu() instead
 void MemberMenu::Menu() {
-    bool end = false;
-    bool saveChanges = false;
-    std::string option;
+    std::vector<std::string> instructions;
+    std::vector<std::string> menuOptions;
+    if (m_Season->GetFinalized()) {
+        instructions = { "Member Menu, " + m_Season->GetSeasonName() + " (finalized)" };
+        menuOptions = { "List Members", "Create Standings File", "Exit" };
+    } else {
+        instructions = { "Member Menu, " + m_Season->GetSeasonName() };
+        menuOptions = { "Add Member", "Delete Member", "Modify Member", "List Members", "Delete ALL Members", "Create Standings File", "Save Changes", "Exit" };
+    }
 
-    MemberList memberList = m_Season->GetMemberList();
-    RiderManagerList riderManagerList = m_Season->GetRiderManagerList();
+    //these are references, they update the lists in the season instance
+    MemberList& memberList = m_Season->GetMemberList();
+    RiderManagerList& riderManagerList = m_Season->GetRiderManagerList();
+
+    SingleSelectionUi memberMenu(m_Logger, instructions, menuOptions);
+
+    int selection;
+    bool changesMade = false;
+    bool exit = false;
 
     do {
-        system(CLEAR);
-        std::cout << "Member Menu, " << m_Season->GetSeasonName() << std::endl;
-        m_Logger->PrintLog();
-        std::cout << "1. Add Member" << std::endl;
-        std::cout << "2. Delete Member" << std::endl;
-        std::cout << "3. Modify Member" << std::endl;
-        std::cout << "4. List Members" << std::endl;
-        std::cout << "5. Delete ALL Members" << std::endl;
-        std::cout << "6. Create standings file" << std::endl;
-        std::cout << "7. Save Changes" << std::endl;
-        std::cout << "8. Exit" << std::endl;
-        std::cout << "Option: ";
-        std::cin >> option;
-        switch(OptionSelector(option)){
-            case INVALID_OPTION: {
-                m_Logger->Log("Invalid option (" + option + ")", Logger::LogLevelError, Logger::LogConsole);
-                break;
-            }
-            case ADD_MEMBER: {
-                if(!saveChanges){
-                    saveChanges = AddMember(memberList, riderManagerList);
+        memberMenu.InitializeUi();
+        if (memberMenu.GetChangesMade()) {
+            selection = memberMenu.GetSelection();
+            switch (selection) {
+            case options::ADD_MEMBER: {
+                if (!changesMade) {
+                    changesMade = AddMember();
                 } else {
-                    AddMember(memberList, riderManagerList);
+                    AddMember();
                 }
-
                 break;
             }
 
-            case DELETE_MEMBER: {
-                if(!saveChanges){
-                    saveChanges = DeleteMember(memberList);
+            case options::DELETE_MEMBER: {
+                if (!changesMade) {
+                    changesMade = DeleteMember();
                 } else {
-                    DeleteMember(memberList);
+                    DeleteMember();
                 }
-
                 break;
             }
 
-            case MODIFY_MEMBER: {
-                if(!saveChanges){
-                    saveChanges = ModifyMember(memberList, riderManagerList);
+            case options::MODIFY_MEMBER: {
+                if (!changesMade) {
+                    changesMade = ModifyMember();
                 } else {
-                    ModifyMember(memberList, riderManagerList);
+                    ModifyMember();
                 }
-
                 break;
             }
 
-            case SHOW_MEMBERS: {
+            case options::SHOW_MEMBERS: {
                 m_Logger->Log("Displaying member list", Logger::LogLevelInfo, Logger::LogFile);
 
                 std::string memberListString = memberList.ToString();
-                if(!memberListString.empty()){
+                if (!memberListString.empty()) {
                     system(CLEAR);
+                    //setting floating point numbers to print with 2 decimal places
                     std::cout << memberList.ToString() << std::endl;
                     std::cin.ignore();
                     util::EnterToContinue();
@@ -84,20 +81,20 @@ void MemberMenu::Menu() {
                 break;
             }
 
-            case DELETE_ALL_MEMBERS: {
+            case options::DELETE_ALL_MEMBERS: {
                 char opt;
                 std::cout << "Are you sure you want to delete all the members? (Y/N): ";
                 std::cin >> opt;
-                if(opt == 'Y' || opt == 'y'){
+                if (opt == 'Y' || opt == 'y') {
                     m_Logger->Log("Deleting all member", Logger::LogLevelInfo, Logger::LogFile);
-                    if(memberList.DeleteAllMembers()){
-                        saveChanges = true;
+                    if (memberList.DeleteAllMembers()) {
+                        changesMade = true;
                     }
                 }
                 break;
             }
 
-            case CREATE_STANDINGS_FILE: {         
+            case options::CREATE_STANDINGS_FILE: {
                 m_Logger->Log("Creating standings file", Logger::LogLevelInfo, Logger::LogFile);
 
                 std::string tempString = memberList.ToStringSmallHTML();
@@ -124,40 +121,44 @@ void MemberMenu::Menu() {
                 break;
             }
 
-            case SAVE_CHANGES: {
+            case options::SAVE_CHANGES: {
                 m_Logger->Log("Saving changes", Logger::LogLevelInfo, Logger::LogFile);
-                if(!saveChanges){
+                if (!changesMade) {
                     m_Logger->Log("No changes have been registered", Logger::LogLevelInfo, Logger::LogConsoleFile);
                 } else {
-                    m_Season->SetMemberList(memberList);
                     m_Season->SaveChanges();
-                    saveChanges = false;
+                    changesMade = false;
                 }
                 break;
             }
 
-            case EXIT: {
-                if(saveChanges){
+            default: {
+                if (changesMade) {
                     char opt;
                     std::cout << "Would you like to save the changes made? (Y/N): ";
                     std::cin >> opt;
-                    if(opt == 'y' || opt == 'Y'){
+                    if (opt == 'y' || opt == 'Y') {
                         m_Logger->Log("User exiting member menu and saving changes", Logger::LogLevelInfo, Logger::LogFile);
-                        m_Season->SetMemberList(memberList);
                         m_Season->SaveChanges();
                     } else {
+                        m_Season->LoadFromDisk();
                         m_Logger->Log("User exiting member menu without saving changes", Logger::LogLevelInfo, Logger::LogFile);
                     }
                 }
-                end = true;
-                break;
+
+                exit = true;
             }
-        };
-    }while(!end);
+            }
+        }
+    } while (!exit);
 }
 
-bool MemberMenu::AddMember(MemberList& memberList, RiderManagerList& riderManagerList) {
+bool MemberMenu::AddMember() {
     m_Logger->Log("Opening add member", Logger::LogLevelInfo, Logger::LogFile);
+
+    MemberList& memberList = m_Season->GetMemberList();
+    RiderManagerList& riderManagerList = m_Season->GetRiderManagerList();
+
     if(riderManagerList.GetRiderManagerList().empty() || riderManagerList.GetRiderManagerList().size() < 6){
         m_Logger->Log("You have no riders added, make sure to have 6 riders before creating a member", Logger::LogLevelError, Logger::LogConsole);
         m_Logger->Log("No riders in rider list", Logger::LogLevelError, Logger::LogFile);
@@ -216,8 +217,10 @@ bool MemberMenu::AddMember(MemberList& memberList, RiderManagerList& riderManage
     return true;
 }
 
-bool MemberMenu::DeleteMember(MemberList& memberList) {
+bool MemberMenu::DeleteMember() {
     m_Logger->Log("Opening delete member", Logger::LogLevelInfo, Logger::LogFile);
+
+    MemberList& memberList = m_Season->GetMemberList();
     
     if(memberList.GetMemberList().empty()){
         m_Logger->Log("You have no members added", Logger::LogLevelWarning, Logger::LogConsole);
@@ -255,8 +258,12 @@ bool MemberMenu::DeleteMember(MemberList& memberList) {
     return true;
 }
 
-bool MemberMenu::ModifyMember(MemberList& memberList, RiderManagerList& riderManagerList) {
+bool MemberMenu::ModifyMember() {
     m_Logger->Log("Opening modify member", Logger::LogLevelInfo, Logger::LogFile);
+
+    MemberList& memberList = m_Season->GetMemberList();
+    RiderManagerList& riderManagerList = m_Season->GetRiderManagerList();
+
     if(memberList.GetMemberList().empty()){
         m_Logger->Log("You have no members added", Logger::LogLevelWarning, Logger::LogConsole);
         m_Logger->Log("Member list empty, returning to member menu", Logger::LogLevelWarning, Logger::LogFile);
@@ -345,16 +352,4 @@ bool MemberMenu::ModifyMember(MemberList& memberList, RiderManagerList& riderMan
 
     
     return true;
-}
-
-int MemberMenu::OptionSelector(const std::string &option) {
-    if(option == "1") return ADD_MEMBER;
-    if(option == "2") return DELETE_MEMBER;
-    if(option == "3") return MODIFY_MEMBER;
-    if(option == "4") return SHOW_MEMBERS;
-    if(option == "5") return DELETE_ALL_MEMBERS;
-    if(option == "6") return CREATE_STANDINGS_FILE;
-    if(option == "7") return SAVE_CHANGES;
-    if(option == "8") return EXIT;
-    return 0;
 }

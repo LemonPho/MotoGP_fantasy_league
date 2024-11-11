@@ -29,7 +29,6 @@ void SeasonMenu::Menu() {
 	bool exit = false;
 
 	do {
-		system(CLEAR);
 		menu.InitializeUi();
 		if (menu.GetChangesMade()) {
 			selection = menu.GetSelection();
@@ -95,6 +94,11 @@ bool SeasonMenu::AddSeason() {
 }
 
 bool SeasonMenu::ModifySeason() {
+	system(CLEAR);
+	std::cout << "Test finalizing season" << std::endl;
+	util::ClearBuffer();
+	util::EnterToContinue();
+	m_Season->FinalizeSeason();
 	return false;
 }
 

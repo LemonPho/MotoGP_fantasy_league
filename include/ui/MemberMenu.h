@@ -18,8 +18,7 @@
 class MemberMenu {
 public:
     enum options {
-        INVALID_OPTION = 0,
-        ADD_MEMBER = 1,
+        ADD_MEMBER = 0,
         DELETE_MEMBER,
         MODIFY_MEMBER,
         SHOW_MEMBERS,
@@ -37,11 +36,9 @@ public:
     void InitializeMemberMenu(std::shared_ptr<Logger> logger, std::shared_ptr<Season> season);
 
     void Menu();
-    bool AddMember(MemberList& memberList, RiderManagerList& riderManagerList);
-    bool DeleteMember(MemberList& memberList);
-    bool ModifyMember(MemberList& memberList, RiderManagerList& riderManagerList);
-
-    int OptionSelector(const std::string &option);
+    bool AddMember();
+    bool DeleteMember();
+    bool ModifyMember();
 };
 
 

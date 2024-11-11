@@ -58,13 +58,12 @@ void Core::InitializeCore() {
     }
 
     std::filesystem::path programData = util::APP_DIRECTORY_DATA / util::PROGRAM_DATA;
-
+    std::string tempString;
     if(!std::filesystem::exists(programData)){
         m_Logger->Log("Program data file not found, creating", Logger::LogLevelInfo, Logger::LogFile);
         FirstStart();
     } else {
         std::ifstream programFile(programData);
-        std::string tempString;
 
         if(!programFile.is_open()){
             m_Logger->Log("Could not open program file", Logger::LogLevelError, Logger::LogConsoleFile);
@@ -74,7 +73,7 @@ void Core::InitializeCore() {
             exit(0);
         }
 
-        std::getline(programFile, tempString, '\n');
+        std::getline(programFile, tempString, '|');
 
         if(tempString.empty() || tempString == " "){
             m_Logger->Log("Program data file empty, starting first start", Logger::LogLevelInfo, Logger::LogFile);
@@ -105,13 +104,16 @@ void Core::InitializeCore() {
 
             m_Logger->Log("Files successfully found", Logger::LogLevelSuccess, Logger::LogFile);
         }
+
+        //for getting if the season is finalized
+        std::getline(programFile, tempString, '\n');
     }
 
 
 
     m_Logger->Log("Core initialized", Logger::LogLevelSuccess, Logger::LogFile);
 
-    m_Menu.InitializeMenu(m_Logger, m_SelectedSeason);
+    m_Menu.InitializeMenu(m_Logger, m_SelectedSeason, std::stoi(tempString));
 }
 
 void Core::FirstStart() {

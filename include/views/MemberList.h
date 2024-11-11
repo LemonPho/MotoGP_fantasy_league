@@ -28,8 +28,9 @@ public:
     std::vector<std::string> ToStringArray();
     std::string ToStringSmallHTML();
 
-    void SortMembers();
+    void SortMembers(bool updatePoints);
     void UpdateMembersPoints();
+    void AddFinalizedPoints(RiderManagerList &riderManagerList);
 
     void WriteToDisk(const std::filesystem::path &fileName);
     void ReadFromDisk(const std::filesystem::path &fileName, RiderManagerList riderManagerList);

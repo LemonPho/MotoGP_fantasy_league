@@ -9,45 +9,29 @@
 
 #include "core/Logger.h"
 #include "utils/Util.h"
+#include "DynamicUiElement/BaseUiElement.h"
 
 struct Window {
     int columns=0;
     int rows=0;
 };
 
-struct SelectionsSpace {
-    size_t upperLimit = 0;
-    size_t lowerLimit = 0;
-};
-
 class DynamicUi {
 public:
-    enum UiSpacing {
-        INSTRUCTIONS_DOWN_SPACING = 2,
-        ARROWS_SPACING = 3,
-        SELECT_SPACING = 7,
-        ACCEPT_LINE_SPACING = 1,
-        MESSAGE_LINE_SPACING = 1,
+    enum class Positioning {
+        LEFT=0,
+        CENTER,
+        RIGHT,
     };
 // This is the base of what the dynamic ui needs to sort of work, it is lacking a selections array (located in its children classes)
 // and OnSelect() and OnDeselect() are empty (built in child classes)
 private:
     std::shared_ptr<Logger> m_Logger;
 
-    std::vector<std::string> &m_Instructions;
-    std::vector<std::string> &m_MenuOptions;
-    
-    size_t m_InstructionsLength = 0;
-    size_t m_LongestMenuOption = 0;
-    size_t m_OptionCount = 0;
+    std::string m_Label;
+    std::vector<std::shared_ptr<BaseUiElement>> m_UiElements;
 
-    SelectionsSpace m_SelectionsSpace;
-
-    size_t m_LeftArrow, m_RightArrow;
-    size_t m_HighlightedOption = 0;
-    size_t m_OptionIndex = 0;
-
-    bool m_Pagination = false;
+    size_t m_SelectedElement = 0;
     int m_CurrentPage = 0;
     size_t m_PageCount = 1;
 
@@ -58,27 +42,19 @@ protected:
     void gotoxy(size_t x, size_t y);
     void GetWindowDimensions(int& columns, int& rows);
     void ToggleConsoleCursor(bool enable);
-    void UpdateArrowPosition(size_t line, size_t left, size_t right);
+    void UpdateHighlightPosition(size_t line, size_t left, size_t right);
     void ClearText(size_t start, size_t end, size_t left, size_t right);
     void ClearLine(size_t line);
+    void ClearUiElement(BaseUiElement& uiElement);
 public:
-    DynamicUi(std::shared_ptr<Logger> logger, std::vector<std::string>& instructions, std::vector<std::string>& menuOptions);
+    DynamicUi(std::shared_ptr<Logger> logger, std::vector<std::shared_ptr<BaseUiElement>>& uiElements, std::string label);
 
-    std::vector<std::string>& GetMenuOptions();
-    size_t GetLongestMenuOption();
-    size_t GetHighlightedOption();
-    size_t GetOptionCount();
-    size_t GetOptionIndex();
-    size_t GetInstructionsLength();
-    size_t GetLeftArrow();
-    size_t GetRightArrow();
     bool GetChangesMade();
-    SelectionsSpace GetSelectionsSpace();
-
-    //TODO: create function that only clears the selections area
+    //TODO: create function that only clears an elements area
 
     void InitializeUi();
     void Display();
+    void UpdateDisplay();
     void PrintLog();
     virtual bool PrintAccept(size_t x, size_t y);
     void Navigate(const char key);
@@ -91,8 +67,8 @@ public:
 
 #ifdef _WIN32
 enum keys {
-    UP_KEY = 80,
-    DOWN_KEY = 72,
+    UP_KEY = 72,
+    DOWN_KEY = 80,
     RIGHT_KEY = 77,
     LEFT_KEY = 75,
     ENTER_KEY = 13,

@@ -5,13 +5,13 @@ Menu::Menu(){
     m_Season = std::make_shared<Season>();
 }
 
-void Menu::InitializeMenu(std::shared_ptr<Logger> logger, const std::string &selectedSeason) {
+void Menu::InitializeMenu(std::shared_ptr<Logger> logger, const std::string &selectedSeason, bool finalized) {
     m_Logger = logger;
     m_Logger->Log("Initializing main menu", Logger::LogLevelInfo, Logger::LogFile);
     RiderManagerList riderManagerList(m_Logger);
     MemberList memberList(m_Logger);
 
-    m_Season->InitializeSeason(logger, selectedSeason);
+    m_Season->InitializeSeason(logger, selectedSeason, finalized);
     m_Logger->Log("Main menu initialized", Logger::LogLevelSuccess, Logger::LogFile);
     MainMenu();
 }

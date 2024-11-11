@@ -5,21 +5,40 @@ Season::Season() {
 	m_SeasonName = "";
 }
 
-void Season::InitializeSeason(std::shared_ptr<Logger> logger, std::string seasonName) {
+void Season::InitializeSeason(std::shared_ptr<Logger> logger, std::string seasonName, bool finalized) {
 	m_Logger->Log("Initializing season with season name: " + seasonName, Logger::LogLevelInfo, Logger::LogFile);
 	m_Logger = logger;
 	m_MemberList = MemberList(logger);
 	m_RiderManagerList = RiderManagerList(logger);
 	m_SeasonName = seasonName;
+	m_Finalized = finalized;
 	LoadFromDisk();
 	m_Logger->Log("Season initialized", Logger::LogLevelSuccess, Logger::LogFile);
 }
 
-MemberList Season::GetMemberList() {
+void Season::FinalizeSeason() {
+	m_Finalized = true;
+
+}
+
+void Season::SortMembers() {
+	if (!m_Finalized) {
+		m_MemberList.UpdateMembersPoints();
+	} else {
+		m_MemberList.AddFinalizedPoints(m_RiderManagerList);
+	}
+	m_MemberList.SortMembers(false);
+}
+
+bool Season::GetFinalized() {
+	return m_Finalized;
+}
+
+MemberList& Season::GetMemberList() {
 	return m_MemberList;
 }
 
-RiderManagerList Season::GetRiderManagerList() {
+RiderManagerList& Season::GetRiderManagerList() {
 	return m_RiderManagerList;
 }
 

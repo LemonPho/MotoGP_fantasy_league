@@ -2,6 +2,7 @@
 #define MOTOGP_FANTASY_LEAGUE_MODERN_CORE_H
 
 #include <iostream>
+#include <iomanip>
 
 #include "ui/Menu.h"
 #include "core/Logger.h"

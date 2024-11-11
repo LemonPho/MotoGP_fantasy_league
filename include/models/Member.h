@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include <vector>
+#include <sstream>
+#include <iomanip>
 
 #include "models/RiderManager.h"
 #include "views/RiderManagerList.h"

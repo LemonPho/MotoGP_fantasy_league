@@ -10,18 +10,18 @@ MemberList::MemberList(std::shared_ptr<Logger> logger) {
 
 void MemberList::SetMember(Member member, size_t index){
     m_MemberList[index] = member;
-    SortMembers();
+    SortMembers(true);
 }
 
 void MemberList::AddMember(Member member) {
     m_MemberList.push_back(member);
-    SortMembers();
+    SortMembers(true);
 }
 
 void MemberList::RemoveMember(Member member) {
     m_MemberList.erase(std::remove(m_MemberList.begin(), m_MemberList.end(), member), m_MemberList.end());
     m_Logger->Log("Member " + member.GetMemberUserName() + " was deleted", Logger::LogLevelSuccess, Logger::LogConsoleFile);
-    SortMembers();
+    SortMembers(true);
 }
 
 std::vector<Member> MemberList::GetMemberList(){
@@ -65,6 +65,7 @@ std::string MemberList::ToStringSmallHTML() {
 
     int position = 1;
     for(auto member : m_MemberList){
+        std::ostringstream stream;
         result += "<tr>";
         result += "<td>";
         result += "<b>";
@@ -72,7 +73,8 @@ std::string MemberList::ToStringSmallHTML() {
         result += ". ";
         result += member.GetMemberUserName();
         result += " - ";
-        result += std::to_string(member.GetPoints());
+        stream << std::fixed << std::setprecision(2) << member.GetPoints();
+        result += stream.str();
         result += "</b>";
         result += "</td>";
         result += member.GetRiderList().ToStringHTML();
@@ -85,8 +87,10 @@ std::string MemberList::ToStringSmallHTML() {
     return result;
 }
 
-void MemberList::SortMembers() {
-    UpdateMembersPoints();
+void MemberList::SortMembers(bool updatePoints) {
+    if (updatePoints) {
+        UpdateMembersPoints();
+    }
     m_Logger->Log("Sorting members", Logger::LogLevelInfo, Logger::LogFile);
     std::sort(m_MemberList.rbegin(), m_MemberList.rend());
     m_Logger->Log("Sorted members", Logger::LogLevelInfo, Logger::LogFile);
@@ -104,6 +108,26 @@ void MemberList::UpdateMembersPoints() {
         member.SetPoints(points);
     }
     m_Logger->Log("Updated members points", Logger::LogLevelInfo, Logger::LogFile);
+}
+
+void MemberList::AddFinalizedPoints(RiderManagerList& riderManagerList) {
+    float finalPoints;
+    float pointsMultipliers[] = { 0.1, 0.07, 0.05, 0.0325, 0.02 };
+    Member member;
+    RiderManagerList memberRiderManagerList;
+
+    for (size_t i = 0; i < m_MemberList.size(); i++) {
+        member = m_MemberList[i];
+        memberRiderManagerList = member.GetRiderList();
+        finalPoints = member.GetPoints();
+        for (size_t j = 0; j < Member::RIDER_COUNT - 1; j++) {
+            if (memberRiderManagerList.GetRiderManagerIndex(j) == riderManagerList.GetRiderManagerIndex(j)) {
+                finalPoints += riderManagerList.GetRiderManagerIndex(j).GetPoints() * pointsMultipliers[j];
+            }
+        }
+
+        member.SetPoints(finalPoints);
+    }
 }
 
 bool MemberList::DeleteAllMembers() {
@@ -191,6 +215,6 @@ void MemberList::ReadFromDisk(const std::filesystem::path &fileName, RiderManage
         tempMember = Member(m_Logger);
     }
 
-    SortMembers();
+    SortMembers(true);
     m_Logger->Log("Successfully read member list from disk", Logger::LogLevelSuccess, Logger::LogFile);
 }

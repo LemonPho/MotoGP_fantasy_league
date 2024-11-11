@@ -27,7 +27,7 @@ private:
     std::shared_ptr<Season> m_Season;
 public:
     Menu();
-    void InitializeMenu(std::shared_ptr<Logger> logger, const std::string &selectedSeason);
+    void InitializeMenu(std::shared_ptr<Logger> logger, const std::string &selectedSeason, bool finalized);
 
     void PrintMenu();
     void MainMenu();

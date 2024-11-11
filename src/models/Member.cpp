@@ -75,10 +75,13 @@ float Member::GetPoints() {
 
 std::string Member::ToStringSmall() {
     std::string result;
+    std::ostringstream stream;
+    
 
     result += m_UserName;
     result += " - ";
-    result += std::to_string(m_Points);
+    stream << std::fixed << std::setprecision(0) << m_Points;
+    result += stream.str();
 
     result = util::FillSpaces(result, Spacing::USERNAME_SPACING - result.length());
 

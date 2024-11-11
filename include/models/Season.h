@@ -12,13 +12,18 @@ private:
 	std::string m_SeasonName;
 	MemberList m_MemberList;
 	RiderManagerList m_RiderManagerList;
+	bool m_Finalized = false;
 
 public:
 	Season();
-	void InitializeSeason(std::shared_ptr<Logger> logger, std::string seasonName);
+	void InitializeSeason(std::shared_ptr<Logger> logger, std::string seasonName, bool finalized);
 
-	MemberList GetMemberList();
-	RiderManagerList GetRiderManagerList();
+	void FinalizeSeason();
+	void SortMembers();
+
+	bool GetFinalized();
+	MemberList& GetMemberList();
+	RiderManagerList& GetRiderManagerList();
 	std::string GetSeasonName();
 
 	void SetMemberList(MemberList memberList);
