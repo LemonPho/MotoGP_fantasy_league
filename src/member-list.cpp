@@ -260,6 +260,7 @@ void MemberList::addExtraMembersPoints(RiderList *riderList) {
         tempMember = tempMemberNode->getData();
         totalPoints = tempMember.getPoints();
         tempRiderNode1 = tempMember.getRiderList()->getFirstPos();
+        tempRiderNode2 = riderList->getFirstPos();
         i=0;
         while(tempRiderNode1 != nullptr){
             tempRiderManager2 = tempRiderNode2->getData();
