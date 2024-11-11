@@ -61,10 +61,10 @@ void DynamicUi::ClearLine(size_t line) {
 
 void DynamicUi::ClearUiElement(BaseUiElement& uiElement) {
     BaseUiElement::Size size = uiElement.GetSize();
-    BaseUiElement::Coordinate coordinates = uiElement.GetCoordinates();
+    BaseUiElement::Coordinates coordinates = uiElement.GetCoordinates();
     
     std::string clearString(size.width, ' ');
-    for (int i = coordinates.y; i <= coordinates.y + size.height; i++) {
+    for (int i = coordinates.topLeftCoordinate.y; i <= coordinates.bottomLeftCoordinate.y; i++) {
         std::cout << clearString;
     }
 }
@@ -87,32 +87,9 @@ void DynamicUi::InitializeUi() {
     //configuring elements
     size_t longestString;
     size_t rowCounter = 1;
-    for (auto& element : m_Elements) {
-        element.y = rowCounter;
-        longestString = 0;
-        for (auto& string : element.content) {
-            if (string.length() > longestString) {
-                longestString = string.length();
-            }
-            rowCounter++;
-            if (rowCounter >= m_Window.rows - UiSpacing::FOOTER_SPACING) {
-                rowCounter = 0;
-                if (element.content.size() < m_Window.rows) {
-                    element.y = rowCounter;
-                }
-                m_PageCount++;
-            }
-        }
-        
-        if (element.positioning == POSITIONING_LEFT) {
-            element.x = 0;
-        } else if(element.positioning == POSITIONING_CENTER) {
-            element.x = (m_Window.columns / 2) - (longestString / 2) - UiSpacing::HIGHLIGHT_SPACING;
-        } else if (element.positioning == POSITIONING_RIGHT) {
-            element.x = m_Window.columns - longestString - UiSpacing::HIGHLIGHT_SPACING;
-        }
-        element.highlightWidth = longestString + UiSpacing::HIGHLIGHT_SPACING;
-        element.page = m_PageCount;
+    for (auto& uiElement : m_UiElements) {
+        uiElement->InitializeUiElement(m_Window, rowCounter);
+        rowCounter = uiElement->GetCoordinates().bottomLeftCoordinate.y;
     }
 
     char key = 0;
@@ -124,7 +101,6 @@ void DynamicUi::InitializeUi() {
         } else {
             UpdateDisplay();
         }
-        PrintLog();
         key = util::CustomGetch();
         Navigate(key);
     }
@@ -133,45 +109,23 @@ void DynamicUi::InitializeUi() {
 }
 
 void DynamicUi::Display(){
-    size_t centeredText;
-    size_t i = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING;
-    std::string accept = "Accept";
-
     system(CLEAR);
 
-    for (const auto& instruction : m_Instructions) {
-        std::cout << instruction << std::endl;
-    }
-
-    if (m_Pagination) {
-        size_t start = m_CurrentPage * (m_SelectionsSpace.lowerLimit - m_SelectionsSpace.upperLimit);
-        size_t end = ((m_CurrentPage + 1) * (m_SelectionsSpace.lowerLimit - m_SelectionsSpace.upperLimit) > m_MenuOptions.size()) ? m_MenuOptions.size() : (m_CurrentPage+1) * (m_SelectionsSpace.lowerLimit - m_SelectionsSpace.upperLimit);
-        for (size_t j = start; j < end; j++) {
-            centeredText = m_Window.columns / 2 - m_MenuOptions[j].length() / 2;
-            gotoxy(centeredText, i);
-            i++;
-            std::cout << m_MenuOptions[j];
+    for (int i = 0; i < m_UiElements.size(); i++) {
+        if (m_UiElements[i]->GetCoordinates().topRightCoordinate.y > m_Window.rows) {
+            break;
         }
-    } else {
-        for (const auto& menuOption : m_MenuOptions) {
-            centeredText = m_Window.columns / 2 - menuOption.length() / 2;
-            gotoxy(centeredText, i);
-            i++;
-            std::cout << menuOption;
+
+        if (i == m_SelectedElement) {
+            DrawElementOutline(*m_UiElements[i]);
         }
+
+        m_UiElements[i]->Display();
     }
 
-    centeredText = m_Window.columns / 2 - accept.length() / 2;
-    m_AcceptPrinted = PrintAccept(centeredText, i);
-    if (!m_AcceptPrinted) {
-        m_SelectionsSpace.lowerLimit = m_OptionCount + m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING - 1;
-    }
-
-    if (m_Pagination) {
-        std::string pageString = "[" + std::to_string(m_CurrentPage + 1) + "/" + std::to_string(m_PageCount) + "]";
-        centeredText = m_Window.columns / 2 - pageString.length() / 2;
-        gotoxy(centeredText, m_Window.rows);
-        std::cout << pageString;
+    for (auto& uiElement : m_UiElements) {
+        
+        uiElement->Display();
     }
 }
 
@@ -179,48 +133,85 @@ void DynamicUi::UpdateDisplay() {
 
 }
 
-void DynamicUi::PrintLog() {
-    int messageLine = GetSelectionsSpace().upperLimit - UiSpacing::MESSAGE_LINE_SPACING;
-    //Clear message line
-    ClearLine(messageLine);
+void DynamicUi::RemoveElementOutline(BaseUiElement& uiElement) {
+    //top left corner
+    gotoxy(uiElement.GetCoordinates().topLeftCoordinate.x, uiElement.GetCoordinates().topLeftCoordinate.y);
+    std::cout << " ";
 
-    //Print new message
-    gotoxy(0, messageLine); 
-    m_Logger->PrintLog();
+    //bottom left corner
+    gotoxy(uiElement.GetCoordinates().bottomLeftCoordinate.x, uiElement.GetCoordinates().bottomLeftCoordinate.y);
+    std::cout << " ";
+
+    //bottom right corner
+    gotoxy(uiElement.GetCoordinates().bottomRightCoordinate.x, uiElement.GetCoordinates().bottomRightCoordinate.y);
+    std::cout << " ";
+
+    //top right corner
+    gotoxy(uiElement.GetCoordinates().topRightCoordinate.x, uiElement.GetCoordinates().topRightCoordinate.y);
+    std::cout << " ";
 }
 
-bool DynamicUi::PrintAccept(size_t x, size_t y){
-    gotoxy(x, y);
-    std::cout << "\x1b[32m" << "Accept" << "\033[0m";
-    return true;
+void DynamicUi::DrawElementOutline(BaseUiElement& uiElement) {    
+    //top left corner
+    gotoxy(uiElement.GetCoordinates().topLeftCoordinate.x, uiElement.GetCoordinates().topLeftCoordinate.y);
+    std::cout << char(218);
+
+    //bottom left corner
+    gotoxy(uiElement.GetCoordinates().bottomLeftCoordinate.x, uiElement.GetCoordinates().bottomLeftCoordinate.y);
+    std::cout << char(192);
+
+    //bottom right corner
+    gotoxy(uiElement.GetCoordinates().bottomRightCoordinate.x, uiElement.GetCoordinates().bottomRightCoordinate.y);
+    std::cout << char(217);
+
+    //top right corner
+    gotoxy(uiElement.GetCoordinates().topRightCoordinate.x, uiElement.GetCoordinates().topRightCoordinate.y);
+    std::cout << char(191);
+
+    /*
+    //building vertical lines
+    for (int i = uiElement.GetCoordinates().y + 1; i < uiElement.GetCoordinates().y + uiElement.GetSize().height - 2; i++) {
+        gotoxy(i, uiElement.GetCoordinates().x);
+        std::cout << char(179);
+        gotoxy(i, uiElement.GetCoordinates().x + uiElement.GetSize().width);
+        std::cout << char(179);
+    }
+
+    for (int i = uiElement.GetCoordinates().x + 1; i < uiElement.GetCoordinates().x + uiElement.GetSize().width - 2; i++) {
+        gotoxy(uiElement.GetCoordinates().y, i);
+        std::cout << char(196);
+        gotoxy(uiElement.GetCoordinates().y + uiElement.GetSize().height, i);
+        std::cout << char(196);
+    }*/
+}
+
+void DynamicUi::PrintLog() {
+    //int messageLine = GetSelectionsSpace().upperLimit - UiSpacing::MESSAGE_LINE_SPACING;
+    //Clear message line
+    //ClearLine(messageLine);
+
+    //Print new message
+    //gotoxy(0, messageLine); 
+    m_Logger->PrintLog();
 }
 
 void DynamicUi::Navigate(const char key) {
     switch (key) {
         case keys::UP_KEY: {
-            std::cout << m_OptionIndex << " " << m_HighlightedOption;
-            m_OptionIndex--;
-            if (m_AcceptPrinted) {
-                m_OptionIndex %= m_OptionCount + UiSpacing::ACCEPT_LINE_SPACING;
-            } else {
-                m_OptionIndex %= m_OptionCount;
-            }
-            m_HighlightedOption = m_InstructionsLength + UiSpacing::INSTRUCTIONS_DOWN_SPACING + m_OptionIndex;
+            m_UiElements[m_SelectedElement]->OnKeyUp();
             break;
         }
 
         case keys::DOWN_KEY: {
-            std::cout << m_OptionIndex << " " << m_HighlightedOption;
-            m_HighlightedOption++;
-            if (m_HighlightedOption > m_SelectionsSpace.lowerLimit) {
-                m_HighlightedOption = m_SelectionsSpace.upperLimit;
-            }
-            m_OptionIndex++;
-            if (m_AcceptPrinted) {
-                m_OptionIndex %= m_OptionCount + UiSpacing::ACCEPT_LINE_SPACING;
-            } else {
-                m_OptionIndex %= m_OptionCount;
-            }
+            m_UiElements[m_SelectedElement]->OnKeyDown();
+            break;
+        }
+
+        case keys::TAB_KEY: {
+            RemoveElementOutline(*m_UiElements[m_SelectedElement]);
+            m_SelectedElement++;
+            m_SelectedElement %= m_UiElements.size();
+            DrawElementOutline(*m_UiElements[m_SelectedElement]);
             break;
         }
 

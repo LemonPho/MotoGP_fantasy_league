@@ -1,3 +1,4 @@
+/*
 #include "ui/DynamicUi/SingleSelectionUi.h"
 
 SingleSelectionUi::SingleSelectionUi(std::shared_ptr<Logger> logger, std::vector<std::string>& instructions, std::vector<std::string>& menuOptions) : DynamicUi(logger, instructions, menuOptions) {
@@ -20,3 +21,4 @@ void SingleSelectionUi::OnSelect() {
 void SingleSelectionUi::OnDeselect() {
 	return;
 }
+*/

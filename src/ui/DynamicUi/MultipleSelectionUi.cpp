@@ -1,3 +1,4 @@
+/*
 #include "ui/DynamicUi/MultipleSelectionUi.h"
 
 MultipleSelectionUi::MultipleSelectionUi(std::shared_ptr<Logger> logger, std::vector<std::string>& instructions, std::vector<std::string>& menuOptions) : DynamicUi(logger, instructions, menuOptions)
@@ -46,3 +47,4 @@ void MultipleSelectionUi::OnDeselect(){
 	std::cout << " ";
 	m_Selections[optionIndex] = false;
 }
+*/

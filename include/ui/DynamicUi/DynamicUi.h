@@ -10,11 +10,7 @@
 #include "core/Logger.h"
 #include "utils/Util.h"
 #include "DynamicUiElement/BaseUiElement.h"
-
-struct Window {
-    int columns=0;
-    int rows=0;
-};
+#include "Window.h"
 
 class DynamicUi {
 public:
@@ -55,8 +51,9 @@ public:
     void InitializeUi();
     void Display();
     void UpdateDisplay();
+    void RemoveElementOutline(BaseUiElement& uiElement);
+    void DrawElementOutline(BaseUiElement& uiElement);
     void PrintLog();
-    virtual bool PrintAccept(size_t x, size_t y);
     void Navigate(const char key);
     virtual void OnSelect();
     virtual void OnDeselect();
@@ -74,6 +71,7 @@ enum keys {
     ENTER_KEY = 13,
     BACKSPACE_KEY = 8,
     Q_KEY = 113,
+    TAB_KEY = 9,
 };
 #else
 enum keys {

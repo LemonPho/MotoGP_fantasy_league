@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #include "ui/DynamicUi/DynamicUi.h"
@@ -15,3 +16,4 @@ public:
 	void OnSelect() override;
 	void OnDeselect() override;
 };
+*/

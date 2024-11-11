@@ -19,9 +19,22 @@ void SeasonMenu::InitializeSeasonMenu(std::shared_ptr<Logger> logger, std::share
 }
 
 void SeasonMenu::Menu() {
-	std::vector<std::string> instructions = { "Season Menu", "Arrow keys: Move up and down", "Enter: select option", "Q: exit" };
-	std::vector<std::string> menuOptions = { "Add Season", "Modify Season", "Delete Season", "Change Season", "Save Changes", "Exit"};
+	std::vector<std::string> instructionsArray = { "Season Menu", "Arrow keys: Move up and down", "Enter: select option", "Q: exit" };
+	std::vector<std::string> menuOptionsArray = { "Add Season", "Modify Season", "Delete Season", "Change Season", "Save Changes", "Exit"};
 	
+	BaseUiElement::Positioning instructionsPositioning = BaseUiElement::Positioning::LEFT;
+	BaseUiElement::Positioning menuOptionsPositioning = BaseUiElement::Positioning::CENTERED;
+
+	std::shared_ptr<BaseUiElement> instructions = std::make_shared<BaseUiElement>(m_Logger, "instructions", instructionsPositioning, instructionsArray);
+	std::shared_ptr<BaseUiElement> menuOptions = std::make_shared<BaseUiElement>(m_Logger, "menu options", menuOptionsPositioning, menuOptionsArray);
+
+	std::vector<std::shared_ptr<BaseUiElement>> menuUiElements = {instructions, menuOptions};
+
+	DynamicUi menu(m_Logger, menuUiElements, "Season Menu");
+
+	menu.InitializeUi();
+
+	/*
 	SingleSelectionUi menu(m_Logger, instructions, menuOptions);
 
 	int selection;
@@ -86,7 +99,7 @@ void SeasonMenu::Menu() {
 			}
 		}
 	} while (menu.GetChangesMade() && !exit);
-	
+	*/
 }
 
 bool SeasonMenu::AddSeason() {

@@ -34,6 +34,6 @@ add_executable(MotoGP_Fantasy_League
 	src/ui/SeasonMenu.cpp
 	src/utils/Util.cpp
 	src/views/MemberList.cpp
-	src/views/RiderManagerList.cpp "include/ui/DynamicUi/MultipleSelectionUi.h" "include/ui/DynamicUi/SingleSelectionUi.h" "include/ui/DynamicUi/LimitedSelectionUi.h" "src/ui/DynamicUi/MultipleSelectionUi.cpp" "src/ui/DynamicUi/LimitedSelectionUi.cpp" "src/ui/DynamicUi/SingleSelectionUi.cpp" "include/ui/DynamicUi/RidersSelectorUi.h" "src/ui/DynamicUi/RidersSelectorUi.cpp" "include/models/Season.h" "src/models/Season.cpp" "include/ui/DynamicUi/DynamicUiElement/BaseUiElement.h" "src/ui/DynamicUi/DynamicUiElement/BaseUiElement.cpp")
+	src/views/RiderManagerList.cpp "include/ui/DynamicUi/MultipleSelectionUi.h" "include/ui/DynamicUi/SingleSelectionUi.h" "include/ui/DynamicUi/LimitedSelectionUi.h" "src/ui/DynamicUi/MultipleSelectionUi.cpp" "src/ui/DynamicUi/LimitedSelectionUi.cpp" "src/ui/DynamicUi/SingleSelectionUi.cpp" "include/ui/DynamicUi/RidersSelectorUi.h" "src/ui/DynamicUi/RidersSelectorUi.cpp" "include/models/Season.h" "src/models/Season.cpp" "include/ui/DynamicUi/DynamicUiElement/BaseUiElement.h" "src/ui/DynamicUi/DynamicUiElement/BaseUiElement.cpp" "include/ui/DynamicUi/Window.h")
 
 target_include_directories(MotoGP_Fantasy_League PRIVATE ${CMAKE_SOURCE_DIR}/include)

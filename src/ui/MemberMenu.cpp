@@ -28,6 +28,7 @@ void MemberMenu::Menu() {
     MemberList& memberList = m_Season->GetMemberList();
     RiderManagerList& riderManagerList = m_Season->GetRiderManagerList();
 
+    /*
     SingleSelectionUi memberMenu(m_Logger, instructions, menuOptions);
 
     int selection;
@@ -151,6 +152,7 @@ void MemberMenu::Menu() {
             }
         }
     } while (!exit);
+    */
 }
 
 bool MemberMenu::AddMember() {
@@ -194,6 +196,7 @@ bool MemberMenu::AddMember() {
     std::vector<std::string> instructions = { "Creating Member", "Add the member's picks", "Arrow keys for going up and down", "Enter: Select rider", "Backspace: Remove selected rider", "Q: cancel" };
     std::vector<std::string> options = riderManagerList.ToStringVector();
 
+    /*
     RidersSelectorUi ridersSelector(m_Logger, instructions, options);
     ridersSelector.InitializeUi();
     //check if operation was cancelled
@@ -213,7 +216,7 @@ bool MemberMenu::AddMember() {
     memberList.AddMember(tempMember);
     m_Logger->Log("New member created with username: " + tempMember.GetMemberUserName(), Logger::LogLevelSuccess, Logger::LogFile);
     m_Logger->Log(tempMember.GetMemberUserName() + " created!", Logger::LogLevelSuccess, Logger::LogConsole);
-
+    */
     return true;
 }
 
@@ -235,6 +238,7 @@ bool MemberMenu::DeleteMember() {
     std::vector<bool> selections;
     selections.resize(memberListString.size());
 
+    /*
     MultipleSelectionUi deleteMemberUi(m_Logger, instructions, memberListString);
 
     deleteMemberUi.InitializeUi();
@@ -254,6 +258,7 @@ bool MemberMenu::DeleteMember() {
             memberList.RemoveMember(tempMember);
         }
     }
+    */
 
     return true;
 }
@@ -274,7 +279,7 @@ bool MemberMenu::ModifyMember() {
     std::vector<std::string> memberListString = memberList.ToStringArray();
     size_t memberSelection;
 
-    system(CLEAR);
+    /*
     SingleSelectionUi memberSelectorUi(m_Logger, memberListInstructions, memberListString);
     memberSelectorUi.InitializeUi();
 
@@ -349,7 +354,7 @@ bool MemberMenu::ModifyMember() {
             m_Logger->Log("Changes successfully made", Logger::LogLevelSuccess, Logger::LogConsoleFile);
         }
     }
-
+    */
     
     return true;
 }

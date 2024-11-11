@@ -1,3 +1,4 @@
+/*
 #include "ui/DynamicUi/RidersSelectorUi.h"
 
 RidersSelectorUi::RidersSelectorUi(std::shared_ptr<Logger> logger, std::vector<std::string>& instructions, std::vector<std::string>& menuOptions) : DynamicUi(logger, instructions, menuOptions) {
@@ -114,3 +115,4 @@ void RidersSelectorUi::OnDeselect() {
     m_Selections[selected] = -1;
     m_SelectionCount--;
 }
+*/
