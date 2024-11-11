@@ -522,8 +522,9 @@ int MemberMenu::optionSelector(string option) {
     if(option == "3") return MODIFY_MEMBER;
     if(option == "4") return LIST_MEMBERS;
     if(option == "5") return DELETE_ALL_MEMBERS;
-    if(option == "6") return CREATE_STANDINGS_FILE;
-    if(option == "7") return SAVE_CHANGES_MEMBER;
-    if(option == "8") return EXIT_MEMBER;
+    if(option == "6") return ADD_EXTRA_POINTS_MEMBER;
+    if(option == "7") return CREATE_STANDINGS_FILE;
+    if(option == "8") return SAVE_CHANGES_MEMBER;
+    if(option == "9") return EXIT_MEMBER;
     return 0;
 }
