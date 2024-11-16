@@ -9,7 +9,7 @@
 #include "models/RiderManager.h"
 #include "ui/DynamicUi/SingleSelectionUi.h"
 #include "ui/DynamicUi/DynamicUi.h"
-#include "ui/DynamicUi/DynamicUiElement/BaseUiElement.h"
+#include "ui/DynamicUi/DynamicUiElement/SingleSelectionUiElement.h"
 
 class SeasonMenu {
 public:

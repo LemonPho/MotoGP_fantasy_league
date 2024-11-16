@@ -3,6 +3,7 @@
 DynamicUi::DynamicUi(std::shared_ptr<Logger> logger, std::vector<std::shared_ptr<BaseUiElement>>& uiElements, std::string label) : m_Logger(logger), m_UiElements(uiElements) {
     m_Logger->Log("Initializing" + label + " ui", Logger::LogLevelInfo, Logger::LogFile);
     m_Label = label;
+    m_Terminate = std::make_shared<bool>(false);
 }
 
 void DynamicUi::gotoxy(size_t x, size_t y) {
@@ -64,7 +65,7 @@ void DynamicUi::ClearUiElement(BaseUiElement& uiElement) {
     BaseUiElement::Coordinates coordinates = uiElement.GetCoordinates();
     
     std::string clearString(size.width, ' ');
-    for (int i = coordinates.topLeftCoordinate.y; i <= coordinates.bottomLeftCoordinate.y; i++) {
+    for (int i = coordinates.top; i <= coordinates.bottom; i++) {
         std::cout << clearString;
     }
 }
@@ -77,7 +78,7 @@ void DynamicUi::InitializeUi() {
     system(CLEAR);
     m_Logger->Log("Starting " + m_Label + " ui", Logger::LogLevelInfo, Logger::LogFile);
 
-    m_Terminate = false;
+    *m_Terminate = false;
     //disabling cursor
     ToggleConsoleCursor(false);
 
@@ -89,13 +90,22 @@ void DynamicUi::InitializeUi() {
     size_t rowCounter = 1;
     for (auto& uiElement : m_UiElements) {
         uiElement->InitializeUiElement(m_Window, rowCounter);
-        rowCounter = uiElement->GetCoordinates().bottomLeftCoordinate.y;
+        uiElement->SetTerminate(m_Terminate);
+        rowCounter = uiElement->GetCoordinates().bottom;
+    }
+
+    //configuring selected element
+    for(int i = 0; i < m_UiElements.size(); i++){
+        if (!m_UiElements[i]->GetStatic()) {
+            m_SelectedElement = i;
+            break;
+        }
     }
 
     char key = 0;
     //display instructions and menu
     Display();
-    while (!m_Terminate) {
+    while (*m_Terminate == false) {
         if (key == keys::LEFT_KEY || key == keys::RIGHT_KEY) {
             Display();
         } else {
@@ -112,11 +122,11 @@ void DynamicUi::Display(){
     system(CLEAR);
 
     for (int i = 0; i < m_UiElements.size(); i++) {
-        if (m_UiElements[i]->GetCoordinates().topRightCoordinate.y > m_Window.rows) {
+        if (m_UiElements[i]->GetCoordinates().top > m_Window.rows) {
             break;
         }
 
-        if (i == m_SelectedElement) {
+        if (i == m_SelectedElement && !m_UiElements[m_SelectedElement]->GetStatic()) {
             DrawElementOutline(*m_UiElements[i]);
         }
 
@@ -135,37 +145,37 @@ void DynamicUi::UpdateDisplay() {
 
 void DynamicUi::RemoveElementOutline(BaseUiElement& uiElement) {
     //top left corner
-    gotoxy(uiElement.GetCoordinates().topLeftCoordinate.x, uiElement.GetCoordinates().topLeftCoordinate.y);
+    gotoxy(uiElement.GetCoordinates().left, uiElement.GetCoordinates().top);
     std::cout << " ";
 
     //bottom left corner
-    gotoxy(uiElement.GetCoordinates().bottomLeftCoordinate.x, uiElement.GetCoordinates().bottomLeftCoordinate.y);
+    gotoxy(uiElement.GetCoordinates().left, uiElement.GetCoordinates().bottom);
     std::cout << " ";
 
     //bottom right corner
-    gotoxy(uiElement.GetCoordinates().bottomRightCoordinate.x, uiElement.GetCoordinates().bottomRightCoordinate.y);
+    gotoxy(uiElement.GetCoordinates().right, uiElement.GetCoordinates().bottom);
     std::cout << " ";
 
     //top right corner
-    gotoxy(uiElement.GetCoordinates().topRightCoordinate.x, uiElement.GetCoordinates().topRightCoordinate.y);
+    gotoxy(uiElement.GetCoordinates().right, uiElement.GetCoordinates().top);
     std::cout << " ";
 }
 
 void DynamicUi::DrawElementOutline(BaseUiElement& uiElement) {    
     //top left corner
-    gotoxy(uiElement.GetCoordinates().topLeftCoordinate.x, uiElement.GetCoordinates().topLeftCoordinate.y);
+    gotoxy(uiElement.GetCoordinates().left, uiElement.GetCoordinates().top);
     std::cout << char(218);
 
     //bottom left corner
-    gotoxy(uiElement.GetCoordinates().bottomLeftCoordinate.x, uiElement.GetCoordinates().bottomLeftCoordinate.y);
+    gotoxy(uiElement.GetCoordinates().left, uiElement.GetCoordinates().bottom);
     std::cout << char(192);
 
     //bottom right corner
-    gotoxy(uiElement.GetCoordinates().bottomRightCoordinate.x, uiElement.GetCoordinates().bottomRightCoordinate.y);
+    gotoxy(uiElement.GetCoordinates().right, uiElement.GetCoordinates().bottom);
     std::cout << char(217);
 
     //top right corner
-    gotoxy(uiElement.GetCoordinates().topRightCoordinate.x, uiElement.GetCoordinates().topRightCoordinate.y);
+    gotoxy(uiElement.GetCoordinates().right, uiElement.GetCoordinates().top);
     std::cout << char(191);
 
     /*
@@ -198,20 +208,27 @@ void DynamicUi::PrintLog() {
 void DynamicUi::Navigate(const char key) {
     switch (key) {
         case keys::UP_KEY: {
-            m_UiElements[m_SelectedElement]->OnKeyUp();
+            if(!m_UiElements[m_SelectedElement]->GetStatic())
+                m_UiElements[m_SelectedElement]->OnKeyUp();
             break;
         }
 
         case keys::DOWN_KEY: {
-            m_UiElements[m_SelectedElement]->OnKeyDown();
+            if (!m_UiElements[m_SelectedElement]->GetStatic())
+                m_UiElements[m_SelectedElement]->OnKeyDown();
             break;
         }
 
         case keys::TAB_KEY: {
+            int previousSelected = m_SelectedElement;
             RemoveElementOutline(*m_UiElements[m_SelectedElement]);
             m_SelectedElement++;
-            m_SelectedElement %= m_UiElements.size();
-            DrawElementOutline(*m_UiElements[m_SelectedElement]);
+            while (m_UiElements[m_SelectedElement]->GetStatic() && previousSelected != m_SelectedElement) {
+                m_SelectedElement++;
+                m_SelectedElement %= m_UiElements.size();
+            }
+            if(!m_UiElements[m_SelectedElement]->GetStatic())
+                DrawElementOutline(*m_UiElements[m_SelectedElement]);
             break;
         }
 
@@ -230,18 +247,22 @@ void DynamicUi::Navigate(const char key) {
         }
 
         case keys::ENTER_KEY: {
-            OnSelect();
+            if (!m_UiElements[m_SelectedElement]->GetStatic()) {
+                m_UiElements[m_SelectedElement]->OnSelect();
+            }
             break;
         }
 
         case keys::BACKSPACE_KEY: {
-            OnDeselect();
+            if (!m_UiElements[m_SelectedElement]->GetStatic()) {
+                m_UiElements[m_SelectedElement]->OnDeselect();
+            }
             break;
         }
 
         case keys::Q_KEY: {
             m_Logger->Log("Exiting Ui by cancelation", Logger::LogLevelInfo, Logger::LogFile);
-            m_Terminate = true;
+            *m_Terminate = true;
             m_ChangesMade = false;
             break;
         }
@@ -265,6 +286,6 @@ void DynamicUi::Exit(bool changesMade) {
     } else {
         m_Logger->Log("User exiting menu by cancelling", Logger::LogLevelInfo, Logger::LogFile);
     }
-    m_Terminate = true;
+    *m_Terminate = true;
 }
 

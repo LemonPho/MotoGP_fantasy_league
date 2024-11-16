@@ -26,16 +26,11 @@ void SeasonMenu::Menu() {
 	BaseUiElement::Positioning menuOptionsPositioning = BaseUiElement::Positioning::CENTERED;
 
 	std::shared_ptr<BaseUiElement> instructions = std::make_shared<BaseUiElement>(m_Logger, "instructions", instructionsPositioning, instructionsArray);
-	std::shared_ptr<BaseUiElement> menuOptions = std::make_shared<BaseUiElement>(m_Logger, "menu options", menuOptionsPositioning, menuOptionsArray);
+	std::shared_ptr<SingleSelectionUiElement> menuOptions = std::make_shared<SingleSelectionUiElement>(m_Logger, "menu options", menuOptionsPositioning, menuOptionsArray);
 
 	std::vector<std::shared_ptr<BaseUiElement>> menuUiElements = {instructions, menuOptions};
 
 	DynamicUi menu(m_Logger, menuUiElements, "Season Menu");
-
-	menu.InitializeUi();
-
-	/*
-	SingleSelectionUi menu(m_Logger, instructions, menuOptions);
 
 	int selection;
 	bool changesMade = false;
@@ -43,8 +38,8 @@ void SeasonMenu::Menu() {
 
 	do {
 		menu.InitializeUi();
-		if (menu.GetChangesMade()) {
-			selection = menu.GetSelection();
+		if (menuOptions->GetChangesMade()) {
+			selection = menuOptions->GetSelection();
 			switch (selection) {
 			case options::ADD_SEASON: {
 				if (!changesMade) {
@@ -99,7 +94,7 @@ void SeasonMenu::Menu() {
 			}
 		}
 	} while (menu.GetChangesMade() && !exit);
-	*/
+	
 }
 
 bool SeasonMenu::AddSeason() {

@@ -31,7 +31,7 @@ private:
     int m_CurrentPage = 0;
     size_t m_PageCount = 1;
 
-    bool m_Terminate = false;
+    std::shared_ptr<bool> m_Terminate;
     bool m_ChangesMade = false;
 protected:
     Window m_Window;
