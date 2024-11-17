@@ -302,8 +302,9 @@ string MemberList::addExtraMembersPoints(RiderList *riderList) {
             stream.clear();
             tempRiderManager2 = tempRiderNode2->getData();
             tempRiderManager1 = tempRiderNode1->getData();
-            rider = tempRiderManager2.getRider();
+
             if(tempRiderManager1 == tempRiderManager2){
+                rider = tempRiderManager2.getRider();
                 totalPoints += pointsMultiplier[i] * tempRiderManager2.getPoints();
                 result += "<td>";
                 result += rider.getFirstName()[0];
@@ -318,6 +319,7 @@ string MemberList::addExtraMembersPoints(RiderList *riderList) {
                 result += "</td>";
                 
             } else {
+                rider = tempRiderManager1.getRider();
                 result += "<td>";
                 result += rider.getFirstName()[0];
                 result += ". ";
@@ -325,7 +327,7 @@ string MemberList::addExtraMembersPoints(RiderList *riderList) {
                     result += rider.getLastName()[i];
                 }
                 result += " - ";
-                stream << std::fixed << std::setprecision(2) << tempRiderManager2.getPoints();
+                stream << std::fixed << std::setprecision(2) << tempRiderManager1.getPoints();
                 result += stream.str();
 
                 result += "</td>";
