@@ -337,6 +337,7 @@ string MemberList::addExtraMembersPoints(RiderList *riderList) {
         tempMember.setPoints(totalPoints);
         tempMemberNode->setData(tempMember);
         tempMemberNode = tempMemberNode->getNext();
+        positionCounter++;
     }
 
     result += "</table>";
