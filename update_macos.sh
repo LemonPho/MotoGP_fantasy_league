@@ -2,7 +2,7 @@
 
 #pull changes from github
 echo "retrieving the changes from github"
-git clone -b MotoGP_Fantasy_League_macOS https://github.com/BenitoCamelo2/MotoGP_fantasy_league.git || { echo "getting the changes failed"; exit 1; }
+git clone -b MotoGP_Fantasy_League_macOS https://github.com/LemonPho/MotoGP_fantasy_league.git || { echo "getting the changes failed"; exit 1; }
 
 #build new program file
 echo "building new program"
