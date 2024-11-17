@@ -280,33 +280,30 @@ string MemberList::addExtraMembersPoints(RiderList *riderList) {
         while(tempRiderNode1 != nullptr){
             tempRiderManager2 = tempRiderNode2->getData();
             tempRiderManager1 = tempRiderNode1->getData();
+            rider = tempRiderManager2.getRider();
             if(tempRiderManager1 == tempRiderManager2){
                 totalPoints += pointsMultiplier[i] * tempRiderManager2.getPoints();
-                rider = tempRiderManager2.getRider();
-                
                 result += "<td>";
                 result += rider.getFirstName()[0];
-                result += ".";
+                result += ". ";
                 for(int i = 0; i < 3; i++){
                     result += rider.getLastName()[i];
                 }
                 result += " - ";
-                stream << std::fixed << std::setprecision(0) << pointsMultiplier[i] * tempRiderManager2.getPoints();
+                stream << std::fixed << std::setprecision(2) << pointsMultiplier[i] * tempRiderManager2.getPoints();
                 result += stream.str();
 
                 result += "</td>";
                 
             } else {
-                rider = tempRiderManager2.getRider();
-
                 result += "<td>";
                 result += rider.getFirstName()[0];
-                result += ".";
+                result += ". ";
                 for (int i = 0; i < 3; i++) {
                     result += rider.getLastName()[i];
                 }
                 result += " - ";
-                stream << std::fixed << std::setprecision(0) << tempRiderManager2.getPoints();
+                stream << std::fixed << std::setprecision(2) << tempRiderManager2.getPoints();
                 result += stream.str();
 
                 result += "</td>";
@@ -320,6 +317,9 @@ string MemberList::addExtraMembersPoints(RiderList *riderList) {
         tempMemberNode = tempMemberNode->getNext();
     }
 
+    result += "</table>";
+
+    return result;
 }
 
 void MemberList::sortMembers(RiderNode* riderHead) {
