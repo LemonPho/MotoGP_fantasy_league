@@ -263,6 +263,8 @@ string MemberList::addExtraMembersPoints(RiderList *riderList) {
     std::ostringstream stream;
 
     while(tempMemberNode != nullptr){
+        stream.str("");
+        stream.clear();
         tempMember = tempMemberNode->getData();
         totalPoints = tempMember.getPoints();
         tempRiderNode1 = tempMember.getRiderList()->getFirstPos();
@@ -277,7 +279,6 @@ string MemberList::addExtraMembersPoints(RiderList *riderList) {
         result += tempMember.getUserName();
         result += " - ";
 
-        totalPoints = 0;
         while(tempRiderNode1 != nullptr){
             tempRiderManager2 = tempRiderNode2->getData();
             tempRiderManager1 = tempRiderNode1->getData();
