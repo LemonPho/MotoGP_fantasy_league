@@ -277,7 +277,9 @@ string MemberList::addExtraMembersPoints(RiderList *riderList) {
         result += tempMember.getUserName();
         result += " - ";
 
+
         while(tempRiderNode1 != nullptr){
+            totalPoints = 0;
             tempRiderManager2 = tempRiderNode2->getData();
             tempRiderManager1 = tempRiderNode1->getData();
             rider = tempRiderManager2.getRider();
