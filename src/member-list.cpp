@@ -245,7 +245,10 @@ void MemberList::updateMembersRiders(RiderList* riderList) {
     }
 }
 
-void MemberList::addExtraMembersPoints(RiderList *riderList) {
+string MemberList::addExtraMembersPoints(RiderList *riderList) {
+    string result = "<table>";
+    int positionCounter = 1;
+
     float totalPoints = 0;
     float pointsMultiplier[] = {0.1, 0.07, 0.05, 0.0325, 0.02};
     int i;
@@ -255,6 +258,9 @@ void MemberList::addExtraMembersPoints(RiderList *riderList) {
     RiderNode* tempRiderNode2 = riderList->getFirstPos();
     RiderManager tempRiderManager1;
     RiderManager tempRiderManager2;
+    Rider rider;
+
+    std::ostringstream stream;
 
     while(tempMemberNode != nullptr){
         tempMember = tempMemberNode->getData();
@@ -262,11 +268,48 @@ void MemberList::addExtraMembersPoints(RiderList *riderList) {
         tempRiderNode1 = tempMember.getRiderList()->getFirstPos();
         tempRiderNode2 = riderList->getFirstPos();
         i=0;
+
+        result += "<tr>";
+        result += "<td>";
+        result += "<b>";
+        result += to_string(positionCounter);
+        result += ". ";
+        result += tempMember.getUserName();
+        result += " - ";
+
         while(tempRiderNode1 != nullptr){
             tempRiderManager2 = tempRiderNode2->getData();
             tempRiderManager1 = tempRiderNode1->getData();
             if(tempRiderManager1 == tempRiderManager2){
                 totalPoints += pointsMultiplier[i] * tempRiderManager2.getPoints();
+                rider = tempRiderManager2.getRider();
+                
+                result += "<td>";
+                result += rider.getFirstName()[0];
+                result += ".";
+                for(int i = 0; i < 3; i++){
+                    result += rider.getLastName()[i];
+                }
+                result += " - ";
+                stream << std::fixed << std::setprecision(0) << pointsMultiplier[i] * tempRiderManager2.getPoints();
+                result += stream.str();
+
+                result += "</td>";
+                
+            } else {
+                rider = tempRiderManager2.getRider();
+
+                result += "<td>";
+                result += rider.getFirstName()[0];
+                result += ".";
+                for (int i = 0; i < 3; i++) {
+                    result += rider.getLastName()[i];
+                }
+                result += " - ";
+                stream << std::fixed << std::setprecision(0) << tempRiderManager2.getPoints();
+                result += stream.str();
+
+                result += "</td>";
             }
             tempRiderNode1 = tempRiderNode1->getNext();
             tempRiderNode2 = tempRiderNode2->getNext();

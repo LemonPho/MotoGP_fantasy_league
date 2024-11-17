@@ -82,7 +82,22 @@ void MemberMenu::menu() {
                 break;
             }
             case ADD_EXTRA_POINTS_MEMBER: {
-                memberList->addExtraMembersPoints(riderList);
+                string HTMLTable = memberList->addExtraMembersPoints(riderList);
+
+                ofstream fileHTML(MAIN_DIRECTORY_WITHOUT_QUOTES + seasonName + '-' + CURRENT_STANDINGS_HTML, ios::out);
+
+                if(!fileHTML.is_open()){
+                    cout << "Standings file not opened successfully, check if administrator privileges are necessary" << endl;
+                } else {
+                    fileHTML << HTMLTable << endl << endl;
+                    fileHTML.close();
+                    cout << "Standings file created successfully" << endl;
+                    cout << "To open file standings on macOS:" << endl;
+                    cout << "Open Finder, on the top of the screen select Go, in the options select Home and the file should be labelled (season name)-current-standings.txt" << endl;
+                    cout << "On windows it should be located in the same directory as the program" << endl;
+                    getchar();
+                    enterToContinue();
+                }
                 break;
             }
             case CREATE_STANDINGS_FILE: {

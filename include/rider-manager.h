@@ -2,6 +2,8 @@
 #define MOTOGP_FANTASY_LEAGUE_RIDER_MANAGER_H
 
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 #include "rider.h"
 
 class RiderManager{
